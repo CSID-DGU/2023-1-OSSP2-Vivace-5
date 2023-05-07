@@ -18,17 +18,20 @@ const typeorm_1 = require("@nestjs/typeorm");
 const project_repository_1 = require("./project.repository");
 const project_entity_1 = require("../entity/project.entity");
 const user_to_project_entity_1 = require("../entity/user-to-project.entity");
-const user_service_1 = require("../user/user.service");
 const user_right_enum_1 = require("../enum/user-right.enum");
 const user_to_project_repository_1 = require("./user-to-project.repository");
 const project_comment_entity_1 = require("../entity/project-comment.entity");
 const project_comment_repository_1 = require("./project-comment.repository");
+const typeorm_2 = require("typeorm");
+const task_repository_1 = require("../task/task.repository");
+const user_repository_1 = require("../user/user.repository");
 let ProjectService = class ProjectService {
-    constructor(projectRepository, userToProjectRepository, projectCommentRepository, userService) {
+    constructor(projectRepository, userToProjectRepository, projectCommentRepository, taskRepository, userRepository) {
         this.projectRepository = projectRepository;
         this.userToProjectRepository = userToProjectRepository;
         this.projectCommentRepository = projectCommentRepository;
-        this.userService = userService;
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
     async getAllProjects(user, queryString) {
         const query = this.projectRepository.createQueryBuilder("project");
@@ -44,7 +47,9 @@ let ProjectService = class ProjectService {
             .leftJoin("project.userToProjects", "userToProjects")
             .where("userToProjects.userId = :userId", { userId: user.id });
         if (queryString) {
-            query.andWhere("project.title LIKE :queryString OR project.description LIKE :queryString", { queryString });
+            query.andWhere(new typeorm_2.Brackets((qb) => {
+                qb.where("project.title LIKE :queryString", { queryString: `%${queryString}%` }).orWhere("project.description LIKE :queryString", { queryString: `%${queryString}%` });
+            }));
         }
         return query.getMany();
     }
@@ -57,7 +62,6 @@ let ProjectService = class ProjectService {
             "project.type",
             "project.encodedImg",
             "project.createdAt",
-            "project.comments",
             "userToProjects.userRight",
             "user.id",
             "user.encodedImg",
@@ -67,6 +71,7 @@ let ProjectService = class ProjectService {
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
             .leftJoinAndSelect("project.tasks", "task")
+            .leftJoinAndSelect("project.comments", "comments")
             .where("project.id = :projectId", { projectId });
         const found = await query.getOne();
         if (!found) {
@@ -102,8 +107,8 @@ let ProjectService = class ProjectService {
         userToProject.user = user;
         await this.userToProjectRepository.save(userToProject);
         const notFoundUserId = [];
-        members.forEach(async (member) => {
-            const memberEntity = await this.userService.getUserEntity(member.id);
+        for (const member of members) {
+            const memberEntity = await this.userRepository.findOneBy({ id: member.id });
             if (memberEntity) {
                 const memberToProject = new user_to_project_entity_1.UserToProject();
                 memberToProject.userRight = member.right;
@@ -114,7 +119,7 @@ let ProjectService = class ProjectService {
             else {
                 notFoundUserId.push(member.id);
             }
-        });
+        }
         return { notFoundUserId: notFoundUserId };
     }
     async updateProject(user, projectId, projectInfoDto) {
@@ -134,18 +139,24 @@ let ProjectService = class ProjectService {
                 right = member.userRight;
             }
         });
-        if (right !== user_right_enum_1.UserRight.ADMIN && right !== user_right_enum_1.UserRight.MEMBER_AND_TASK_MGT) {
+        if (right !== user_right_enum_1.UserRight.ADMIN) {
             throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to update the information on this project. Your right in this project is "${right}".`);
         }
         found.title = title;
         found.description = description;
         found.encodedImg = encodedImg;
-        found.userToProjects.forEach(async (member) => {
+        await this.projectRepository.save(found);
+        for (const member of found.userToProjects) {
             await this.userToProjectRepository.delete({ id: member.id });
-        });
+        }
+        const userToProject = new user_to_project_entity_1.UserToProject();
+        userToProject.userRight = right;
+        userToProject.project = found;
+        userToProject.user = user;
+        await this.userToProjectRepository.save(userToProject);
         const notFoundUserId = [];
-        members.forEach(async (member) => {
-            const memberEntity = await this.userService.getUserEntity(member.id);
+        for (const member of members) {
+            const memberEntity = await this.userRepository.findOneBy({ id: member.id });
             if (memberEntity) {
                 const memberToProject = new user_to_project_entity_1.UserToProject();
                 memberToProject.userRight = member.right;
@@ -156,7 +167,7 @@ let ProjectService = class ProjectService {
             else {
                 notFoundUserId.push(member.id);
             }
-        });
+        }
         return { notFoundUserId: notFoundUserId };
     }
     async deleteProject(user, projectId) {
@@ -179,9 +190,9 @@ let ProjectService = class ProjectService {
             throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to delete this project. Join this project for elimination.`);
         }
         if (right === user_right_enum_1.UserRight.ADMIN) {
-            found.userToProjects.forEach(async (member) => {
-                await this.userToProjectRepository.delete({ id: member.id });
-            });
+            await this.userToProjectRepository.delete({ projectId });
+            await this.projectCommentRepository.delete({ projectId });
+            await this.taskRepository.delete({ projectId });
             await this.projectRepository.delete({ id: projectId });
         }
         else {
@@ -212,8 +223,8 @@ let ProjectService = class ProjectService {
         }
         const notFoundUserId = [];
         const alreadyMemberUserId = [];
-        members.forEach(async (member) => {
-            const memberEntity = await this.userService.getUserEntity(member.id);
+        for (const member of members) {
+            const memberEntity = await this.userRepository.findOneBy({ id: member.id });
             if (memberEntity) {
                 const query = this.userToProjectRepository.createQueryBuilder("userToProject");
                 query
@@ -224,7 +235,12 @@ let ProjectService = class ProjectService {
                 const foundUser = await query.getOne();
                 if (!foundUser) {
                     const memberToProject = new user_to_project_entity_1.UserToProject();
-                    memberToProject.userRight = member.right;
+                    if (right === user_right_enum_1.UserRight.ADMIN) {
+                        memberToProject.userRight = member.right;
+                    }
+                    else {
+                        memberToProject.userRight = user_right_enum_1.UserRight.COMPLETION_MOD;
+                    }
                     memberToProject.project = foundProject;
                     memberToProject.user = memberEntity;
                     await this.userToProjectRepository.save(memberToProject);
@@ -236,8 +252,8 @@ let ProjectService = class ProjectService {
             else {
                 notFoundUserId.push(member.id);
             }
-        });
-        return { notFoundUserId: notFoundUserId, alreadyMemberUserId: alreadyMemberUserId };
+        }
+        return { notFoundUserId, alreadyMemberUserId };
     }
     async dismiss(user, projectId, members) {
         const query = this.projectRepository.createQueryBuilder("project");
@@ -263,8 +279,9 @@ let ProjectService = class ProjectService {
         }
         const notFoundUserId = [];
         const alreadyNotMemberUserId = [];
-        members.forEach(async (member) => {
-            const memberEntity = await this.userService.getUserEntity(member.id);
+        const adminUserId = [];
+        for (const memberId of members) {
+            const memberEntity = await this.userRepository.findOneBy({ id: memberId });
             if (memberEntity) {
                 const query = this.userToProjectRepository.createQueryBuilder("userToProject");
                 query
@@ -274,17 +291,22 @@ let ProjectService = class ProjectService {
                     .andWhere("project.id = :projectId", { projectId });
                 const foundUser = await query.getOne();
                 if (foundUser) {
-                    await this.userToProjectRepository.delete({ id: foundUser.id });
+                    if (foundUser.userRight !== user_right_enum_1.UserRight.ADMIN || right === user_right_enum_1.UserRight.ADMIN) {
+                        await this.userToProjectRepository.delete({ id: foundUser.id });
+                    }
+                    else {
+                        adminUserId.push(memberId);
+                    }
                 }
                 else {
-                    alreadyNotMemberUserId.push(member.id);
+                    alreadyNotMemberUserId.push(memberId);
                 }
             }
             else {
-                notFoundUserId.push(member.id);
+                notFoundUserId.push(memberId);
             }
-        });
-        return { notFoundUserId: notFoundUserId, alreadyNotMemberUserId: alreadyNotMemberUserId };
+        }
+        return { notFoundUserId, alreadyNotMemberUserId, adminUserId };
     }
     async withdraw(user, projectId) {
         const query = this.projectRepository.createQueryBuilder("project");
@@ -337,9 +359,39 @@ let ProjectService = class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
-        projectComment.level = 0;
         projectComment.user = user;
         projectComment.project = foundProject;
+        await this.projectCommentRepository.save(projectComment);
+    }
+    async addReply(user, commentId, content) {
+        const query = this.projectCommentRepository.createQueryBuilder("projectComment");
+        query
+            .leftJoinAndSelect("projectComment.project", "project")
+            .leftJoinAndSelect("project.userToProjects", "userToProjects")
+            .leftJoinAndSelect("userToProjects.user", "user")
+            .where("projectComment.id = :commentId", { commentId });
+        const found = await query.getOne();
+        if (!found) {
+            throw new common_1.NotFoundException(`Project comment with id "${commentId}" is not found.`);
+        }
+        let isMember = false;
+        found.project.userToProjects.forEach((member) => {
+            if (member.user.id === user.id) {
+                isMember = true;
+            }
+        });
+        if (!isMember) {
+            throw new common_1.UnauthorizedException(`You "${user.email}" are not member of this project with id "${found.project.id}".`);
+        }
+        const projectComment = new project_comment_entity_1.ProjectComment();
+        const now = new Date();
+        projectComment.createdAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+        projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
+        projectComment.content = content;
+        projectComment.pinned = false;
+        projectComment.parent = found;
+        projectComment.user = user;
+        projectComment.project = found.project;
         await this.projectCommentRepository.save(projectComment);
     }
     async getAllComments(user, projectId, queryString) {
@@ -368,9 +420,13 @@ let ProjectService = class ProjectService {
             .leftJoin("projectComment.user", "user")
             .where("project.id = :projectId", { projectId });
         if (queryString) {
-            commentQuery.andWhere("projectComment.content LIKE :queryString OR user.firstName LIKE :queryString OR user.lastName LIKE :queryString", { queryString });
+            commentQuery.andWhere(new typeorm_2.Brackets((qb) => {
+                qb.where("projectComment.content LIKE :queryString", { queryString: `%${queryString}%` })
+                    .orWhere("user.firstName LIKE :queryString", { queryString: `%${queryString}%` })
+                    .orWhere("user.lastName LIKE :queryString", { queryString: `%${queryString}%` });
+            }));
         }
-        return commentQuery.getMany();
+        return commentQuery.getRawMany();
     }
     async updateCommentContent(user, commentId, content) {
         const query = this.projectCommentRepository.createQueryBuilder("projectComment");
@@ -435,10 +491,13 @@ ProjectService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(project_repository_1.ProjectRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(user_to_project_repository_1.UserToProjectRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(project_comment_repository_1.ProjectCommentRepository)),
+    __param(3, (0, typeorm_1.InjectRepository)(task_repository_1.TaskRepository)),
+    __param(4, (0, typeorm_1.InjectRepository)(user_repository_1.UserRepository)),
     __metadata("design:paramtypes", [project_repository_1.ProjectRepository,
         user_to_project_repository_1.UserToProjectRepository,
         project_comment_repository_1.ProjectCommentRepository,
-        user_service_1.UserService])
+        task_repository_1.TaskRepository,
+        user_repository_1.UserRepository])
 ], ProjectService);
 exports.ProjectService = ProjectService;
 //# sourceMappingURL=project.service.js.map

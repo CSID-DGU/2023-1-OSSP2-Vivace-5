@@ -11,6 +11,9 @@ import { UserRight } from "../enum/user-right.enum";
 import { UserToProjectRepository } from "./user-to-project.repository";
 import { ProjectComment } from "src/entity/project-comment.entity";
 import { ProjectCommentRepository } from "./project-comment.repository";
+import { Brackets } from "typeorm";
+import { TaskRepository } from "src/task/task.repository";
+import { UserRepository } from "src/user/user.repository";
 
 @Injectable()
 export class ProjectService {
@@ -18,7 +21,8 @@ export class ProjectService {
         @InjectRepository(ProjectRepository) private projectRepository: ProjectRepository,
         @InjectRepository(UserToProjectRepository) private userToProjectRepository: UserToProjectRepository,
         @InjectRepository(ProjectCommentRepository) private projectCommentRepository: ProjectCommentRepository,
-        private userService: UserService,
+        @InjectRepository(TaskRepository) private taskRepository: TaskRepository,
+        @InjectRepository(UserRepository) private userRepository: UserRepository,
     ) {}
 
     async getAllProjects(user: User, queryString: string): Promise<Project[]> {
@@ -37,7 +41,14 @@ export class ProjectService {
             .where("userToProjects.userId = :userId", { userId: user.id });
 
         if (queryString) {
-            query.andWhere("project.title LIKE :queryString OR project.description LIKE :queryString", { queryString });
+            query.andWhere(
+                new Brackets((qb) => {
+                    qb.where("project.title LIKE :queryString", { queryString: `%${queryString}%` }).orWhere(
+                        "project.description LIKE :queryString",
+                        { queryString: `%${queryString}%` },
+                    );
+                }),
+            );
         }
 
         return query.getMany();
@@ -53,7 +64,6 @@ export class ProjectService {
                 "project.type",
                 "project.encodedImg",
                 "project.createdAt",
-                "project.comments",
                 "userToProjects.userRight",
                 "user.id",
                 "user.encodedImg",
@@ -63,6 +73,7 @@ export class ProjectService {
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
             .leftJoinAndSelect("project.tasks", "task")
+            .leftJoinAndSelect("project.comments", "comments")
             .where("project.id = :projectId", { projectId });
 
         const found = await query.getOne();
@@ -123,8 +134,8 @@ export class ProjectService {
 
         const notFoundUserId: string[] = [];
 
-        members.forEach(async (member: MemberDto) => {
-            const memberEntity: User = await this.userService.getUserEntity(member.id);
+        for (const member of members) {
+            const memberEntity: User = await this.userRepository.findOneBy({ id: member.id });
 
             if (memberEntity) {
                 const memberToProject = new UserToProject();
@@ -136,7 +147,7 @@ export class ProjectService {
             } else {
                 notFoundUserId.push(member.id);
             }
-        });
+        }
 
         return { notFoundUserId: notFoundUserId };
     }
@@ -169,7 +180,7 @@ export class ProjectService {
             }
         });
 
-        if (right !== UserRight.ADMIN && right !== UserRight.MEMBER_AND_TASK_MGT) {
+        if (right !== UserRight.ADMIN) {
             throw new UnauthorizedException(
                 `You "${user.email}" are not authorized to update the information on this project. Your right in this project is "${right}".`,
             );
@@ -179,14 +190,23 @@ export class ProjectService {
         found.description = description;
         found.encodedImg = encodedImg;
 
-        found.userToProjects.forEach(async (member: UserToProject) => {
+        await this.projectRepository.save(found);
+
+        for (const member of found.userToProjects) {
             await this.userToProjectRepository.delete({ id: member.id });
-        });
+        }
+
+        const userToProject = new UserToProject();
+        userToProject.userRight = right;
+        userToProject.project = found;
+        userToProject.user = user;
+
+        await this.userToProjectRepository.save(userToProject);
 
         const notFoundUserId: string[] = [];
 
-        members.forEach(async (member: MemberDto) => {
-            const memberEntity: User = await this.userService.getUserEntity(member.id);
+        for (const member of members) {
+            const memberEntity: User = await this.userRepository.findOneBy({ id: member.id });
 
             if (memberEntity) {
                 const memberToProject = new UserToProject();
@@ -198,7 +218,7 @@ export class ProjectService {
             } else {
                 notFoundUserId.push(member.id);
             }
-        });
+        }
 
         return { notFoundUserId: notFoundUserId };
     }
@@ -232,9 +252,9 @@ export class ProjectService {
         }
 
         if (right === UserRight.ADMIN) {
-            found.userToProjects.forEach(async (member: UserToProject) => {
-                await this.userToProjectRepository.delete({ id: member.id });
-            });
+            await this.userToProjectRepository.delete({ projectId });
+            await this.projectCommentRepository.delete({ projectId });
+            await this.taskRepository.delete({ projectId });
 
             await this.projectRepository.delete({ id: projectId });
         } else {
@@ -285,8 +305,8 @@ export class ProjectService {
         const notFoundUserId: string[] = [];
         const alreadyMemberUserId: string[] = [];
 
-        members.forEach(async (member: MemberDto) => {
-            const memberEntity: User = await this.userService.getUserEntity(member.id);
+        for (const member of members) {
+            const memberEntity: User = await this.userRepository.findOneBy({ id: member.id });
 
             if (memberEntity) {
                 const query = this.userToProjectRepository.createQueryBuilder("userToProject");
@@ -301,7 +321,13 @@ export class ProjectService {
 
                 if (!foundUser) {
                     const memberToProject = new UserToProject();
-                    memberToProject.userRight = member.right;
+
+                    if (right === UserRight.ADMIN) {
+                        memberToProject.userRight = member.right;
+                    } else {
+                        memberToProject.userRight = UserRight.COMPLETION_MOD;
+                    }
+
                     memberToProject.project = foundProject;
                     memberToProject.user = memberEntity;
 
@@ -312,16 +338,16 @@ export class ProjectService {
             } else {
                 notFoundUserId.push(member.id);
             }
-        });
+        }
 
-        return { notFoundUserId: notFoundUserId, alreadyMemberUserId: alreadyMemberUserId };
+        return { notFoundUserId, alreadyMemberUserId };
     }
 
     async dismiss(
         user: User,
         projectId: string,
-        members: MemberDto[],
-    ): Promise<{ notFoundUserId: string[]; alreadyNotMemberUserId: string[] }> {
+        members: string[],
+    ): Promise<{ notFoundUserId: string[]; alreadyNotMemberUserId: string[]; adminUserId: string[] }> {
         const query = this.projectRepository.createQueryBuilder("project");
 
         query
@@ -357,9 +383,10 @@ export class ProjectService {
 
         const notFoundUserId: string[] = [];
         const alreadyNotMemberUserId: string[] = [];
+        const adminUserId: string[] = [];
 
-        members.forEach(async (member: MemberDto) => {
-            const memberEntity: User = await this.userService.getUserEntity(member.id);
+        for (const memberId of members) {
+            const memberEntity: User = await this.userRepository.findOneBy({ id: memberId });
 
             if (memberEntity) {
                 const query = this.userToProjectRepository.createQueryBuilder("userToProject");
@@ -373,16 +400,20 @@ export class ProjectService {
                 const foundUser = await query.getOne();
 
                 if (foundUser) {
-                    await this.userToProjectRepository.delete({ id: foundUser.id });
+                    if (foundUser.userRight !== UserRight.ADMIN || right === UserRight.ADMIN) {
+                        await this.userToProjectRepository.delete({ id: foundUser.id });
+                    } else {
+                        adminUserId.push(memberId);
+                    }
                 } else {
-                    alreadyNotMemberUserId.push(member.id);
+                    alreadyNotMemberUserId.push(memberId);
                 }
             } else {
-                notFoundUserId.push(member.id);
+                notFoundUserId.push(memberId);
             }
-        });
+        }
 
-        return { notFoundUserId: notFoundUserId, alreadyNotMemberUserId: alreadyNotMemberUserId };
+        return { notFoundUserId, alreadyNotMemberUserId, adminUserId };
     }
 
     async withdraw(user: User, projectId: string): Promise<void> {
@@ -469,9 +500,61 @@ export class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
-        projectComment.level = 0;
         projectComment.user = user;
         projectComment.project = foundProject;
+
+        await this.projectCommentRepository.save(projectComment);
+    }
+
+    async addReply(user: User, commentId: string, content: string): Promise<void> {
+        const query = this.projectCommentRepository.createQueryBuilder("projectComment");
+
+        query
+            .leftJoinAndSelect("projectComment.project", "project")
+            .leftJoinAndSelect("project.userToProjects", "userToProjects")
+            .leftJoinAndSelect("userToProjects.user", "user")
+            .where("projectComment.id = :commentId", { commentId });
+
+        const found: ProjectComment = await query.getOne();
+
+        if (!found) {
+            throw new NotFoundException(`Project comment with id "${commentId}" is not found.`);
+        }
+
+        let isMember: boolean = false;
+
+        found.project.userToProjects.forEach((member: UserToProject) => {
+            if (member.user.id === user.id) {
+                isMember = true;
+            }
+        });
+
+        if (!isMember) {
+            throw new UnauthorizedException(
+                `You "${user.email}" are not member of this project with id "${found.project.id}".`,
+            );
+        }
+
+        const projectComment = new ProjectComment();
+
+        const now = new Date();
+        projectComment.createdAt = new Date(
+            Date.UTC(
+                now.getUTCFullYear(),
+                now.getUTCMonth(),
+                now.getUTCDate(),
+                now.getUTCHours(),
+                now.getUTCMinutes(),
+                now.getUTCSeconds(),
+            ),
+        );
+
+        projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
+        projectComment.content = content;
+        projectComment.pinned = false;
+        projectComment.parent = found;
+        projectComment.user = user;
+        projectComment.project = found.project;
 
         await this.projectCommentRepository.save(projectComment);
     }
@@ -514,12 +597,15 @@ export class ProjectService {
 
         if (queryString) {
             commentQuery.andWhere(
-                "projectComment.content LIKE :queryString OR user.firstName LIKE :queryString OR user.lastName LIKE :queryString",
-                { queryString },
+                new Brackets((qb) => {
+                    qb.where("projectComment.content LIKE :queryString", { queryString: `%${queryString}%` })
+                        .orWhere("user.firstName LIKE :queryString", { queryString: `%${queryString}%` })
+                        .orWhere("user.lastName LIKE :queryString", { queryString: `%${queryString}%` });
+                }),
             );
         }
 
-        return commentQuery.getMany();
+        return commentQuery.getRawMany();
     }
 
     async updateCommentContent(user: User, commentId: string, content: string): Promise<void> {

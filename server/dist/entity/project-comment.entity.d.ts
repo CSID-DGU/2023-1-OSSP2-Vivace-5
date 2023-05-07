@@ -9,7 +9,7 @@ export declare class ProjectComment extends BaseEntity {
     pinned: boolean;
     parent: ProjectComment;
     children: ProjectComment[];
-    level: number;
     user: User;
+    projectId: string;
     project: Project;
 }

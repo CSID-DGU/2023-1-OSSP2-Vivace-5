@@ -5,6 +5,7 @@ import {
     BaseEntity,
     Column,
     Entity,
+    JoinColumn,
     ManyToMany,
     ManyToOne,
     OneToMany,
@@ -71,7 +72,11 @@ export class Task extends BaseEntity {
     @TreeLevelColumn()
     level: number;
 
+    @Column({ name: "projectId" })
+    projectId: string;
+
     @ManyToOne((type) => Project, (project) => project.tasks, { eager: false })
+    @JoinColumn({ name: "projectId" })
     project: Project;
 
     @OneToMany((type) => UserToTask, (userToTask) => userToTask.task, { eager: false })

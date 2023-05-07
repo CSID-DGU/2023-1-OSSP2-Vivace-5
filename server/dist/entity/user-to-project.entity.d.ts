@@ -5,6 +5,8 @@ import { UserRight } from "../enum/user-right.enum";
 export declare class UserToProject extends BaseEntity {
     id: number;
     userRight: UserRight;
+    projectId: string;
+    userId: string;
     project: Project;
     user: User;
 }

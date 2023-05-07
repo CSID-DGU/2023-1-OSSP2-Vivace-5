@@ -20,12 +20,14 @@ export declare class ProjectController {
         notFoundUserId: string[];
         alreadyMemberUserId: string[];
     }>;
-    dismiss(user: User, projectId: string, members: MemberDto[]): Promise<{
+    dismiss(user: User, projectId: string, members: string[]): Promise<{
         notFoundUserId: string[];
         alreadyNotMemberUserId: string[];
+        adminUserId: string[];
     }>;
     withdraw(user: User, projectId: string): Promise<void>;
     addCommment(user: User, projectId: string, content: string): Promise<void>;
+    addReply(user: User, commentId: string, content: string): Promise<void>;
     getAllComments(user: User, projectId: string, query: string): Promise<ProjectComment[]>;
     updateCommentContent(user: User, commentId: string, content: string): Promise<void>;
     updateCommentPinStatus(user: User, commentId: string, pinned: boolean): Promise<{

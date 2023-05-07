@@ -2,11 +2,11 @@ import {
     BaseEntity,
     Column,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     Tree,
     TreeChildren,
-    TreeLevelColumn,
     TreeParent,
 } from "typeorm";
 import { Project } from "./project.entity";
@@ -38,12 +38,13 @@ export class ProjectComment extends BaseEntity {
     @TreeChildren()
     children: ProjectComment[];
 
-    @TreeLevelColumn()
-    level: number;
-
     @ManyToOne((type) => User, (user) => user.projectComments, { eager: false })
     user: User;
 
+    @Column({ name: "projectId" })
+    projectId: string;
+
     @ManyToOne((type) => Project, (project) => project.comments, { eager: false })
+    @JoinColumn({ name: "projectId" })
     project: Project;
 }

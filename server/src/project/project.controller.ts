@@ -73,7 +73,7 @@ export class ProjectController {
     invite(
         @GetUser() user: User,
         @Param("id") projectId: string,
-        @Body(ValidationPipe) members: MemberDto[],
+        @Body("members", ValidationPipe) members: MemberDto[],
     ): Promise<{ notFoundUserId: string[]; alreadyMemberUserId: string[] }> {
         this.logger.verbose(`User "${user.email}" trying to invite some people into project "${projectId}".`);
         return this.projectService.invite(user, projectId, members);
@@ -83,13 +83,13 @@ export class ProjectController {
     dismiss(
         @GetUser() user: User,
         @Param("id") projectId: string,
-        @Body(ValidationPipe) members: MemberDto[],
-    ): Promise<{ notFoundUserId: string[]; alreadyNotMemberUserId: string[] }> {
+        @Body("members", ValidationPipe) members: string[],
+    ): Promise<{ notFoundUserId: string[]; alreadyNotMemberUserId: string[]; adminUserId: string[] }> {
         this.logger.verbose(`User "${user.email}" trying to dismiss some members from this project "${projectId}".`);
         return this.projectService.dismiss(user, projectId, members);
     }
 
-    @Delete("/invite/:id")
+    @Delete("/withdraw/:id")
     withdraw(@GetUser() user: User, @Param("id") projectId: string): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to withdraw from this project "${projectId}".`);
         return this.projectService.withdraw(user, projectId);
@@ -103,6 +103,16 @@ export class ProjectController {
     ): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to comment on this project "${projectId}".`);
         return this.projectService.addComment(user, projectId, content);
+    }
+
+    @Post("/reply/:commentId")
+    addReply(
+        @GetUser() user: User,
+        @Param("commentId", UUIDValidationPipe) commentId: string,
+        @Body("content", IsNotEmptyStringPipe) content: string,
+    ): Promise<void> {
+        this.logger.verbose(`User "${user.email}" trying to reply on the comment "${commentId}".`);
+        return this.projectService.addReply(user, commentId, content);
     }
 
     @Get("/comment/:id")

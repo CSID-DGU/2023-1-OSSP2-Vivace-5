@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Project } from "./project.entity";
 import { User } from "src/entity/user.entity";
 import { UserRight } from "../enum/user-right.enum";
@@ -11,9 +11,17 @@ export class UserToProject extends BaseEntity {
     @Column()
     userRight: UserRight;
 
+    @Column({ name: "projectId" })
+    projectId: string;
+
+    @Column({ name: "userId" })
+    userId: string;
+
     @ManyToOne((type) => Project, (project) => project.userToProjects, { eager: false })
+    @JoinColumn({ name: "projectId" })
     project: Project;
 
     @ManyToOne((type) => User, (user) => user.userToProjects, { eager: false })
+    @JoinColumn({ name: "userId" })
     user: User;
 }

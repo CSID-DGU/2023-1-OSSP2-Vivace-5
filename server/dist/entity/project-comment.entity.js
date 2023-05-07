@@ -44,15 +44,16 @@ __decorate([
     __metadata("design:type", Array)
 ], ProjectComment.prototype, "children", void 0);
 __decorate([
-    (0, typeorm_1.TreeLevelColumn)(),
-    __metadata("design:type", Number)
-], ProjectComment.prototype, "level", void 0);
-__decorate([
     (0, typeorm_1.ManyToOne)((type) => user_entity_1.User, (user) => user.projectComments, { eager: false }),
     __metadata("design:type", user_entity_1.User)
 ], ProjectComment.prototype, "user", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "projectId" }),
+    __metadata("design:type", String)
+], ProjectComment.prototype, "projectId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.comments, { eager: false }),
+    (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], ProjectComment.prototype, "project", void 0);
 ProjectComment = __decorate([

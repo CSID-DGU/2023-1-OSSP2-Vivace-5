@@ -25,11 +25,21 @@ __decorate([
     __metadata("design:type", String)
 ], UserToProject.prototype, "userRight", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "projectId" }),
+    __metadata("design:type", String)
+], UserToProject.prototype, "projectId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: "userId" }),
+    __metadata("design:type", String)
+], UserToProject.prototype, "userId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.userToProjects, { eager: false }),
+    (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], UserToProject.prototype, "project", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)((type) => user_entity_1.User, (user) => user.userToProjects, { eager: false }),
+    (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_entity_1.User)
 ], UserToProject.prototype, "user", void 0);
 UserToProject = __decorate([

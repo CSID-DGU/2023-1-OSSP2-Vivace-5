@@ -86,7 +86,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Task.prototype, "level", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "projectId" }),
+    __metadata("design:type", String)
+], Task.prototype, "projectId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.tasks, { eager: false }),
+    (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], Task.prototype, "project", void 0);
 __decorate([

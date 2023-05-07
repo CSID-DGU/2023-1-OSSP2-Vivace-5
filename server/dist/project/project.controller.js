@@ -65,6 +65,10 @@ let ProjectController = class ProjectController {
         this.logger.verbose(`User "${user.email}" trying to comment on this project "${projectId}".`);
         return this.projectService.addComment(user, projectId, content);
     }
+    addReply(user, commentId, content) {
+        this.logger.verbose(`User "${user.email}" trying to reply on the comment "${commentId}".`);
+        return this.projectService.addReply(user, commentId, content);
+    }
     getAllComments(user, projectId, query) {
         this.logger.verbose(`User "${user.email}" trying to get all comments of this project "${projectId}".`);
         return this.projectService.getAllComments(user, projectId, query);
@@ -128,7 +132,7 @@ __decorate([
     (0, common_1.Patch)("/invite/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id")),
-    __param(2, (0, common_1.Body)(common_1.ValidationPipe)),
+    __param(2, (0, common_1.Body)("members", common_1.ValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, Array]),
     __metadata("design:returntype", Promise)
@@ -137,13 +141,13 @@ __decorate([
     (0, common_1.Patch)("/dismiss/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id")),
-    __param(2, (0, common_1.Body)(common_1.ValidationPipe)),
+    __param(2, (0, common_1.Body)("members", common_1.ValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, Array]),
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "dismiss", null);
 __decorate([
-    (0, common_1.Delete)("/invite/:id"),
+    (0, common_1.Delete)("/withdraw/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
@@ -159,6 +163,15 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "addCommment", null);
+__decorate([
+    (0, common_1.Post)("/reply/:commentId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("commentId", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(2, (0, common_1.Body)("content", is_not_empty_string_pipe_1.IsNotEmptyStringPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "addReply", null);
 __decorate([
     (0, common_1.Get)("/comment/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
