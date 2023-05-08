@@ -6,7 +6,6 @@ import { Project } from "../entity/project.entity";
 import { ProjectInfoDto, MemberDto } from "./dto/project-info.dto";
 import { Task } from "src/entity/task.entity";
 import { UserToProject } from "../entity/user-to-project.entity";
-import { UserService } from "src/user/user.service";
 import { UserRight } from "../enum/user-right.enum";
 import { UserToProjectRepository } from "./user-to-project.repository";
 import { ProjectComment } from "src/entity/project-comment.entity";
@@ -559,7 +558,11 @@ export class ProjectService {
         await this.projectCommentRepository.save(projectComment);
     }
 
-    async getAllComments(user: User, projectId: string, queryString: string): Promise<ProjectComment[]> {
+    async getAllComments(
+        user: User,
+        projectId: string,
+        queryString: string,
+    ): Promise<{ isQueried: boolean; queryResult: ProjectComment[] }> {
         const projectQuery = this.projectRepository.createQueryBuilder("project");
 
         projectQuery
@@ -605,7 +608,9 @@ export class ProjectService {
             );
         }
 
-        return commentQuery.getRawMany();
+        const queryResult = await commentQuery.getRawMany();
+
+        return { isQueried: Boolean(queryString), queryResult };
     }
 
     async updateCommentContent(user: User, commentId: string, content: string): Promise<void> {

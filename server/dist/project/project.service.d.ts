@@ -35,7 +35,10 @@ export declare class ProjectService {
     withdraw(user: User, projectId: string): Promise<void>;
     addComment(user: User, projectId: string, content: string): Promise<void>;
     addReply(user: User, commentId: string, content: string): Promise<void>;
-    getAllComments(user: User, projectId: string, queryString: string): Promise<ProjectComment[]>;
+    getAllComments(user: User, projectId: string, queryString: string): Promise<{
+        isQueried: boolean;
+        queryResult: ProjectComment[];
+    }>;
     updateCommentContent(user: User, commentId: string, content: string): Promise<void>;
     updateCommentFixStatus(user: User, commentId: string, pinned: boolean): Promise<{
         pinnedStatus: boolean;

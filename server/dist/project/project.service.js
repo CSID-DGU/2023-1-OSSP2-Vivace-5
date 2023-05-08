@@ -426,7 +426,8 @@ let ProjectService = class ProjectService {
                     .orWhere("user.lastName LIKE :queryString", { queryString: `%${queryString}%` });
             }));
         }
-        return commentQuery.getRawMany();
+        const queryResult = await commentQuery.getRawMany();
+        return { isQueried: Boolean(queryString), queryResult };
     }
     async updateCommentContent(user, commentId, content) {
         const query = this.projectCommentRepository.createQueryBuilder("projectComment");

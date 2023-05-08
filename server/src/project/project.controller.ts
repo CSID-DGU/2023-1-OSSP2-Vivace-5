@@ -120,7 +120,7 @@ export class ProjectController {
         @GetUser() user: User,
         @Param("id", UUIDValidationPipe) projectId: string,
         @Query("q") query: string,
-    ): Promise<ProjectComment[]> {
+    ): Promise<{ isQueried: boolean; queryResult: ProjectComment[] }> {
         this.logger.verbose(`User "${user.email}" trying to get all comments of this project "${projectId}".`);
         return this.projectService.getAllComments(user, projectId, query);
     }

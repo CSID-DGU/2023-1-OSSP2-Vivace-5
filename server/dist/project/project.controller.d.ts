@@ -28,7 +28,10 @@ export declare class ProjectController {
     withdraw(user: User, projectId: string): Promise<void>;
     addCommment(user: User, projectId: string, content: string): Promise<void>;
     addReply(user: User, commentId: string, content: string): Promise<void>;
-    getAllComments(user: User, projectId: string, query: string): Promise<ProjectComment[]>;
+    getAllComments(user: User, projectId: string, query: string): Promise<{
+        isQueried: boolean;
+        queryResult: ProjectComment[];
+    }>;
     updateCommentContent(user: User, commentId: string, content: string): Promise<void>;
     updateCommentPinStatus(user: User, commentId: string, pinned: boolean): Promise<{
         pinnedStatus: boolean;
