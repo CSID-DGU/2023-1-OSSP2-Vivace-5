@@ -6,13 +6,11 @@ import {
     Column,
     Entity,
     JoinColumn,
-    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
     Tree,
     TreeChildren,
-    TreeLevelColumn,
     TreeParent,
 } from "typeorm";
 
@@ -68,9 +66,6 @@ export class Task extends BaseEntity {
 
     @OneToMany((type) => Task, (task) => task.predecessors, { eager: false })
     successors: Task[];
-
-    @TreeLevelColumn()
-    level: number;
 
     @Column({ name: "projectId" })
     projectId: string;
