@@ -19,7 +19,6 @@ export declare class Task extends BaseEntity {
     children: Task[];
     predecessors: Task[];
     successors: Task[];
-    level: number;
     projectId: string;
     project: Project;
     userToTasks: UserToTask[];

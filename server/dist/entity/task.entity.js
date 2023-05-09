@@ -82,10 +82,6 @@ __decorate([
     __metadata("design:type", Array)
 ], Task.prototype, "successors", void 0);
 __decorate([
-    (0, typeorm_1.TreeLevelColumn)(),
-    __metadata("design:type", Number)
-], Task.prototype, "level", void 0);
-__decorate([
     (0, typeorm_1.Column)({ name: "projectId" }),
     __metadata("design:type", String)
 ], Task.prototype, "projectId", void 0);

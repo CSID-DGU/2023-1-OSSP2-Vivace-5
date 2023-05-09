@@ -24,8 +24,10 @@ import { ProjectComment } from "src/entity/project-comment.entity";
 import { UUIDValidationPipe } from "src/pipe/uuid-validation.pipe";
 import { BooleanValidationPipe } from "src/pipe/boolean-validation.pipe";
 import { IsNotEmptyStringPipe } from "src/pipe/is-not-empty-string.pipe";
+import { ApiTags, ApiOperation, ApiCreatedResponse } from "@nestjs/swagger";
 
 @Controller("project")
+@ApiTags("Project API")
 @UseGuards(AuthGuard())
 export class ProjectController {
     private logger = new Logger("ProjectController");
@@ -33,6 +35,11 @@ export class ProjectController {
     constructor(private projectService: ProjectService) {}
 
     @Get("/")
+    @ApiOperation({
+        summary: "Get all projects",
+        description: "get all projects to which the user belongs",
+    })
+    @ApiCreatedResponse({ description: "return project array", type: Promise<Project[]> })
     getAllProjects(@GetUser() user: User, @Query("q") query: string): Promise<Project[]> {
         this.logger.verbose(`User "${user.email}" trying to get his or her project list.`);
         return this.projectService.getAllProjects(user, query);

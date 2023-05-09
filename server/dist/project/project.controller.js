@@ -24,6 +24,7 @@ const encoded_img_validation_pipe_1 = require("../pipe/encoded-img-validation.pi
 const uuid_validation_pipe_1 = require("../pipe/uuid-validation.pipe");
 const boolean_validation_pipe_1 = require("../pipe/boolean-validation.pipe");
 const is_not_empty_string_pipe_1 = require("../pipe/is-not-empty-string.pipe");
+const swagger_1 = require("@nestjs/swagger");
 let ProjectController = class ProjectController {
     constructor(projectService) {
         this.projectService = projectService;
@@ -88,6 +89,11 @@ let ProjectController = class ProjectController {
 };
 __decorate([
     (0, common_1.Get)("/"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Get all projects",
+        description: "get all projects to which the user belongs",
+    }),
+    (0, swagger_1.ApiCreatedResponse)({ description: "return project array", type: (Promise) }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Query)("q")),
     __metadata("design:type", Function),
@@ -209,6 +215,7 @@ __decorate([
 ], ProjectController.prototype, "deleteComment", null);
 ProjectController = __decorate([
     (0, common_1.Controller)("project"),
+    (0, swagger_1.ApiTags)("Project API"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     __metadata("design:paramtypes", [project_service_1.ProjectService])
 ], ProjectController);
