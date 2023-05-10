@@ -33,7 +33,7 @@ export class ProjectService {
                 "project.title",
                 "project.description",
                 "project.type",
-                "userToProjects.userRight",
+                "userToProjects.right",
                 "project.encodedImg",
             ])
             .leftJoin("project.userToProjects", "userToProjects")
@@ -63,7 +63,7 @@ export class ProjectService {
                 "project.type",
                 "project.encodedImg",
                 "project.createdAt",
-                "userToProjects.userRight",
+                "userToProjects.right",
                 "user.id",
                 "user.encodedImg",
                 "user.firstName",
@@ -125,7 +125,7 @@ export class ProjectService {
         await this.projectRepository.save(project);
 
         const userToProject = new UserToProject();
-        userToProject.userRight = UserRight.ADMIN;
+        userToProject.right = UserRight.ADMIN;
         userToProject.project = project;
         userToProject.user = user;
 
@@ -138,7 +138,7 @@ export class ProjectService {
 
             if (memberEntity) {
                 const memberToProject = new UserToProject();
-                memberToProject.userRight = member.right;
+                memberToProject.right = member.right;
                 memberToProject.project = project;
                 memberToProject.user = memberEntity;
 
@@ -175,7 +175,7 @@ export class ProjectService {
 
         found.userToProjects.forEach((member: UserToProject) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
 
@@ -196,7 +196,7 @@ export class ProjectService {
         }
 
         const userToProject = new UserToProject();
-        userToProject.userRight = right;
+        userToProject.right = right;
         userToProject.project = found;
         userToProject.user = user;
 
@@ -209,7 +209,7 @@ export class ProjectService {
 
             if (memberEntity) {
                 const memberToProject = new UserToProject();
-                memberToProject.userRight = member.right;
+                memberToProject.right = member.right;
                 memberToProject.project = found;
                 memberToProject.user = memberEntity;
 
@@ -240,7 +240,7 @@ export class ProjectService {
 
         found.userToProjects.forEach((member: UserToProject) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
 
@@ -285,7 +285,7 @@ export class ProjectService {
 
         foundProject.userToProjects.forEach((member: UserToProject) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
 
@@ -322,9 +322,9 @@ export class ProjectService {
                     const memberToProject = new UserToProject();
 
                     if (right === UserRight.ADMIN) {
-                        memberToProject.userRight = member.right;
+                        memberToProject.right = member.right;
                     } else {
-                        memberToProject.userRight = UserRight.COMPLETION_MOD;
+                        memberToProject.right = UserRight.COMPLETION_MOD;
                     }
 
                     memberToProject.project = foundProject;
@@ -364,7 +364,7 @@ export class ProjectService {
 
         foundProject.userToProjects.forEach((member: UserToProject) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
 
@@ -399,7 +399,7 @@ export class ProjectService {
                 const foundUser = await query.getOne();
 
                 if (foundUser) {
-                    if (foundUser.userRight !== UserRight.ADMIN || right === UserRight.ADMIN) {
+                    if (foundUser.right !== UserRight.ADMIN || right === UserRight.ADMIN) {
                         await this.userToProjectRepository.delete({ id: foundUser.id });
                     } else {
                         adminUserId.push(memberId);
@@ -434,7 +434,7 @@ export class ProjectService {
 
         foundProject.userToProjects.forEach((member: UserToProject) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
                 userToProject = member;
             }
         });
@@ -664,7 +664,7 @@ export class ProjectService {
 
         found.project.userToProjects.forEach((member: UserToProject) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
 

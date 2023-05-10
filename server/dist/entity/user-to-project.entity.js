@@ -23,7 +23,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserToProject.prototype, "userRight", void 0);
+], UserToProject.prototype, "right", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: "projectId" }),
     __metadata("design:type", String)
