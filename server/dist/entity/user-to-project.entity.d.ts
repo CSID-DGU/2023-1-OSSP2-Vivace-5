@@ -4,7 +4,7 @@ import { User } from "src/entity/user.entity";
 import { UserRight } from "../enum/user-right.enum";
 export declare class UserToProject extends BaseEntity {
     id: number;
-    userRight: UserRight;
+    right: UserRight;
     projectId: string;
     userId: string;
     project: Project;

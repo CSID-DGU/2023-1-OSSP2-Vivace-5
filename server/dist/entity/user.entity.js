@@ -11,9 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const user_to_project_entity_1 = require("./user-to-project.entity");
-const user_to_task_entity_1 = require("./user-to-task.entity");
 const typeorm_1 = require("typeorm");
 const project_comment_entity_1 = require("./project-comment.entity");
+const task_entity_1 = require("./task.entity");
+const bookmark_entity_1 = require("./bookmark.entity");
+const task_comment_entity_1 = require("./task-comment.entity");
 let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -73,13 +75,21 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "userToProjects", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => user_to_task_entity_1.UserToTask, (userToTask) => userToTask.user, { eager: false }),
+    (0, typeorm_1.ManyToMany)((type) => task_entity_1.Task, (tasks) => tasks.members, { eager: false }),
     __metadata("design:type", Array)
-], User.prototype, "userToTasks", void 0);
+], User.prototype, "tasks", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)((type) => project_comment_entity_1.ProjectComment, (projectComments) => projectComments.user, { eager: false }),
     __metadata("design:type", Array)
 ], User.prototype, "projectComments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => task_comment_entity_1.TaskComment, (taskComments) => taskComments.user, { eager: false }),
+    __metadata("design:type", Array)
+], User.prototype, "taskComments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => bookmark_entity_1.Bookmark, (bookmarks) => bookmarks.user, { eager: false }),
+    __metadata("design:type", Array)
+], User.prototype, "bookmarks", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)(),
     (0, typeorm_1.Unique)(["email"])

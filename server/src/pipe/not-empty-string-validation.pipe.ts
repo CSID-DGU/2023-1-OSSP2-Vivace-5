@@ -1,6 +1,6 @@
 import { BadRequestException, Logger, PipeTransform } from "@nestjs/common";
 
-export class IsNotEmptyStringPipe implements PipeTransform {
+export class NotEmptyStringValidationPipe implements PipeTransform {
     private logger = new Logger("IsNotEmptyStringPipe");
 
     transform(value: any) {

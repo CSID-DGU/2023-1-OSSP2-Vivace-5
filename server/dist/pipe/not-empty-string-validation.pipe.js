@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IsNotEmptyStringPipe = void 0;
+exports.NotEmptyStringValidationPipe = void 0;
 const common_1 = require("@nestjs/common");
-class IsNotEmptyStringPipe {
+class NotEmptyStringValidationPipe {
     constructor() {
         this.logger = new common_1.Logger("IsNotEmptyStringPipe");
     }
@@ -16,5 +16,5 @@ class IsNotEmptyStringPipe {
         }
     }
 }
-exports.IsNotEmptyStringPipe = IsNotEmptyStringPipe;
-//# sourceMappingURL=is-not-empty-string.pipe.js.map
+exports.NotEmptyStringValidationPipe = NotEmptyStringValidationPipe;
+//# sourceMappingURL=not-empty-string-validation.pipe.js.map
