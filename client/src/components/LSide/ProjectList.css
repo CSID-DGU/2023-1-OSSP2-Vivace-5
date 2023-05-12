@@ -1,0 +1,31 @@
+.project-list {
+    font-family: sans-serif;
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.project-list h3 {
+    margin-top: 0;
+}
+
+.project-list ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.project-list button {
+    margin-top: 16px;
+    background-color: #0077cc;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.project-list button:hover {
+    background-color: #005ea6;
+}

@@ -1,0 +1,58 @@
+.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #eee;
+    transition: all 0.2s;
+    overflow: auto;
+    z-index: 999;
+}
+
+.sidebar.collapsed {
+    width: 50px;
+}
+
+.sidebar.expanded {
+    width: 200px;
+}
+
+.sidebar .sidebar-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    background-color: #999;
+    cursor: ew-resize;
+}
+
+.sidebar .profile {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+.sidebar .profile-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 16px;
+}
+
+.sidebar .project-list {
+    padding: 16px;
+}
+
+.sidebar .project-list .project {
+    padding: 8px;
+    margin-bottom: 8px;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sidebar .project-list .project:hover {
+    background-color: #eee;
+}
