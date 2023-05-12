@@ -86,7 +86,7 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
-        summary: "로그인한 유저 정보 조회 API"
+        summary: "로그인한 유저 정보 조회 API",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
@@ -98,7 +98,7 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
-        summary: "아이디를 통해 원하는 유저 정보 조회 API"
+        summary: "아이디를 통해 원하는 유저 정보 조회 API",
     }),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
@@ -110,7 +110,7 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
-        summary: "유저 정보 변경 API"
+        summary: "유저 정보 변경 API",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe, encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
@@ -124,7 +124,7 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
-        summary: "비밀번호 변경 API"
+        summary: "비밀번호 변경 API",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe)),
@@ -137,7 +137,7 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
-        summary: "유저 탈퇴 API"
+        summary: "유저 탈퇴 API",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe)),
