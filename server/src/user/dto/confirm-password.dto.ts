@@ -1,21 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsString, Matches, MaxLength, MinLength } from "class-validator";
 
-export class AuthCredentialsDto {
+export class ConfirmPasswordDto {
     @ApiProperty({
-        example: 'gdhong@dongguk.edu',
-        description: 'user email',
-        required: true,
-      })
-    @IsString()
-    @IsNotEmpty()
-    @Matches(/[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i, {
-        message: "It isn't a format of e-mail address.",
-    })
-    email: string;
-
-    @ApiProperty({
-        example: "Qwas1234!",
+        example: "Erdf5678@",
         description: "Password",
         required: true,
     })

@@ -1,6 +1,12 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsString, Matches, MaxLength, MinLength } from "class-validator";
 
-export class ConfirmPasswordDto {
+export class UpdatePasswordDto {
+    @ApiProperty({
+        example: "Qwas1234!",
+        description: "Password",
+        required: true,
+    })
     @IsString()
     @MinLength(8, { message: "The password entered is too short." })
     @MaxLength(24, { message: "The password entered is too long." })
@@ -13,6 +19,11 @@ export class ConfirmPasswordDto {
     })
     before: string;
 
+    @ApiProperty({
+        example: "Erdf5678@",
+        description: "Password",
+        required: true,
+    })
     @IsString()
     @MinLength(8, { message: "The password entered is too short." })
     @MaxLength(24, { message: "The password entered is too long." })

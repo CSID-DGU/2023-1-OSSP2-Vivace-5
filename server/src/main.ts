@@ -11,6 +11,15 @@ async function bootstrap() {
             .setTitle("Tempo API Docs")
             .setDescription("API document from Tempo, an easy-to-use project management tool.")
             .setVersion("1.0.0")
+            .addBearerAuth(
+                {
+                  type: 'http',
+                  scheme: 'bearer',
+                  name: 'JWT',
+                  in: 'header',
+                },
+                'access-token',
+              )
             .build(),
     );
 

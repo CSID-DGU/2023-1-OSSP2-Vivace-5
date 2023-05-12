@@ -23,6 +23,8 @@ const user_entity_1 = require("../entity/user.entity");
 const update_user_dto_1 = require("./dto/update-user.dto");
 const update_password_dto_1 = require("./dto/update-password.dto");
 const encoded_img_validation_pipe_1 = require("../pipe/encoded-img-validation.pipe");
+const swagger_1 = require("@nestjs/swagger");
+const confirm_password_dto_1 = require("./dto/confirm-password.dto");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -48,9 +50,9 @@ let UserController = class UserController {
         this.logger.verbose(`"${user.email}" trying to update personal information.`);
         return this.userService.updateUser(user, updateUserDto);
     }
-    updatePassword(user, confirmPasswordDto) {
+    updatePassword(user, updatePasswordDto) {
         this.logger.verbose(`"${user.email}" trying to update password.`);
-        return this.userService.updatePassword(user, confirmPasswordDto);
+        return this.userService.updatePassword(user, updatePasswordDto);
     }
     withdraw(user, confirmPasswordDto) {
         this.logger.verbose(`"${user.email}" trying to withdraw from this service.`);
@@ -59,6 +61,16 @@ let UserController = class UserController {
 };
 __decorate([
     (0, common_1.Post)("/signup"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Sign up API",
+        description: "Sign up",
+    }),
+    (0, swagger_1.ApiCreatedResponse)({
+        description: "성공여부",
+        schema: {
+            example: { success: true },
+        },
+    }),
     __param(0, (0, common_1.Body)(common_1.ValidationPipe, encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [sign_up_dto_1.SignUpDto]),
@@ -66,6 +78,18 @@ __decorate([
 ], UserController.prototype, "signUp", null);
 __decorate([
     (0, common_1.Post)("/signin"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Sign in API",
+        description: "이메일와 비밀번호를 통해 sign in 진행",
+    }),
+    (0, swagger_1.ApiCreatedResponse)({
+        description: "로그인 정보",
+        schema: {
+            example: {
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdkaG9uZ0Bkb25nZ3VrLmVkdSIsImlhdCI6MTY4MzgxODU2MiwiZXhwIjoxNjgzODIyMTYyfQ.jyDv32VcI9PxNi86xADL4wUhHGuu2sJz2rvjxbrDgpc",
+            },
+        },
+    }),
     __param(0, (0, common_1.Body)(common_1.ValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [auth_credentials_dto_1.AuthCredentialsDto]),
@@ -74,6 +98,34 @@ __decorate([
 __decorate([
     (0, common_1.Get)("/info"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
+    (0, swagger_1.ApiBearerAuth)("access-token"),
+    (0, swagger_1.ApiOperation)({
+        summary: "로그인한 유저 정보 조회 API"
+    }),
+    (0, swagger_1.ApiCreatedResponse)({
+        description: "성공여부",
+        schema: {
+            example: {
+                success: true,
+                data: [
+                    {
+                        "id": "d504d88f-c7cf-4a39-afa3-57ae5164dc72",
+                        "firstName": "Gildong",
+                        "lastName": "Hong",
+                        "email": "gdhong@dongguk.edu",
+                        "year": 1998,
+                        "month": 2,
+                        "date": 14,
+                        "belong": "동국대학교",
+                        "country": "Republic of Korea",
+                        "region": "Seoul",
+                        "encodedImg": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAT1JREFUeNrsV0kKwjAQxNeD13tRd7VjICJKSiZpOUVZiMtbjKqB3MhBxjo2VnYWFB0YAl1YZdj4JZKjQRBQ0FAUcR8kS5jxue5m5z5/44vY8e6WZ/6BZj/HPgAlVIkQXoWxUHLYMmkjKUkY6UJW6jo+xlZfKys6uxqvvevX2J6scop+6phbBWWzgVRJ3q4LzJZ/KQ2Z+JWMRnXbS9xTR5GpwAAAABJRU5ErkJggg==",
+                        "createdAt": "2023-05-11T14:16:09.000Z"
+                    },
+                ],
+            },
+        },
+    }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
@@ -82,6 +134,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)("/info/:id"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
+    (0, swagger_1.ApiBearerAuth)("access-token"),
+    (0, swagger_1.ApiOperation)({
+        summary: "아이디를 통해 원하는 유저 정보 조회 API"
+    }),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -90,6 +146,10 @@ __decorate([
 __decorate([
     (0, common_1.Put)("/update/info"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
+    (0, swagger_1.ApiBearerAuth)("access-token"),
+    (0, swagger_1.ApiOperation)({
+        summary: "유저 정보 변경 API"
+    }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe, encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
     __metadata("design:type", Function),
@@ -100,23 +160,32 @@ __decorate([
 __decorate([
     (0, common_1.Patch)("/update/password"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
+    (0, swagger_1.ApiBearerAuth)("access-token"),
+    (0, swagger_1.ApiOperation)({
+        summary: "비밀번호 변경 API"
+    }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, update_password_dto_1.ConfirmPasswordDto]),
+    __metadata("design:paramtypes", [user_entity_1.User, update_password_dto_1.UpdatePasswordDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "updatePassword", null);
 __decorate([
     (0, common_1.Delete)("/withdraw"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
+    (0, swagger_1.ApiBearerAuth)("access-token"),
+    (0, swagger_1.ApiOperation)({
+        summary: "유저 탈퇴 API"
+    }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, update_password_dto_1.ConfirmPasswordDto]),
+    __metadata("design:paramtypes", [user_entity_1.User, confirm_password_dto_1.ConfirmPasswordDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "withdraw", null);
 UserController = __decorate([
     (0, common_1.Controller)("user"),
+    (0, swagger_1.ApiTags)("User API"),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 exports.UserController = UserController;

@@ -9,11 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConfirmPasswordDto = void 0;
+exports.UpdatePasswordDto = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-class ConfirmPasswordDto {
+class UpdatePasswordDto {
 }
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: "Qwas1234!",
+        description: "Password",
+        required: true,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(8, { message: "The password entered is too short." }),
     (0, class_validator_1.MaxLength)(24, { message: "The password entered is too long." }),
@@ -24,8 +30,13 @@ __decorate([
         message: "password should include at least one Upper case, one lower case, one numerical character, and one special character.(`~!@#$%^&*()_=+-)",
     }),
     __metadata("design:type", String)
-], ConfirmPasswordDto.prototype, "before", void 0);
+], UpdatePasswordDto.prototype, "before", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: "Erdf5678@",
+        description: "Password",
+        required: true,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(8, { message: "The password entered is too short." }),
     (0, class_validator_1.MaxLength)(24, { message: "The password entered is too long." }),
@@ -36,6 +47,6 @@ __decorate([
         message: "password should include at least one Upper case, one lower case, one numerical character, and one special character.(`~!@#$%^&*()_=+-)",
     }),
     __metadata("design:type", String)
-], ConfirmPasswordDto.prototype, "after", void 0);
-exports.ConfirmPasswordDto = ConfirmPasswordDto;
+], UpdatePasswordDto.prototype, "after", void 0);
+exports.UpdatePasswordDto = UpdatePasswordDto;
 //# sourceMappingURL=update-password.dto.js.map

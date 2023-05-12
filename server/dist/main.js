@@ -9,6 +9,12 @@ async function bootstrap() {
         .setTitle("Tempo API Docs")
         .setDescription("API document from Tempo, an easy-to-use project management tool.")
         .setVersion("1.0.0")
+        .addBearerAuth({
+        type: 'http',
+        scheme: 'bearer',
+        name: 'JWT',
+        in: 'header',
+    }, 'access-token')
         .build());
     swagger_1.SwaggerModule.setup("api-docs", app, document);
     await app.listen(3000);

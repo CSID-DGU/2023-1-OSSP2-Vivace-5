@@ -91,11 +91,8 @@ let UserService = class UserService {
         await this.userRepository.save(user);
     }
     async withdraw(user, confirmPasswordDto) {
-        const { before, after } = confirmPasswordDto;
-        if (before !== after) {
-            throw new common_1.NotAcceptableException("The password you re-entered is not the same as the first one.");
-        }
-        if (await bcrypt.compare(after, user.password)) {
+        const { password } = confirmPasswordDto;
+        if (await bcrypt.compare(password, user.password)) {
             const result = await this.userRepository.delete({ id: user.id });
             if (result.affected === 0) {
                 throw new common_1.InternalServerErrorException("Unknown Error.");
