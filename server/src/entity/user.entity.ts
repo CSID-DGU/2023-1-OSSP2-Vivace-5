@@ -1,7 +1,9 @@
 import { UserToProject } from "src/entity/user-to-project.entity";
-import { UserToTask } from "src/entity/user-to-task.entity";
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { ProjectComment } from "./project-comment.entity";
+import { Task } from "./task.entity";
+import { Bookmark } from "./bookmark.entity";
+import { TaskComment } from "./task-comment.entity";
 
 @Entity()
 @Unique(["email"])
@@ -48,9 +50,15 @@ export class User extends BaseEntity {
     @OneToMany((type) => UserToProject, (userToProject) => userToProject.user, { eager: false })
     userToProjects: UserToProject[];
 
-    @OneToMany((type) => UserToTask, (userToTask) => userToTask.user, { eager: false })
-    userToTasks: UserToTask[];
+    @ManyToMany((type) => Task, (tasks) => tasks.members, { eager: false })
+    tasks: Task[];
 
     @OneToMany((type) => ProjectComment, (projectComments) => projectComments.user, { eager: false })
     projectComments: ProjectComment[];
+
+    @OneToMany((type) => TaskComment, (taskComments) => taskComments.user, { eager: false })
+    taskComments: TaskComment[];
+
+    @OneToMany((type) => Bookmark, (bookmarks) => bookmarks.user, { eager: false })
+    bookmarks: Bookmark[];
 }

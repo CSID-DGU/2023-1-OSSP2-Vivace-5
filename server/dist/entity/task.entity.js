@@ -16,6 +16,7 @@ const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_to_task_entity_1 = require("./user-to-task.entity");
 const typeorm_1 = require("typeorm");
 const kanban_column_entity_1 = require("./kanban-column.entity");
+const task_content_entity_1 = require("./task-content.entity");
 let Task = Task_1 = class Task extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -34,10 +35,6 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Task.prototype, "type", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Task.prototype, "filePath", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Boolean)
@@ -103,6 +100,11 @@ __decorate([
     (0, typeorm_1.OneToMany)((type) => user_to_task_entity_1.UserToTask, (userToTask) => userToTask.task, { eager: false }),
     __metadata("design:type", Array)
 ], Task.prototype, "userToTasks", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)((type) => task_content_entity_1.TaskContent, (content) => content.task, { eager: false }),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", task_content_entity_1.TaskContent)
+], Task.prototype, "content", void 0);
 Task = Task_1 = __decorate([
     (0, typeorm_1.Entity)(),
     (0, typeorm_1.Tree)("closure-table", {

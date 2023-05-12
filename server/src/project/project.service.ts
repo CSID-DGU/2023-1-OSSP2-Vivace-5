@@ -71,7 +71,7 @@ export class ProjectService {
             ])
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
-            .leftJoinAndSelect("project.tasks", "task")
+            .leftJoinAndSelect("project.tasks", "task", "task.parentId is NULL")
             .leftJoinAndSelect("project.comments", "comments")
             .where("project.id = :projectId", { projectId });
 

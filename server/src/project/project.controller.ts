@@ -23,7 +23,7 @@ import { EncodedImgValidationPipe } from "../pipe/encoded-img-validation.pipe";
 import { ProjectComment } from "src/entity/project-comment.entity";
 import { UUIDValidationPipe } from "src/pipe/uuid-validation.pipe";
 import { BooleanValidationPipe } from "src/pipe/boolean-validation.pipe";
-import { IsNotEmptyStringPipe } from "src/pipe/is-not-empty-string.pipe";
+import { NotEmptyStringValidationPipe } from "src/pipe/not-empty-string-validation.pipe";
 import {
     ApiTags,
     ApiOperation,
@@ -42,7 +42,7 @@ import { UserRight } from "src/enum/user-right.enum";
 @Controller("project")
 @UseGuards(AuthGuard())
 @ApiTags("Project API")
-@ApiBearerAuth()
+@ApiBearerAuth("access-token")
 export class ProjectController {
     private logger = new Logger("ProjectController");
 
@@ -158,7 +158,7 @@ export class ProjectController {
             "If the user who sent the request is not a member of this project, the user is not eligible to view the information. So, returns an unauthorized error.",
     })
     @ApiParam({ name: "id", type: "string", description: "project UUID" })
-    getProjectInfo(@GetUser() user: User, @Param("id", UUIDValidationPipe) projectId: string) {
+    getProjectInfo(@GetUser() user: User, @Param("id", UUIDValidationPipe) projectId: string): Promise<Project> {
         this.logger.verbose(`User "${user.email}" trying to get the info of project "${projectId}".`);
         return this.projectService.getProjectInfo(user, projectId);
     }
@@ -398,7 +398,7 @@ export class ProjectController {
     addCommment(
         @GetUser() user: User,
         @Param("id", UUIDValidationPipe) projectId: string,
-        @Body("content", IsNotEmptyStringPipe) content: string,
+        @Body("content", NotEmptyStringValidationPipe) content: string,
     ): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to comment on this project "${projectId}".`);
         return this.projectService.addComment(user, projectId, content);
@@ -431,7 +431,7 @@ export class ProjectController {
     addReply(
         @GetUser() user: User,
         @Param("commentId", UUIDValidationPipe) commentId: string,
-        @Body("content", IsNotEmptyStringPipe) content: string,
+        @Body("content", NotEmptyStringValidationPipe) content: string,
     ): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to reply on the comment "${commentId}".`);
         return this.projectService.addReply(user, commentId, content);
@@ -514,7 +514,7 @@ export class ProjectController {
     updateCommentContent(
         @GetUser() user: User,
         @Param("id", UUIDValidationPipe) commentId: string,
-        @Body("content", IsNotEmptyStringPipe) content: string,
+        @Body("content", NotEmptyStringValidationPipe) content: string,
     ): Promise<void> {
         this.logger.verbose(
             `User "${user.email}" trying to update content of the comment "${commentId}" in this project.`,

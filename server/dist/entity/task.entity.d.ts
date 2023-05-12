@@ -3,12 +3,12 @@ import { SubTask } from "src/enum/sub-task.enum";
 import { UserToTask } from "src/entity/user-to-task.entity";
 import { BaseEntity } from "typeorm";
 import { KanbanColumn } from "./kanban-column.entity";
+import { TaskContent } from "./task-content.entity";
 export declare class Task extends BaseEntity {
     id: string;
     title: string;
     description: string;
     type: SubTask;
-    filePath: string;
     mailstone: boolean;
     createdAt: Date;
     modifiedAt: Date;
@@ -25,4 +25,5 @@ export declare class Task extends BaseEntity {
     projectId: string;
     project: Project;
     userToTasks: UserToTask[];
+    content: TaskContent;
 }

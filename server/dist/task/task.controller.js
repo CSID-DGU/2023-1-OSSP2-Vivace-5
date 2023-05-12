@@ -25,14 +25,14 @@ let TaskController = class TaskController {
     constructor(taskService) {
         this.taskService = taskService;
     }
-    getAllTasks() { }
+    getTaskInfo(user, taskId) { }
     createTask(user, createTaskDto) { }
     appendBefore(user, appendTaskDto) { }
     appendAfter(user, appendTaskDto) { }
     bringDown(user, bringDownDto) { }
     bringUp(user, taskId) { }
-    updateInfo() { }
-    updateContent() { }
+    updateTitle(user, taskId, newTitle) { }
+    updateDescription(user, taskId, newDescription) { }
     addToBookmark() { }
     deleteFromBookmark() { }
     updateMilestoneStatue() { }
@@ -40,11 +40,13 @@ let TaskController = class TaskController {
     delete() { }
 };
 __decorate([
-    (0, common_1.Get)("/"),
+    (0, common_1.Get)("/:id"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", void 0)
-], TaskController.prototype, "getAllTasks", null);
+], TaskController.prototype, "getTaskInfo", null);
 __decorate([
     (0, common_1.Post)("/create"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
@@ -86,18 +88,25 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "bringUp", null);
 __decorate([
-    (0, common_1.Patch)("/update/info"),
+    (0, common_1.Patch)("/update/title/:id"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("id")),
+    __param(2, (0, common_1.Body)("newTitle")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", void 0)
-], TaskController.prototype, "updateInfo", null);
+], TaskController.prototype, "updateTitle", null);
 __decorate([
-    (0, common_1.Patch)("/update/content"),
+    (0, common_1.Patch)("/update/description/:id"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("id")),
+    __param(2, (0, common_1.Body)("newDescription")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", void 0)
-], TaskController.prototype, "updateContent", null);
+], TaskController.prototype, "updateDescription", null);
 __decorate([
+    (0, common_1.Patch)(),
     (0, common_1.Patch)("/add/bookmark"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

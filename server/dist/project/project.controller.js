@@ -205,7 +205,7 @@ __decorate([
     __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "getProjectInfo", null);
 __decorate([
     (0, common_1.Post)("/create"),
@@ -624,7 +624,7 @@ ProjectController = __decorate([
     (0, common_1.Controller)("project"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiTags)("Project API"),
-    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiBearerAuth)("access-token"),
     __metadata("design:paramtypes", [project_service_1.ProjectService])
 ], ProjectController);
 exports.ProjectController = ProjectController;
