@@ -33,10 +33,13 @@ export class TaskController {
     constructor(private taskService: TaskService) {}
 
     @Get("/:id")
-    getTaskInfo(@GetUser() user: User, @Param("id") taskId: string) {}
+    getTaskInfo(@GetUser() user: User, @Param("id", UUIDValidationPipe) taskId: string) {}
 
     @Post("/create")
     createTask(@GetUser() user: User, @Body(ValidationPipe) createTaskDto: CreateTaskDto) {}
+
+    @Post("/copy/:id")
+    copyTask(@GetUser() user: User, @Param("id", UUIDValidationPipe) taskId: string) {}
 
     @Patch("/update/title/:id")
     updateTaskTitle(
@@ -154,7 +157,7 @@ export class TaskController {
     updateBookmarkTitle(
         @GetUser() user: User,
         @Param("id", UUIDValidationPipe) bookmarkId: string,
-        @Body("newTitle") newTitle: string,
+        @Body("newTitle", NotEmptyStringValidationPipe) newTitle: string,
     ) {}
 
     @Delete("/delete/bookmark/:id")
