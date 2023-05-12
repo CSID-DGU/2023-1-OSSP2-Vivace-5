@@ -13,6 +13,7 @@ import {
     TreeChildren,
     TreeParent,
 } from "typeorm";
+import { KanbanColumn } from "./kanban-column.entity";
 
 @Entity()
 @Tree("closure-table", {
@@ -54,6 +55,12 @@ export class Task extends BaseEntity {
 
     @Column()
     isFinished: boolean;
+
+    @OneToMany((type) => KanbanColumn, (childColumns) => childColumns.parent, { eager: false })
+    childColumns: KanbanColumn[];
+
+    @ManyToOne((type) => KanbanColumn, (parentColumn) => parentColumn.children, { eager: false })
+    parentColumn: KanbanColumn;
 
     @TreeParent()
     parent: Task;

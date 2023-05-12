@@ -15,6 +15,7 @@ const project_entity_1 = require("./project.entity");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_to_task_entity_1 = require("./user-to-task.entity");
 const typeorm_1 = require("typeorm");
+const kanban_column_entity_1 = require("./kanban-column.entity");
 let Task = Task_1 = class Task extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -65,6 +66,14 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Boolean)
 ], Task.prototype, "isFinished", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => kanban_column_entity_1.KanbanColumn, (childColumns) => childColumns.parent, { eager: false }),
+    __metadata("design:type", Array)
+], Task.prototype, "childColumns", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)((type) => kanban_column_entity_1.KanbanColumn, (parentColumn) => parentColumn.children, { eager: false }),
+    __metadata("design:type", kanban_column_entity_1.KanbanColumn)
+], Task.prototype, "parentColumn", void 0);
 __decorate([
     (0, typeorm_1.TreeParent)(),
     __metadata("design:type", Task)
