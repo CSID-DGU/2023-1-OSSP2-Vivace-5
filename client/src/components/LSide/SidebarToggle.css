@@ -1,0 +1,14 @@
+.sidebar-toggle {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-toggle svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+}
