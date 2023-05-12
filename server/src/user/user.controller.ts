@@ -55,7 +55,7 @@ export class UserController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth("access-token")
     @ApiOperation({
-        summary: "로그인한 유저 정보 조회 API"
+        summary: "로그인한 유저 정보 조회 API",
     })
     getMyInfo(@GetUser() user: User): UserInfo {
         this.logger.verbose(`"${user.email}" trying to get personal information.`);
@@ -66,7 +66,7 @@ export class UserController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth("access-token")
     @ApiOperation({
-        summary: "아이디를 통해 원하는 유저 정보 조회 API"
+        summary: "아이디를 통해 원하는 유저 정보 조회 API",
     })
     getUserInfo(@Param("id") userId: string): Promise<UserInfo> {
         this.logger.verbose(`User trying to get information of "${userId}".`);
@@ -77,7 +77,7 @@ export class UserController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth("access-token")
     @ApiOperation({
-        summary: "유저 정보 변경 API"
+        summary: "유저 정보 변경 API",
     })
     updateUser(
         @GetUser() user: User,
@@ -91,7 +91,7 @@ export class UserController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth("access-token")
     @ApiOperation({
-        summary: "비밀번호 변경 API"
+        summary: "비밀번호 변경 API",
     })
     updatePassword(@GetUser() user: User, @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto): Promise<void> {
         this.logger.verbose(`"${user.email}" trying to update password.`);
@@ -102,7 +102,7 @@ export class UserController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth("access-token")
     @ApiOperation({
-        summary: "유저 탈퇴 API"
+        summary: "유저 탈퇴 API",
     })
     withdraw(@GetUser() user: User, @Body(ValidationPipe) confirmPasswordDto: ConfirmPasswordDto): Promise<void> {
         this.logger.verbose(`"${user.email}" trying to withdraw from this service.`);
