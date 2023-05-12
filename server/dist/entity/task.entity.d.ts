@@ -1,9 +1,11 @@
 import { Project } from "src/entity/project.entity";
 import { SubTask } from "src/enum/sub-task.enum";
-import { UserToTask } from "src/entity/user-to-task.entity";
 import { BaseEntity } from "typeorm";
 import { KanbanColumn } from "./kanban-column.entity";
 import { TaskContent } from "./task-content.entity";
+import { User } from "./user.entity";
+import { Bookmark } from "./bookmark.entity";
+import { TaskComment } from "./task-comment.entity";
 export declare class Task extends BaseEntity {
     id: string;
     title: string;
@@ -24,6 +26,8 @@ export declare class Task extends BaseEntity {
     successors: Task[];
     projectId: string;
     project: Project;
-    userToTasks: UserToTask[];
-    content: TaskContent;
+    members: User[];
+    contents: TaskContent[];
+    bookmarks: Bookmark[];
+    comments: TaskComment[];
 }

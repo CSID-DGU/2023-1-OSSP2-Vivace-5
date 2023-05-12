@@ -20,10 +20,22 @@ __decorate([
 ], TaskContent.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Array)
+    __metadata("design:type", String)
+], TaskContent.prototype, "title", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], TaskContent.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], TaskContent.prototype, "modifiedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], TaskContent.prototype, "content", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)((type) => task_entity_1.Task, (task) => task.content, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.contents, { eager: false }),
     __metadata("design:type", task_entity_1.Task)
 ], TaskContent.prototype, "task", void 0);
 TaskContent = __decorate([

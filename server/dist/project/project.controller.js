@@ -23,7 +23,7 @@ const project_info_dto_1 = require("./dto/project-info.dto");
 const encoded_img_validation_pipe_1 = require("../pipe/encoded-img-validation.pipe");
 const uuid_validation_pipe_1 = require("../pipe/uuid-validation.pipe");
 const boolean_validation_pipe_1 = require("../pipe/boolean-validation.pipe");
-const is_not_empty_string_pipe_1 = require("../pipe/is-not-empty-string.pipe");
+const not_empty_string_validation_pipe_1 = require("../pipe/not-empty-string-validation.pipe");
 const swagger_1 = require("@nestjs/swagger");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_right_enum_1 = require("../enum/user-right.enum");
@@ -439,7 +439,7 @@ __decorate([
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
-    __param(2, (0, common_1.Body)("content", is_not_empty_string_pipe_1.IsNotEmptyStringPipe)),
+    __param(2, (0, common_1.Body)("content", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", Promise)
@@ -471,7 +471,7 @@ __decorate([
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("commentId", uuid_validation_pipe_1.UUIDValidationPipe)),
-    __param(2, (0, common_1.Body)("content", is_not_empty_string_pipe_1.IsNotEmptyStringPipe)),
+    __param(2, (0, common_1.Body)("content", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", Promise)
@@ -552,7 +552,7 @@ __decorate([
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
-    __param(2, (0, common_1.Body)("content", is_not_empty_string_pipe_1.IsNotEmptyStringPipe)),
+    __param(2, (0, common_1.Body)("content", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", Promise)

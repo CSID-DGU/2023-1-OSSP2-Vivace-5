@@ -13,10 +13,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Task = void 0;
 const project_entity_1 = require("./project.entity");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
-const user_to_task_entity_1 = require("./user-to-task.entity");
 const typeorm_1 = require("typeorm");
 const kanban_column_entity_1 = require("./kanban-column.entity");
 const task_content_entity_1 = require("./task-content.entity");
+const user_entity_1 = require("./user.entity");
+const bookmark_entity_1 = require("./bookmark.entity");
+const task_comment_entity_1 = require("./task-comment.entity");
 let Task = Task_1 = class Task extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -97,14 +99,22 @@ __decorate([
     __metadata("design:type", project_entity_1.Project)
 ], Task.prototype, "project", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => user_to_task_entity_1.UserToTask, (userToTask) => userToTask.task, { eager: false }),
+    (0, typeorm_1.ManyToMany)((type) => user_entity_1.User, (members) => members.tasks, { eager: false }),
+    (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Array)
-], Task.prototype, "userToTasks", void 0);
+], Task.prototype, "members", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)((type) => task_content_entity_1.TaskContent, (content) => content.task, { eager: false }),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", task_content_entity_1.TaskContent)
-], Task.prototype, "content", void 0);
+    (0, typeorm_1.OneToMany)((type) => task_content_entity_1.TaskContent, (contents) => contents.task, { eager: false }),
+    __metadata("design:type", Array)
+], Task.prototype, "contents", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => bookmark_entity_1.Bookmark, (bookmarks) => bookmarks.task, { eager: false }),
+    __metadata("design:type", Array)
+], Task.prototype, "bookmarks", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => task_comment_entity_1.TaskComment, (comments) => comments.task, { eager: false }),
+    __metadata("design:type", Array)
+], Task.prototype, "comments", void 0);
 Task = Task_1 = __decorate([
     (0, typeorm_1.Entity)(),
     (0, typeorm_1.Tree)("closure-table", {

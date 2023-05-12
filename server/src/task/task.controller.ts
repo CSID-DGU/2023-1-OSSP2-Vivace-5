@@ -190,7 +190,7 @@ export class TaskController {
     ) {}
 
     @Post("/create/reply/:id")
-    addReply(
+    createReply(
         @GetUser() user: User,
         @Param("commentId", UUIDValidationPipe) commentId: string,
         @Body("content", NotEmptyStringValidationPipe) content: string,
