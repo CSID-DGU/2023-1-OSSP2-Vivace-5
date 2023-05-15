@@ -1,0 +1,30 @@
+.main-page {
+    display: flex;
+    height: 100vh; /* 높이 전체로 설정 */
+    position: relative; /* 포지션을 설정하여 하위 요소를 배치하기 위해 추가합니다. */
+}
+
+.sidebar {
+    width: 20%; /* 넓이 20%로 설정 */
+}
+
+.main-section {
+    flex: 1; /* 나머지 공간을 차지하도록 설정 */
+}
+
+.toggle-button {
+    position: relative;
+    top: 95vh;
+    left: 10px;
+    height: 30px;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.sidebar.closed .toggle-button {
+    left: 10px;
+}
+
+.sidebar .toggle-button {
+    right: 10px;
+}

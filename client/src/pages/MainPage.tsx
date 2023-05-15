@@ -1,45 +1,21 @@
 import React, { useState } from "react";
-import Sidebar from "../components/LSide/Sidebar";
-import UserInformation from "../components/LSide/UserInformation";
-import ProjectList from "../components/LSide/ProjectList";
-import AddProject from "./AddProject";
+import LSideBar from "../components/LSideBar/LSideBar";
 import MainSection from "../components/MainSect/MainSect";
-import "../components/LSide/Sidebar.css";
-import "../components/LSide/ProjectList.css";
-import "../components/LSide/Profile.css";
-import "../components/LSide/ProjectListItem.css";
-import "../components/LSide/SidebarToggle.css";
-
-type Project = {
-    id: number;
-    title: string;
-    description: string;
-};
+import "./MainPage.css";
 
 const MainPage: React.FC = () => {
-    const [projects, setProjects] = useState<Project[]>([
-        { id: 1, title: "Project 1", description: "Description 1" },
-        { id: 2, title: "Project 2", description: "Description 2" },
-    ]);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    const handleAddProject = (title: string, description: string) => {
-        const newProject = {
-            id: Date.now(),
-            title,
-            description,
-        };
-        setProjects((prevProjects) => [...prevProjects, newProject]);
+    const handleToggleSidebar = () => {
+        setSidebarOpen((prevState) => !prevState);
     };
 
     return (
         <div className="main-page">
-            <Sidebar>
-                <UserInformation
-                    profileImage="https://example.com/profile-image.png"
-                    username="John Doe11"
-                    email="johndoe@example.com"
-                />
-            </Sidebar>
+            {sidebarOpen && <LSideBar />}
+            <button className="toggle-button" onClick={handleToggleSidebar}>
+                토글
+            </button>
             <MainSection />
         </div>
     );
