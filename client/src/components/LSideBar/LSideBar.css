@@ -1,0 +1,38 @@
+.sidebar {
+    background-color: #f2f2f2;
+    padding: 20px;
+    width: 20%;
+    height: 100vh;
+    /* 다른 스타일링 속성을 추가할 수 있습니다. */
+    transition: width 0.3s ease-in-out; /* 트랜지션 효과를 추가합니다. */
+    overflow: hidden; /* 내용이 너비를 벗어나면 감추도록 설정합니다. */
+    position: relative; /* 부모 요소를 기준으로 자식 요소를 배치하기 위해 position 속성을 추가합니다. */
+}
+
+.sidebar.closed {
+    width: 0; /* 접힌 상태일 때 사이드바의 너비를 0으로 설정합니다. */
+    padding: 0; /* 접힌 상태일 때 패딩을 0으로 설정하여 내용을 감춥니다. */
+}
+
+.profile img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.profile div {
+    margin-bottom: 5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.project-list li {
+    list-style-type: none;
+    padding: 5px 0;
+}
