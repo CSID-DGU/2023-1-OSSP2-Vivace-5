@@ -4,7 +4,7 @@ exports.typeORMConfig = void 0;
 exports.typeORMConfig = {
     type: "postgres",
     host: "localhost",
-    port: 5432,
+    port: 55432,
     username: "postgres",
     password: "postgres",
     database: "tempo",
