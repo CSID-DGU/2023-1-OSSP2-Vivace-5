@@ -55,6 +55,7 @@ const LSidebar: React.FC = () => {
                         <li key={project.id}>{project.name}</li>
                     ))}
                 </ul>
+                <button className="add-project-button">Add Project</button>
             </div>
         </div>
     );

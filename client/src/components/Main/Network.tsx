@@ -51,7 +51,7 @@ const NetworkGraph = () => {
                 d3
                     .forceLink<NodeData, LinkData>(links)
                     .id((d) => d.id)
-                    .distance(100), // Example distance setting
+                    .distance(100),
             )
             .force("charge", d3.forceManyBody().strength(-200))
             .force("center", d3.forceCenter(width / 2, height / 2));

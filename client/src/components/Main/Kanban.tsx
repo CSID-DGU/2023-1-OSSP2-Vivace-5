@@ -20,38 +20,39 @@ const Kanban: React.FC = () => {
     const [columns, setColumns] = useState(initialColumns);
     const [tasks, setTasks] = useState(initialTasks);
 
-    // 드래그 앤 드롭 이벤트 핸들러
     const handleDragEnd = (result: DropResult) => {
-        const { source, destination } = result;
+        const { source, destination, type } = result;
 
         if (!destination) {
             return;
         }
 
-        // 같은 열에서 작업 순서 변경
-        if (source.droppableId === destination.droppableId) {
-            const column = columns.find((col) => col.id === source.droppableId);
-            if (column) {
-                const newTasks = Array.from(column.tasks);
-                const [removed] = newTasks.splice(source.index, 1);
-                newTasks.splice(destination.index, 0, removed);
-
-                const updatedColumns = columns.map((col) => {
-                    if (col.id === source.droppableId) {
-                        return { ...col, tasks: newTasks };
-                    }
-                    return col;
-                });
-
-                setColumns(updatedColumns);
-            }
-        }
-        // 다른 열로 작업 이동
-        else {
+        if (type === "column") {
+            const newColumns = Array.from(columns);
+            const [removed] = newColumns.splice(source.index, 1);
+            newColumns.splice(destination.index, 0, removed);
+            setColumns(newColumns);
+        } else if (type === "task") {
             const sourceColumn = columns.find((col) => col.id === source.droppableId);
             const destinationColumn = columns.find((col) => col.id === destination.droppableId);
 
-            if (sourceColumn && destinationColumn) {
+            if (sourceColumn && destinationColumn && sourceColumn === destinationColumn) {
+                const column = columns.find((col) => col.id === source.droppableId);
+                if (column) {
+                    const newTasks = Array.from(column.tasks);
+                    const [removed] = newTasks.splice(source.index, 1);
+                    newTasks.splice(destination.index, 0, removed);
+
+                    const updatedColumns = columns.map((col) => {
+                        if (col.id === source.droppableId) {
+                            return { ...col, tasks: newTasks };
+                        }
+                        return col;
+                    });
+
+                    setColumns(updatedColumns);
+                }
+            } else if (sourceColumn && destinationColumn && sourceColumn !== destinationColumn) {
                 const sourceTasks = Array.from(sourceColumn.tasks);
                 const destinationTasks = Array.from(destinationColumn.tasks);
                 const [removed] = sourceTasks.splice(source.index, 1);
