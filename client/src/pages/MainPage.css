@@ -1,7 +1,7 @@
 .main-page {
     display: flex;
     height: 100vh; /* 높이 전체로 설정 */
-    position: relative; /* 포지션을 설정하여 하위 요소를 배치하기 위해 추가합니다. */
+    position: relative; /* 포지션을 설정하여 하위 요소 배치*/
 }
 
 .sidebar {
