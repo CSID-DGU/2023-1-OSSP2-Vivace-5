@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import LSideBar from "../components/LSideBar/LSideBar";
 import MainSection from "../components/MainSect/MainSect";
+import RSideBar from "../components/RSideBar/RSideBar";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import "./MainPage.css";
 
 const MainPage: React.FC = () => {
@@ -14,9 +17,10 @@ const MainPage: React.FC = () => {
         <div className="main-page">
             {sidebarOpen && <LSideBar />}
             <button className="toggle-button" onClick={handleToggleSidebar}>
-                토글
+                {sidebarOpen ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
             </button>
             <MainSection />
+            {/* <RSideBar /> */}
         </div>
     );
 };

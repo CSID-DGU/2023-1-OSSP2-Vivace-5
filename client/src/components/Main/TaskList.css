@@ -6,7 +6,6 @@ ul {
 li {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 10px;
     margin-bottom: 10px;
     background-color: #f7f7f7;
@@ -17,24 +16,7 @@ li {
 .task-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-}
-
-.task-content {
-    flex-grow: 1;
-    margin-right: 10px;
-}
-
-h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-p {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
+    width: 100%;
 }
 
 .drag-icon {
@@ -43,4 +25,32 @@ p {
     font-size: 20px;
     color: #888;
     cursor: move;
+    margin-right: 10px;
+}
+
+.task-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.separator {
+    display: inline-block;
+    height: 100%;
+    width: 1px;
+    background-color: #000000;
+    margin-right: 10px;
+}
+
+p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
 }

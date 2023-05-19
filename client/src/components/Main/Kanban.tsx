@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import AddIcon from "@mui/icons-material/Add";
 import "./Kanban.css";
 
-// 초기 열과 작업 리스트
 const initialColumns = [
-    { id: "column-1", title: "열 1", tasks: ["task-1", "task-2", "task-3"] },
-    { id: "column-2", title: "열 2", tasks: ["task-4", "task-5"] },
+    { id: "column-1", title: "column 1", tasks: ["task-1", "task-2", "task-3"] },
+    { id: "column-2", title: "column 2", tasks: ["task-4", "task-5"] },
 ];
 
 const initialTasks: { [key: string]: { id: string; content: string } } = {
@@ -77,11 +78,22 @@ const Kanban: React.FC = () => {
         const newColumnId = `column-${columns.length + 1}`;
         const newColumn = {
             id: newColumnId,
-            title: `열 ${columns.length + 1}`,
+            title: `column ${columns.length + 1}`,
             tasks: [],
         };
 
         setColumns([...columns, newColumn]);
+    };
+
+    const updateColumnTitle = (columnId: string, newTitle: string) => {
+        const updatedColumns = columns.map((col) => {
+            if (col.id === columnId) {
+                return { ...col, title: newTitle };
+            }
+            return col;
+        });
+
+        setColumns(updatedColumns);
     };
 
     return (
@@ -100,7 +112,21 @@ const Kanban: React.FC = () => {
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
-                                                <h2 className="column-title">{column.title}</h2>
+                                                <div className="column-header">
+                                                    <h2 className="column-title">{column.title}</h2>
+                                                    <button
+                                                        className="column-title-button"
+                                                        onClick={() => {
+                                                            const newTitle = prompt("새로운 열 제목을 입력하세요:");
+                                                            if (newTitle) {
+                                                                updateColumnTitle(column.id, newTitle);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <BorderColorIcon className="reName" />
+                                                    </button>
+                                                    <span className="task-count">{column.tasks.length}</span>
+                                                </div>
                                                 <Droppable droppableId={column.id} type="task">
                                                     {(provided) => (
                                                         <div
@@ -137,7 +163,7 @@ const Kanban: React.FC = () => {
                                 {provided.placeholder}
                                 <div className="add-column-button-container">
                                     <button className="add-column-button" onClick={addColumn}>
-                                        열 추가
+                                        <AddIcon />
                                     </button>
                                 </div>
                             </div>
@@ -148,4 +174,5 @@ const Kanban: React.FC = () => {
         </div>
     );
 };
+
 export default Kanban;

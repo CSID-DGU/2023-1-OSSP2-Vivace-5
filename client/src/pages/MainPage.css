@@ -14,11 +14,12 @@
 
 .toggle-button {
     position: relative;
-    top: 95vh;
-    left: 10px;
+    top: 50vh;
+    left: 0px;
     height: 30px;
+    width: 25px;
     transform: translateY(-50%);
-    z-index: 1;
+    z-index: 2;
 }
 
 .sidebar.closed .toggle-button {
