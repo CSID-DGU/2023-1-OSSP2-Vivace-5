@@ -13,14 +13,18 @@ import { BrowserRouter, Route, Link, Routes } from 'react-router-dom';
 
 import CopyMyForm from './CopyMyForm';
 import CopySignUp from './CopySignUp';
+import CopyPwChange from './CopyPwChange';
 
 function Routers(){
-    <Routes>
-        <Route path="/signUp" element={<CopySignUp/>}/>
-        <Route path="/1outeTest1" element={<RouteTest1/>}/>
-        <Route path="/2outeTest2" element={<RouteTest2/>}/>
+    
+        <Routes>
+            <Route path="/signUp" element={<CopySignUp/>}/>
+            <Route path="/1outeTest1" element={<RouteTest1/>}/>
+            <Route path="/2outeTest2" element={<RouteTest2/>}/>
+            <Route path="/CopyPwChange" element={<CopyPwChange />}/>
 
-    </Routes>
+        </Routes>
+    
 }
 
 // 현재 여기 Route들 다 모아놓고 이 페이지를 import 시킬 생각임.

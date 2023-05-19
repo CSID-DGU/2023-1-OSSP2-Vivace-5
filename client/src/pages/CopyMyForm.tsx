@@ -168,12 +168,15 @@ function CopyMyForm() {
             <div style={navBtnStyle}>
 
                 {/* Routes는 위치 어디다 둘 지 고민중. */}
-                <Routes>
+                {/* Routes와 Route를 여기에 둘 필요 없음. 이미 App.tsx에서 Routes를 사용해서
+                Link를 지정해주었기 때문. */}
+                {/* <Routes>
                     <Route path="/signUp" element={<CopySignUp/>}>회원가입</Route>
-                </Routes>
+                </Routes> */}
 
                 <Link to="/signUp">회원가입</Link>
-                <a>비밀번호 변경</a>
+                <Link to="/pwChange">비밀번호 변경</Link>
+                
             </div>
         </form>
     );

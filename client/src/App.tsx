@@ -13,6 +13,7 @@ import { BrowserRouter, Route, Link, Routes } from 'react-router-dom';
 import CopyMyForm from './pages/CopyMyForm';
 import CopySignUp from './pages/CopySignUp';
 import CopyPwChange from './pages/CopyPwChange';
+import CopyInfoChange from './pages/CopyInfoChange'
 
 const App: React.FC = () => {
   const onSubmit = (form: { name: string; password: string }) => {
@@ -42,25 +43,13 @@ const App: React.FC = () => {
             <PwChange onSubmit={onSubmit} />
             <ProjectAdd pSubmit={pSubmit} />
             <ProjectCorr onSubmit={onSubmit} /> */}
-          <nav>
-            <Link to="/">Test1</Link> 
-            <br />
-            <Link to="/pageT">pageT</Link> 
-            <br />
-            <Link to="/myForm">myForm</Link> 
-            <br />
-            <Link to="/signUp">signUp</Link> 
-            <br />
-            <Link to="/pwChange">pwChange</Link> 
-          </nav>
-
-
           <Routes>
             <Route path="/" Component={RouteTest1} />
             <Route path="/pageT" Component={RouteTest2} />         
             <Route path="/myForm" element={<CopyMyForm/>} /> 
             <Route path="/signUp" element={<CopySignUp/>} />  
             <Route path="/pwChange" element={<CopyPwChange/>} />
+            <Route path="/copyInfoChange" element={<CopyInfoChange/>}/>
           </Routes>
           <Link to="/">Home</Link>
         </div>

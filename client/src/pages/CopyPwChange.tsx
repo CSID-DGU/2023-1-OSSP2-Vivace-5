@@ -186,12 +186,11 @@ function PwChange() {
             <hr style={hrStyle}></hr>
             <div style={navBtnStyle}>
                 <button style={boxStyle} type="submit">변경</button>
-                <button style={boxStyle} type="submit">취소</button>
-            </div>
-                {/* <Link to={"/container"}>
-                    이동하자
-                </Link> */}
-            
+                {/* <button style={boxStyle} type="submit">취소</button> */}
+                <Link to="/myForm">
+                    <button style={boxStyle} type="submit">취소</button>
+                </Link>
+            </div>            
         </form>
     );
 }

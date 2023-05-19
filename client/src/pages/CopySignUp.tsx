@@ -468,12 +468,11 @@ function SignUp() {
             <Routes>
             <Route path="/myForm" element={<CopyMyForm/>}/>
             </Routes>
-            <Link to="/myForm">취소</Link>
-                
+            <Link to="/myForm">
+            <button style={boxStyle} type="submit">취소</button>
+            </Link>
 
-
-            </div>
-            
+            </div>            
         </form>
     );
 }
