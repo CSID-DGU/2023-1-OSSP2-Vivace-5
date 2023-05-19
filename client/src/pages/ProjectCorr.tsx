@@ -103,7 +103,7 @@ function ProjectCorr({ onSubmit }: ProjectCorrProps) {
     return (
         <form style={formStyle}>
 
-        (left/right) bar는 각각 widh 23%로 설정하면 됩니다.
+        {/* (left/right) bar는 각각 widh 23%로 설정하면 됩니다. */}
             
             <div style={upperPage}>
                 {/*  프로젝트 정보를 나타내는 테이블*/}

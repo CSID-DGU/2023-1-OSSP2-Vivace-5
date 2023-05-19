@@ -34,12 +34,13 @@ function ProjectAdd({ pSubmit }: ProjectAddProps) {
     }
 
     const mainTable: CSSProperties= {
-        
+        marginTop: '200px',
         borderCollapse: 'collapse',
         border: '1px solid black',
         letterSpacing: '1px',
         fontSize: '0.8rem',
-        width: '54%'
+        width: '54%',
+        justifyContent: 'center',
     }
 
     const trStyle: CSSProperties = {
@@ -82,6 +83,29 @@ function ProjectAdd({ pSubmit }: ProjectAddProps) {
         color: '#A6C0EE',
         width: '100%',
         fontSize: '25px'
+    }
+
+    const leftSideBar: CSSProperties = {
+        width: '23%',
+        backgroundColor: 'lightgray',
+        color: 'lightgray',
+        height: '80vh'
+    }
+
+    const rightSideBar: CSSProperties = {
+        width: '23%',
+        backgroundColor: 'lightgray',
+        color: 'lightgray',
+        height: '80vh'
+    }
+
+    const mainSection: CSSProperties ={
+        display: 'inlineFlex',
+        alignContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        
+
     }
 //css끝
     const [form, setForm] = useState({
@@ -128,44 +152,49 @@ function ProjectAdd({ pSubmit }: ProjectAddProps) {
 
     return (
         <form style={formStyle}>
+            <section style={mainSection}>
+                {/* <div style={leftSideBar}>
+                    <p style={mainTable}>LeftSideBar 들어갈 위치</p>
+                </div> */}
+                <div style={upperPage}>
+                    {/*  프로젝트 정보를 나타내는 테이블*/}
+                    <table style={mainTable}>
+                        
+                        <tbody>
+                            <tr style={trStyle}>
+                                <th scope="row">프로젝트 이름</th>
+                                <td style={tdStyle}>
+                                    <input style={inputBoxStyle} className="idBox" type="text" name="Pname" value={Pname} onChange={onChange} placeholder="이름 입력"/>
+                                </td>
+                            </tr>
+                            <tr style={trStyle}>
+                                <th scope="row">프로젝트 설명</th>
+                                <td style={tdStyle}>
+                                    <input style={inputBoxStyle} className="idBox" type="text" name="Pdescription" value={Pdescription} onChange={onChange} placeholder="설명 입력"/>
+                                </td>
+                            </tr>
+                            <tr style={trStyle}>
+                                <th scope="row">프로젝트 생성 일자</th>
+                                <td style={tdStyle}>
+                                    <input style={inputBoxStyle} className="idBox" type="text" name="PcreDate" value={PcreDate} onChange={onChange} />                                
+                                </td>
+                            </tr>
+                            <tr style={trStyle}>
+                                <th scope="row">프로젝트 멤버</th>
+                                <td style={tdStyle}>
+                                    <button style={corrBtnStyle} type="button" onClick={alertBtn}>
+                                        <i className="fas fa-plus-square" style={plusBtn}></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        (left/right) bar는 각각 widh 23%로 설정하면 됩니다.
-            
-            <div style={upperPage}>
-                {/*  프로젝트 정보를 나타내는 테이블*/}
-                <table style={mainTable}>
-                    
-                    <tbody>
-                        <tr style={trStyle}>
-                            <th scope="row">프로젝트 이름</th>
-                            <td style={tdStyle}>
-                                <input style={inputBoxStyle} className="idBox" type="text" name="Pname" value={Pname} onChange={onChange} placeholder="이름 입력"/>
-                            </td>
-                        </tr>
-                        <tr style={trStyle}>
-                            <th scope="row">프로젝트 설명</th>
-                            <td style={tdStyle}>
-                                <input style={inputBoxStyle} className="idBox" type="text" name="Pdescription" value={Pdescription} onChange={onChange} placeholder="설명 입력"/>
-                            </td>
-                        </tr>
-                        <tr style={trStyle}>
-                            <th scope="row">프로젝트 생성 일자</th>
-                            <td style={tdStyle}>
-                                <input style={inputBoxStyle} className="idBox" type="text" name="PcreDate" value={PcreDate} onChange={onChange} />                                
-                            </td>
-                        </tr>
-                        <tr style={trStyle}>
-                            <th scope="row">프로젝트 멤버</th>
-                            <td style={tdStyle}>
-                                <button style={corrBtnStyle} type="button" onClick={alertBtn}>
-                                    <i className="fas fa-plus-square" style={plusBtn}></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
+                {/* <div style={rightSideBar}>    
+                    <p style={mainTable}>RightSideBar들어갈 위치</p>
+                </div> */}
+            </section>
             {/* 프로젝트 나가기&삭제 버튼 들어있는 div */}
             <div style={lowerPage}>
                 <div>
