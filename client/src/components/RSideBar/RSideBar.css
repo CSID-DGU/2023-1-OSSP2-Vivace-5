@@ -1,0 +1,25 @@
+.sidebar {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sidebar li {
+    display: inline-block;
+    margin-left: 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+}
+
+.sidebar li.active {
+    background-color: #ddd;
+}
+
+.content {
+    margin-top: 10px;
+    clear: both;
+}

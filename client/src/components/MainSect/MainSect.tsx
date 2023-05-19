@@ -5,9 +5,9 @@ import TaskList from "../Main/TaskList";
 function MainSection() {
     return (
         <div>
-            {/* <Network /> */}
-            <Kanban />
-            {/* <TaskList /> */}
+            {/* <Network />*/}
+            {/* <Kanban /> */}
+            <TaskList />
         </div>
     );
 }

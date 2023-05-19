@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import "./LSideBar.css";
 
 interface Project {
@@ -40,9 +41,14 @@ const LSidebar: React.FC = () => {
         <div className={`sidebar ${isSidebarOpen ? "" : "closed"}`}>
             <div className="content">
                 <div className="profile">
-                    <img src={user.profileImage} alt="Profile" />
-                    <div>{user.name}</div>
-                    <div>{user.email}</div>
+                    <div className="profileImageContainer">
+                        <AccountCircleIcon className="profileImage" fontSize="large" />
+                    </div>
+
+                    <div className="userInfo">
+                        <div className="userName">{user.name}</div>
+                        <div className="userEmail">{user.email}</div>
+                    </div>
                 </div>
                 <input
                     type="text"
