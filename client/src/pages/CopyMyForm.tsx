@@ -34,6 +34,11 @@ function CopyMyForm() {
         justifyContent: 'center',
     }
 
+    const body: CSSProperties = {
+        margin: '0',
+        width: '100%',
+        height: '100%',
+    }
     //헤더 라인 스타일
     const header: CSSProperties = {
         backgroundColor: '#A6C0EE',
@@ -139,8 +144,8 @@ function CopyMyForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} >
-            <section style={header}>Tempo_MyForm</section>
+        <form onSubmit={handleSubmit} style={body}>
+            <section style={header}>Tempo_MyFormnasdnsd</section>
             <div style={mainScreen}>
                 <div style={mainBoxStyle}>
                     <h1 style={titleStyle}>TEMPO</h1>

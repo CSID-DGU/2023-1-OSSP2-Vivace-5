@@ -11,7 +11,9 @@ import RouteTest2 from './pages/RouteTest2';
 import { BrowserRouter, Route, Link, Routes } from 'react-router-dom';
 
 import CopyMyForm from './pages/CopyMyForm';
+import NewCopyMyForm from './pages/NewCopyMyForm';
 import CopySignUp from './pages/CopySignUp';
+import NewCopySignUp from './pages/NewCopySignUp';
 import CopyPwChange from './pages/CopyPwChange';
 import CopyInfoChange from './pages/CopyInfoChange'
 
@@ -46,8 +48,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" Component={RouteTest1} />
             <Route path="/pageT" Component={RouteTest2} />         
-            <Route path="/myForm" element={<CopyMyForm/>} /> 
-            <Route path="/signUp" element={<CopySignUp/>} />  
+            <Route path="/myForm" element={<NewCopyMyForm/>} /> 
+            <Route path="/signUp" element={<NewCopySignUp/>} />  
             <Route path="/pwChange" element={<CopyPwChange/>} />
             <Route path="/copyInfoChange" element={<CopyInfoChange/>}/>
           </Routes>
