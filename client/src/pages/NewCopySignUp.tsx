@@ -382,7 +382,7 @@ function SignUp() {
                             <br/>
                             <TextField id="outlined-basic" label="문자, 숫자, 특수기호 포함 8~16자리" variant="outlined" style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange}/>
                             <br/>
-                            <TextField id="outlined-basic" label="비밀번호를 다시 입력하세요" variant="outlined" style={inputBoxStyle} type="text" name="passwordCk" value={passwordCk} onChange={onChange}/>
+                            <TextField id="outlined-basic" label="비밀번호를 다시 입력하세요" variant="outlined" style={inputBoxStyle} type="password" name="passwordCk" value={passwordCk} onChange={onChange}/>
                             {/* <input style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange} /> */}
                         </div>
                     </div>

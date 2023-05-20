@@ -15,7 +15,9 @@ import NewCopyMyForm from './pages/NewCopyMyForm';
 import CopySignUp from './pages/CopySignUp';
 import NewCopySignUp from './pages/NewCopySignUp';
 import CopyPwChange from './pages/CopyPwChange';
+import NewCopyPwChange from './pages/NewCopyPwChange';
 import CopyInfoChange from './pages/CopyInfoChange'
+import NewCopyInfoChange from './pages/NewCopyInfoChange'
 
 const App: React.FC = () => {
   const onSubmit = (form: { name: string; password: string }) => {
@@ -50,8 +52,8 @@ const App: React.FC = () => {
             <Route path="/pageT" Component={RouteTest2} />         
             <Route path="/myForm" element={<NewCopyMyForm/>} /> 
             <Route path="/signUp" element={<NewCopySignUp/>} />  
-            <Route path="/pwChange" element={<CopyPwChange/>} />
-            <Route path="/copyInfoChange" element={<CopyInfoChange/>}/>
+            <Route path="/pwChange" element={<NewCopyPwChange/>} />
+            <Route path="/copyInfoChange" element={<NewCopyInfoChange/>}/>
           </Routes>
           <Link to="/">Home</Link>
         </div>
