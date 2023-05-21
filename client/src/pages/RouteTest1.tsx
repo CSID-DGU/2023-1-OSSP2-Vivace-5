@@ -24,7 +24,8 @@ function MyForm() {
                 <ol><Link to="/signUp">signUp</Link> </ol>
                 <ol><Link to="/pwChange">pwChange</Link></ol>
                 <ol><Link to="/copyInfoChange">InfoChange</Link></ol>
-            
+                <ol><Link to="/newCopyProjectAdd">ProjectAdd</Link></ol>
+                <ol><Link to="/newCopyProjectCorr">ProjectCorr</Link></ol>
           </nav>
     </div>
     )

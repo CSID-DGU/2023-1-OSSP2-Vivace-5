@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
+
 type InfoChangeProps = {
   onSubmit: (form: {
     name: string; 
@@ -183,7 +184,6 @@ function InfoChange() {
         margin: '30px'   
     }
 
-
     //입력 박스 스타일
     const inputBoxStyle: CSSProperties= {
         width: '300px',
@@ -301,7 +301,7 @@ function InfoChange() {
 
     return (
         <form onSubmit={handleSubmit} style={body}>
-            <header style={header}>New_Tempo_MyForm</header>
+            <header style={header}>New_Tempo_InfoChange</header>
 
             <section style={mainScreen}>
                 <h1 style={titleStyle}>TEMPO</h1>

@@ -37,39 +37,39 @@ function PwChange() {
             return form;
         }
         
-//20230521 1:21 AM 수정
-const body: CSSProperties = {
-    margin: '0',
-    width: '100%',
-    height: '100%',
-}
+    //20230521 1:21 AM 수정
+    const body: CSSProperties = {
+        margin: '0',
+        width: '100%',
+        height: '100%',
+    }
 
-const inputsection: CSSProperties = {
-    display: 'flex',
-    float: 'left',
-}
+    const inputsection: CSSProperties = {
+        display: 'flex',
+        float: 'left',
+    }
 
-const navsection: CSSProperties = {
-    display: 'block',
-    justifyContent: 'space-between',
-    marginLeft: '0px'
-}
+    const navsection: CSSProperties = {
+        display: 'block',
+        justifyContent: 'space-between',
+        marginLeft: '0px'
+    }
 
-const mainRightDiv: CSSProperties = {
-    display: 'flex',
-}
+    const mainRightDiv: CSSProperties = {
+        display: 'flex',
+    }
 
-const comfirmBtn: CSSProperties = {
-    paddingLeft: '30px',
-}
+    const comfirmBtn: CSSProperties = {
+        paddingLeft: '30px',
+    }
 
-const texts: CSSProperties = {
-    margin: '25px',
-    marginBottom: '30px',
-    marginTop: '15px',
-    paddingLeft: '70px',
-    marginRight: '-35px'
-}
+    const texts: CSSProperties = {
+        margin: '25px',
+        marginBottom: '30px',
+        marginTop: '15px',
+        paddingLeft: '70px',
+        marginRight: '-35px'
+    }
 
 //css 시작
     //헤더 라인 스타일

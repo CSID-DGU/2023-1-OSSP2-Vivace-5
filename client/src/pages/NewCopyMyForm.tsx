@@ -10,9 +10,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 
-
-
-
 /*
 * 바로 밑에 type랑 function은 없어도 될 것 같아보임.
 * 현재 console.log로 [확인]눌렀을 때 입력한 email, password 전송까지 OK

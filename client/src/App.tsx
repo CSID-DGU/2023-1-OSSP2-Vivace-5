@@ -10,6 +10,7 @@ import RouteTest1 from './pages/RouteTest1';
 import RouteTest2 from './pages/RouteTest2';
 import { BrowserRouter, Route, Link, Routes } from 'react-router-dom';
 
+
 import CopyMyForm from './pages/CopyMyForm';
 import NewCopyMyForm from './pages/NewCopyMyForm';
 import CopySignUp from './pages/CopySignUp';
@@ -18,6 +19,8 @@ import CopyPwChange from './pages/CopyPwChange';
 import NewCopyPwChange from './pages/NewCopyPwChange';
 import CopyInfoChange from './pages/CopyInfoChange'
 import NewCopyInfoChange from './pages/NewCopyInfoChange'
+import NewCopyProjectCorr from './pages/NewCopyProjectCorr';
+import NewCopyProjectAdd from './pages/NewCopyProjectAdd';
 
 const App: React.FC = () => {
   const onSubmit = (form: { name: string; password: string }) => {
@@ -54,6 +57,10 @@ const App: React.FC = () => {
             <Route path="/signUp" element={<NewCopySignUp/>} />  
             <Route path="/pwChange" element={<NewCopyPwChange/>} />
             <Route path="/copyInfoChange" element={<NewCopyInfoChange/>}/>
+            <Route path="/copyInfoChange" element={<NewCopyInfoChange/>}/>
+            <Route path="/copyInfoChange" element={<NewCopyInfoChange/>}/>
+            <Route path="/newCopyProjectAdd" element={<NewCopyProjectAdd/>}/>
+            <Route path="/newCopyProjectCorr" element={<NewCopyProjectCorr/>}/>
           </Routes>
           <Link to="/">Home</Link>
         </div>
