@@ -27,12 +27,20 @@
     flex-direction: column;
 }
 
+.userName {
+    font-size: 20px;
+}
+
+.userEmail {
+    font-size: 14px;
+}
+
 .profile div {
     margin-bottom: 5px;
 }
 
 input[type="text"] {
-    width: 90%;
+    width: 95%;
     padding: 8px;
     margin-bottom: 10px;
     align-items: center;

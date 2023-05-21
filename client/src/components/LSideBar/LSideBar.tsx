@@ -42,7 +42,7 @@ const LSidebar: React.FC = () => {
             <div className="content">
                 <div className="profile">
                     <div className="profileImageContainer">
-                        <AccountCircleIcon className="profileImage" fontSize="large" />
+                        <AccountCircleIcon sx={{ fontSize: 50 }} />
                     </div>
 
                     <div className="userInfo">

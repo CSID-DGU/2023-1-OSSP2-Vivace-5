@@ -46,12 +46,12 @@ const Kanban: React.FC = () => {
 
                     const updatedColumns = columns.map((col) => {
                         if (col.id === source.droppableId) {
-                            return { ...col, tasks: newTasks };
+                            return { ...col, tasks: newTasks }; //column에 taskList 업데이트
                         }
                         return col;
                     });
 
-                    setColumns(updatedColumns);
+                    setColumns(updatedColumns); //업데이트된 column으로 세팅
                 }
             } else if (sourceColumn && destinationColumn && sourceColumn !== destinationColumn) {
                 const sourceTasks = Array.from(sourceColumn.tasks);

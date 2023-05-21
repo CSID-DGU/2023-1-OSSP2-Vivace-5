@@ -1,13 +1,21 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import "./Network.css";
+import ViewKanbanIcon from "@mui/icons-material/ViewKanban"; //for childType=kanban
+import DescriptionIcon from "@mui/icons-material/Description"; //for childType=MarkDown
+import AccountTreeIcon from "@mui/icons-material/AccountTree"; //for childtype=Network
+import ListIcon from "@mui/icons-material/List"; //for childType=List
+import ReactDOMServer from "react-dom/server";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
 
 interface NodeData extends d3.SimulationNodeDatum {
     id: string;
     label: string;
-    hasButton: boolean;
     x?: number;
     y?: number;
+    childType: string;
+    rate: number;
 }
 
 interface LinkData {
@@ -17,9 +25,10 @@ interface LinkData {
 
 const NetworkGraph = () => {
     const svgRef = useRef<SVGSVGElement>(null);
-    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null); // 이동된 위치로 상태 정의
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const handleNodeButtonClick = (node: NodeData, buttonId: string) => {
+        //버튼 클릭 시 노드 id랑 button id 전송 -> 북마크, 마일스톤, 노드 ID
         console.log(`Button ${buttonId} clicked for node: ${node.id}`);
         setSelectedNodeId(node.id);
     };
@@ -30,9 +39,9 @@ const NetworkGraph = () => {
         const height = +svg.attr("height");
 
         const nodes: NodeData[] = [
-            { id: "node1", label: "Node 1", hasButton: true },
-            { id: "node2", label: "Node 2", hasButton: true },
-            { id: "node3", label: "Node 3", hasButton: true },
+            { id: "node1", label: "Node 1", childType: "Network", rate: 15 / 15 },
+            { id: "node2", label: "Node 2", childType: "Kanban", rate: 5 / 10 },
+            { id: "node3", label: "Node 3", childType: "List", rate: 2 / 4 },
             // ...
         ];
 
@@ -90,7 +99,7 @@ const NetworkGraph = () => {
             .attr("y", 0)
             .attr("width", 100)
             .attr("height", 60)
-            .style("fill", "rgb(216, 228, 252)");
+            .style("fill", (d) => `rgba(216, 228, 252, ${d.rate * 0.7 + 0.3})`); // 투명도 조절
 
         node.append("text")
             .attr("class", "label")
@@ -101,21 +110,47 @@ const NetworkGraph = () => {
             .attr("text-anchor", "middle")
             .text((d) => d.label);
 
-        node.append("rect")
-            .attr("class", "node-rect")
+        node.append("foreignObject")
+            .attr("class", "node-button")
             .attr("x", 85)
-            .attr("y", 6)
-            .attr("width", 10)
-            .attr("height", 10)
+            .attr("y", 0)
+            .attr("width", 15)
+            .attr("height", 20)
+            .html(() => ReactDOMServer.renderToString(<BookmarkIcon sx={{ fontSize: 5 }} />))
             .on("click", (event: any, d: NodeData) => handleNodeButtonClick(d, "1"));
 
-        node.append("rect")
+        node.append("foreignObject")
             .attr("class", "node-button")
             .attr("x", 70)
-            .attr("y", 6)
-            .attr("width", 10)
-            .attr("height", 10)
+            .attr("y", 0)
+            .attr("width", 15)
+            .attr("height", 15)
+            .html(() => ReactDOMServer.renderToString(<StarRoundedIcon sx={{ fontSize: 10 }} />))
             .on("click", (event: any, d: NodeData) => handleNodeButtonClick(d, "2"));
+
+        node.append("line").attr("class", "boundary-line").attr("x1", 0).attr("y1", 10).attr("x2", 100).attr("y2", 10);
+
+        node.append("foreignObject")
+            .attr("class", "node-rect")
+            .attr("x", 82)
+            .attr("y", 40)
+            .attr("width", 15)
+            .attr("height", 15)
+            .html((d) => {
+                let icon: React.ReactElement | null = null;
+
+                if (d.childType === "Kanban") {
+                    icon = <ViewKanbanIcon sx={{ fontSize: 10 }} />;
+                } else if (d.childType === "MarkDown") {
+                    icon = <DescriptionIcon sx={{ fontSize: 10 }} />;
+                } else if (d.childType === "Network") {
+                    icon = <AccountTreeIcon sx={{ fontSize: 10 }} />;
+                } else if (d.childType === "List") {
+                    icon = <ListIcon sx={{ fontSize: 10 }} />;
+                }
+
+                return icon ? ReactDOMServer.renderToString(icon) : null;
+            });
 
         simulation.on("tick", () => {
             link.attr("x1", (d) => d.source.x! + 100)
