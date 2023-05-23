@@ -105,6 +105,7 @@
     align-items: center;
     padding: 10px;
     cursor: pointer;
+    width: 80%;
 }
 
 .userProfile {
@@ -122,7 +123,7 @@
     align-items: flex-start;
     margin-bottom: 16px;
     background-color: #f5f5f5;
-    width: 100%;
+    width: 95%;
     padding: 16px;
     border-radius: 4px;
 }

@@ -184,7 +184,7 @@ const NetworkGraph = () => {
 
     return (
         <div>
-            <svg ref={svgRef} width={1680} height={1050}></svg>
+            <svg ref={svgRef} width={1280} height={1024}></svg>
             <div>Selected Node ID: {selectedNodeId}</div>
         </div>
     );

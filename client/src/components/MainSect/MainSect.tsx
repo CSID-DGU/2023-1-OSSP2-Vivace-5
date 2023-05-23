@@ -13,9 +13,9 @@ function MainSection() {
     return (
         <div className="main-section">
             {/* <Network /> */}
-            <Kanban />
-            {/* <TaskList />*/}
-            {/* <MarkDown /> */}
+            {/* <Kanban /> */}
+            {/* <TaskList /> */}
+            <MarkDown />
             <div
                 className="add-task-button"
                 style={{
