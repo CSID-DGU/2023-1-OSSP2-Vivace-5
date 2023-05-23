@@ -1,7 +1,6 @@
 import Kanban from "../Main/Kanban";
 import Network from "../Main/Network";
 import TaskList from "../Main/TaskList";
-<<<<<<< HEAD
 import MarkDown from "../Main/MarkDown";
 import AddIcon from "@mui/icons-material/Add";
 import React from "react";
@@ -38,15 +37,6 @@ function MainSection() {
             >
                 <AddIcon />
             </div>
-=======
-
-function MainSection() {
-    return (
-        <div>
-            {/* <Network />*/}
-            {/* <Kanban /> */}
-            <TaskList />
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
         </div>
     );
 }

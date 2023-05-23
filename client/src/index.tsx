@@ -10,6 +10,16 @@ ReactDOM.render(
     document.getElementById("root"),
 );
 
+//창준님 index.tsx 내용인데 일단 주석 처리 해놨습니다
+// const root = ReactDOM.createRoot(
+//   document.getElementById('root') as HTMLElement
+// );
+// root.render(
+//   <React.StrictMode>
+//     <App />
+//   </React.StrictMode>
+// );
+
 const MainApp: React.FC = () => {
     return null;
 };

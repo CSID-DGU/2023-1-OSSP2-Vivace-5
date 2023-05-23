@@ -42,7 +42,6 @@ const LSidebar: React.FC = () => {
             <div className="content">
                 <div className="profile">
                     <div className="profileImageContainer">
-<<<<<<< HEAD
                         <AccountCircleIcon sx={{ fontSize: 40 }} />
                     </div>
 
@@ -52,14 +51,6 @@ const LSidebar: React.FC = () => {
                             <br />
                             <div className="userEmail">{user.email}</div>
                         </div>
-=======
-                        <AccountCircleIcon className="profileImage" fontSize="large" />
-                    </div>
-
-                    <div className="userInfo">
-                        <div className="userName">{user.name}</div>
-                        <div className="userEmail">{user.email}</div>
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
                     </div>
                 </div>
                 <input
@@ -70,13 +61,9 @@ const LSidebar: React.FC = () => {
                 />
                 <ul className="project-list">
                     {filteredProjects.map((project) => (
-<<<<<<< HEAD
                         <li key={project.id} onClick={() => console.log(project.id)}>
                             {project.name}
                         </li>
-=======
-                        <li key={project.id}>{project.name}</li>
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
                     ))}
                 </ul>
                 <button className="add-project-button">Add Project</button>

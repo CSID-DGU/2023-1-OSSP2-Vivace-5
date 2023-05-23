@@ -51,7 +51,6 @@
     color: #666666;
 }
 
-<<<<<<< HEAD
 .task-list {
     background-color: #e8e8e8; /* Task Droppable 영역 */
     border-radius: 4px;
@@ -59,8 +58,6 @@
     margin-bottom: 10px;
 }
 
-=======
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 .add-column-button-container {
     margin-top: 0px;
 }

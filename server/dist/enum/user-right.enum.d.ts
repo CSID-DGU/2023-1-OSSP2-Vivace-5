@@ -1,0 +1,7 @@
+export declare enum UserRight {
+    ADMIN = "ADMIN",
+    MEMBER_AND_TASK_MGT = "MEMBER_AND_TASK_MGT",
+    MEMBER_MGT = "MEMBER_MGT",
+    TASK_MGT = "TASK_MGT",
+    COMPLETION_MOD = "COMPLETION_MOD"
+}

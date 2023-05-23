@@ -1,0 +1,34 @@
+/* Css Module을 제대로 적용시키는 법을 아직 찾지 못해서, 현재 사용중이지 않음.(2023-05-08 01:11 AM) */
+.loginBox {
+    background-color: white;
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 50px;
+    
+
+    border-bottom: solid;
+    border-color: gray;
+    border-width: 1px;
+  }
+
+
+.inputBox{
+    display:contents;
+    justify-content: space-evenly;
+}
+
+.linkText{
+    font-size: 15px;
+    text-align: center;
+}
+
+.idBox {
+    background-color: red;
+    width: 1000px;
+}
+
+.test {
+    font-weight: bold;
+    color: blue;
+}

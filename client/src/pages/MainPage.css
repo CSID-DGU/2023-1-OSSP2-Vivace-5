@@ -1,6 +1,5 @@
 .main-page {
     display: flex;
-<<<<<<< HEAD
     height: 100vh;
     position: relative;
 }
@@ -14,18 +13,6 @@
     flex: 1;
     overflow-y: auto; /* 스크롤을 사용할 수 있도록 설정 */
     position: relative;
-=======
-    height: 100vh; /* 높이 전체로 설정 */
-    position: relative; /* 포지션을 설정하여 하위 요소 배치*/
-}
-
-.sidebar {
-    width: 20%; /* 넓이 20%로 설정 */
-}
-
-.main-section {
-    flex: 1; /* 나머지 공간을 차지하도록 설정 */
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 }
 
 .toggle-button {
@@ -45,7 +32,6 @@
 .sidebar .toggle-button {
     right: 10px;
 }
-<<<<<<< HEAD
 
 .RSideBar {
     width: 20%;
@@ -68,5 +54,3 @@
 .MainSection::-webkit-scrollbar-thumb {
     background-color: transparent; /* 스크롤바의 색상 설정 */
 }
-=======
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4

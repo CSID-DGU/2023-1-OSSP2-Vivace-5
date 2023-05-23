@@ -1,12 +1,7 @@
 .sidebar {
     background-color: #f2f2f2;
-<<<<<<< HEAD
     padding: 10px;
     width: 15%;
-=======
-    padding: 20px;
-    width: 20%;
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
     height: 100vh;
     transition: width 0.3s ease-in-out;
     overflow: hidden;
@@ -21,10 +16,7 @@
 .profile {
     display: flex;
     align-items: center;
-<<<<<<< HEAD
     margin-bottom: 10px;
-=======
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 }
 
 .profileImageContainer {
@@ -34,7 +26,6 @@
 .userInfo {
     display: flex;
     flex-direction: column;
-<<<<<<< HEAD
     align-items: center;
 }
 
@@ -44,8 +35,6 @@
 
 .userEmail {
     font-size: 10px;
-=======
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 }
 
 .profile div {
@@ -53,19 +42,13 @@
 }
 
 input[type="text"] {
-<<<<<<< HEAD
     width: 85%;
     padding: 10px;
     margin-left: 0%;
-=======
-    width: 90%;
-    padding: 8px;
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
     margin-bottom: 10px;
     align-items: center;
 }
 
-<<<<<<< HEAD
 .project-list {
     display: flex;
     flex-direction: column;
@@ -85,16 +68,6 @@ input[type="text"] {
     width: 86%;
     padding: 8px;
     margin-left: 10px;
-=======
-.project-list li {
-    list-style-type: none;
-    padding: 5px 0;
-}
-
-.add-project-button {
-    width: 100%;
-    padding: 8px;
->>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
     border: none;
     background-color: #f2f2f2;
     border: 1px solid #ccc;
