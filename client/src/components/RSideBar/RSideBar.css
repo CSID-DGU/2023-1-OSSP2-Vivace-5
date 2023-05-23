@@ -23,6 +23,7 @@
     margin-top: 10px;
     clear: both;
 }
+<<<<<<< HEAD
 .notifi {
     display: flex;
     align-items: center;
@@ -164,3 +165,5 @@
 ::-webkit-scrollbar-thumb {
     background-color: transparent;
 }
+=======
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4

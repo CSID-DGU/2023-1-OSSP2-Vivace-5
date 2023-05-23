@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 .main-section {
     width: 100vh;
     height: 100vh;
     overflow: auto;
+=======
+.MainSect {
+    width: 100vh;
+    height: 100vh;
+    overflow: hidden;
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
     position: relative;
 }

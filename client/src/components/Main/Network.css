@@ -41,6 +41,7 @@
     stroke-width: 1px;
     fill: #fff;
 }
+<<<<<<< HEAD
 
 .node-background {
     cursor: default;
@@ -49,3 +50,5 @@
 .node-button {
     cursor: pointer;
 }
+=======
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4

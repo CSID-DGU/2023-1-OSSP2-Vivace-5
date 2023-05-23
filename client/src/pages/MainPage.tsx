@@ -14,15 +14,24 @@ const MainPage: React.FC = () => {
     };
 
     return (
+<<<<<<< HEAD
         <div className={`main-page ${sidebarOpen ? "" : "sidebar-closed"}`}>
+=======
+        <div className="main-page">
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
             {sidebarOpen && <LSideBar />}
             <button className="toggle-button" onClick={handleToggleSidebar}>
                 {sidebarOpen ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
             </button>
+<<<<<<< HEAD
             <div className="MainSection">
                 <MainSection />
             </div>
             <RSideBar />
+=======
+            <MainSection />
+            {/* <RSideBar /> */}
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
         </div>
     );
 };

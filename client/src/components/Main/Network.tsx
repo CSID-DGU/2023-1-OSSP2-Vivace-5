@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import "./Network.css";
+<<<<<<< HEAD
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban"; //for childType=kanban
 import DescriptionIcon from "@mui/icons-material/Description"; //for childType=MarkDown
 import AccountTreeIcon from "@mui/icons-material/AccountTree"; //for childtype=Network
@@ -8,14 +9,22 @@ import ListIcon from "@mui/icons-material/List"; //for childType=List
 import ReactDOMServer from "react-dom/server";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+=======
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 
 interface NodeData extends d3.SimulationNodeDatum {
     id: string;
     label: string;
+<<<<<<< HEAD
     x?: number;
     y?: number;
     childType: string;
     rate: number;
+=======
+    hasButton: boolean;
+    x?: number;
+    y?: number;
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 }
 
 interface LinkData {
@@ -25,10 +34,16 @@ interface LinkData {
 
 const NetworkGraph = () => {
     const svgRef = useRef<SVGSVGElement>(null);
+<<<<<<< HEAD
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const handleNodeButtonClick = (node: NodeData, buttonId: string) => {
         //버튼 클릭 시 노드 id랑 button id 전송 -> 북마크, 마일스톤, 노드 ID
+=======
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null); // 이동된 위치로 상태 정의
+
+    const handleNodeButtonClick = (node: NodeData, buttonId: string) => {
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
         console.log(`Button ${buttonId} clicked for node: ${node.id}`);
         setSelectedNodeId(node.id);
     };
@@ -39,9 +54,15 @@ const NetworkGraph = () => {
         const height = +svg.attr("height");
 
         const nodes: NodeData[] = [
+<<<<<<< HEAD
             { id: "node1", label: "Node 1", childType: "Network", rate: 15 / 15 },
             { id: "node2", label: "Node 2", childType: "Kanban", rate: 5 / 10 },
             { id: "node3", label: "Node 3", childType: "List", rate: 2 / 4 },
+=======
+            { id: "node1", label: "Node 1", hasButton: true },
+            { id: "node2", label: "Node 2", hasButton: true },
+            { id: "node3", label: "Node 3", hasButton: true },
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
             // ...
         ];
 
@@ -99,7 +120,11 @@ const NetworkGraph = () => {
             .attr("y", 0)
             .attr("width", 100)
             .attr("height", 60)
+<<<<<<< HEAD
             .style("fill", (d) => `rgba(216, 228, 252, ${d.rate * 0.7 + 0.3})`); // 투명도 조절
+=======
+            .style("fill", "rgb(216, 228, 252)");
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
 
         node.append("text")
             .attr("class", "label")
@@ -110,6 +135,7 @@ const NetworkGraph = () => {
             .attr("text-anchor", "middle")
             .text((d) => d.label);
 
+<<<<<<< HEAD
         node.append("foreignObject")
             .attr("class", "node-button")
             .attr("x", 85)
@@ -152,6 +178,24 @@ const NetworkGraph = () => {
                 return icon ? ReactDOMServer.renderToString(icon) : null;
             });
 
+=======
+        node.append("rect")
+            .attr("class", "node-rect")
+            .attr("x", 85)
+            .attr("y", 6)
+            .attr("width", 10)
+            .attr("height", 10)
+            .on("click", (event: any, d: NodeData) => handleNodeButtonClick(d, "1"));
+
+        node.append("rect")
+            .attr("class", "node-button")
+            .attr("x", 70)
+            .attr("y", 6)
+            .attr("width", 10)
+            .attr("height", 10)
+            .on("click", (event: any, d: NodeData) => handleNodeButtonClick(d, "2"));
+
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
         simulation.on("tick", () => {
             link.attr("x1", (d) => d.source.x! + 100)
                 .attr("y1", (d) => d.source.y! + 30)
@@ -184,7 +228,11 @@ const NetworkGraph = () => {
 
     return (
         <div>
+<<<<<<< HEAD
             <svg ref={svgRef} width={1280} height={1024}></svg>
+=======
+            <svg ref={svgRef} width={1680} height={1050}></svg>
+>>>>>>> 28ce7fecb7cc171cf3ecdbd8aef06c30d425d2d4
             <div>Selected Node ID: {selectedNodeId}</div>
         </div>
     );
