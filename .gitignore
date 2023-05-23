@@ -46,3 +46,6 @@ lerna-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+#client/node_modules
+client/node_modules/.cache/default-development/

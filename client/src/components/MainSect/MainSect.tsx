@@ -3,6 +3,7 @@ import Network from "../Main/Network";
 import TaskList from "../Main/TaskList";
 import MarkDown from "../Main/MarkDown";
 import AddIcon from "@mui/icons-material/Add";
+import React from "react";
 
 function MainSection() {
     const handleAddTask = () => {
