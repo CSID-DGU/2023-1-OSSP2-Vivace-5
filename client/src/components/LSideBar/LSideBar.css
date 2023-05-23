@@ -1,7 +1,7 @@
 .sidebar {
     background-color: #f2f2f2;
-    padding: 20px;
-    width: 20%;
+    padding: 10px;
+    width: 15%;
     height: 100vh;
     transition: width 0.3s ease-in-out;
     overflow: hidden;
@@ -16,6 +16,7 @@
 .profile {
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .profileImageContainer {
@@ -25,14 +26,15 @@
 .userInfo {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .userName {
-    font-size: 20px;
+    font-size: 15px;
 }
 
 .userEmail {
-    font-size: 14px;
+    font-size: 10px;
 }
 
 .profile div {
@@ -40,20 +42,32 @@
 }
 
 input[type="text"] {
-    width: 95%;
-    padding: 8px;
+    width: 85%;
+    padding: 10px;
+    margin-left: 0%;
     margin-bottom: 10px;
     align-items: center;
 }
 
-.project-list li {
+.project-list {
+    display: flex;
+    flex-direction: column;
     list-style-type: none;
-    padding: 5px 0;
+    padding: 0;
+}
+
+.project-list li {
+    width: 75%;
+    list-style-type: none;
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 2px;
 }
 
 .add-project-button {
-    width: 100%;
+    width: 86%;
     padding: 8px;
+    margin-left: 10px;
     border: none;
     background-color: #f2f2f2;
     border: 1px solid #ccc;

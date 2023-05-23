@@ -51,6 +51,13 @@
     color: #666666;
 }
 
+.task-list {
+    background-color: #e8e8e8; /* Task Droppable 영역 */
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
 .add-column-button-container {
     margin-top: 0px;
 }

@@ -42,12 +42,15 @@ const LSidebar: React.FC = () => {
             <div className="content">
                 <div className="profile">
                     <div className="profileImageContainer">
-                        <AccountCircleIcon sx={{ fontSize: 50 }} />
+                        <AccountCircleIcon sx={{ fontSize: 40 }} />
                     </div>
 
                     <div className="userInfo">
-                        <div className="userName">{user.name}</div>
-                        <div className="userEmail">{user.email}</div>
+                        <div className="userName">
+                            {user.name}
+                            <br />
+                            <div className="userEmail">{user.email}</div>
+                        </div>
                     </div>
                 </div>
                 <input
@@ -58,7 +61,9 @@ const LSidebar: React.FC = () => {
                 />
                 <ul className="project-list">
                     {filteredProjects.map((project) => (
-                        <li key={project.id}>{project.name}</li>
+                        <li key={project.id} onClick={() => console.log(project.id)}>
+                            {project.name}
+                        </li>
                     ))}
                 </ul>
                 <button className="add-project-button">Add Project</button>
