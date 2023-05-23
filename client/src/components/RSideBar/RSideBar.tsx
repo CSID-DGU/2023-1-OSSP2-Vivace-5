@@ -41,7 +41,7 @@ const Sidebar = () => {
         {
             userId: string;
             userName: string;
-            commentTitle: string;
+            commentId: string;
             comment: string;
             time: string;
         }[]
@@ -84,14 +84,14 @@ const Sidebar = () => {
                 {
                     userId: "1",
                     userName: "User 1",
-                    commentTitle: "Title 1",
+                    commentId: "1",
                     comment: "Comment 1",
                     time: "12:34 PM",
                 },
                 {
                     userId: "2",
                     userName: "User 2",
-                    commentTitle: "Title 2",
+                    commentId: "2",
                     comment: "Comment 2",
                     time: "01:23 PM",
                 },
@@ -146,7 +146,7 @@ const Sidebar = () => {
                             {inviteList.map((invite) => (
                                 <div key={invite.projectID} className="notifi">
                                     <div className="inviteText">
-                                        <AccountCircleRoundedIcon sx={{ fontSize: 40 }} />
+                                        <AccountCircleRoundedIcon sx={{ fontSize: 50 }} />
                                         <div className="inviteInfo">
                                             {invite.userName} invited
                                             <br />
@@ -154,8 +154,18 @@ const Sidebar = () => {
                                         </div>
                                     </div>
                                     <div className="inviteButtons">
-                                        <button onClick={() => handleAcceptInvite(invite.projectID)}>Accept</button>
-                                        <button onClick={() => handleDeclineInvite(invite.projectID)}>Decline</button>
+                                        <button
+                                            className="acceptButton"
+                                            onClick={() => handleAcceptInvite(invite.projectID)}
+                                        >
+                                            Accept
+                                        </button>
+                                        <button
+                                            className="declineButton"
+                                            onClick={() => handleDeclineInvite(invite.projectID)}
+                                        >
+                                            Decline
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -169,16 +179,21 @@ const Sidebar = () => {
                                     key={user.userId}
                                     onClick={() => handleMemberClick(user.userId)}
                                 >
-                                    <AccountCircleRoundedIcon sx={{ fontSize: 40 }} />
-                                    <div className="userInfo">
-                                        <div className="userName">{user.userName}</div>
-                                        <div className="userEmail">{user.userEmail}</div>
+                                    <div className="profile">
+                                        <div className="userProfile">
+                                            <AccountCircleRoundedIcon sx={{ fontSize: 40 }} />
+                                        </div>
+                                        <div className="userInfo">
+                                            <div className="userName">{user.userName}</div>
+                                            <div className="userEmail">{user.userEmail}</div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                             {selectedMemberId && <div>Selected Member ID: {selectedMemberId}</div>}
                         </div>
                     )}
+
                     {value === "three" && (
                         <div>
                             <div className="kanban-board">
@@ -235,18 +250,17 @@ const Sidebar = () => {
                     {value === "five" && (
                         <div>
                             {commentList.map((comment) => (
-                                <div key={comment.commentTitle} className="comment">
+                                <div key={comment.commentId} className="comment">
                                     <div className="commentHeader">
                                         <AccountCircleRoundedIcon sx={{ fontSize: 40 }} />
                                         <div className="commentInfo">
-                                            <div className="commentTitle">{comment.commentTitle}</div>
                                             <div className="commentUser">{comment.userName}</div>
                                         </div>
                                     </div>
                                     <div className="commentContent">
                                         <div className="commentText">{comment.comment}</div>
-                                        <div className="commentTime">{comment.time}</div>
                                     </div>
+                                    <div className="commentTime">{comment.time}</div>
                                 </div>
                             ))}
                         </div>
