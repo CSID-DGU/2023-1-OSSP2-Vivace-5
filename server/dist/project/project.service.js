@@ -67,10 +67,18 @@ let ProjectService = class ProjectService {
             "user.encodedImg",
             "user.firstName",
             "user.lastName",
+            "task.id",
+            "task.title",
+            "task.description",
+            "task.type",
+            "task.milestone",
+            "task.isFinished",
         ])
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
-            .leftJoinAndSelect("project.tasks", "task", "task.parentId is NULL")
+            .leftJoin("project.tasks", "task", "task.parentId IS NULL")
+            .leftJoinAndSelect("task.predecessors", "predecessors")
+            .leftJoinAndSelect("task.successors", "successors")
             .leftJoinAndSelect("project.comments", "comments")
             .where("project.id = :projectId", { projectId });
         const found = await query.getOne();
@@ -173,26 +181,19 @@ let ProjectService = class ProjectService {
     async deleteProject(user, projectId) {
         const query = this.projectRepository.createQueryBuilder("project");
         query
-            .leftJoinAndSelect("project.userToProjects", "userToProjects")
-            .leftJoinAndSelect("userToProjects.user", "user")
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
             .where("project.id =:projectId", { projectId });
         const found = await query.getOne();
         if (!found) {
             throw new common_1.NotFoundException(`Project with id "${projectId}" is not found.`);
         }
-        let right = null;
-        found.userToProjects.forEach((member) => {
-            if (member.user.id === user.id) {
-                right = member.right;
-            }
-        });
-        if (!right) {
+        if (!found.userToProjects[0]) {
             throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to delete this project. Join this project for elimination.`);
         }
+        const right = found.userToProjects[0].right;
         if (right === user_right_enum_1.UserRight.ADMIN) {
-            await this.userToProjectRepository.delete({ projectId });
-            await this.projectCommentRepository.delete({ projectId });
-            await this.taskRepository.delete({ projectId });
             await this.projectRepository.delete({ id: projectId });
         }
         else {
@@ -359,6 +360,7 @@ let ProjectService = class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
+        projectComment.isDeleted = false;
         projectComment.user = user;
         projectComment.project = foundProject;
         await this.projectCommentRepository.save(projectComment);
@@ -389,6 +391,7 @@ let ProjectService = class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
+        projectComment.isDeleted = false;
         projectComment.parent = found;
         projectComment.user = user;
         projectComment.project = found.project;
@@ -484,7 +487,8 @@ let ProjectService = class ProjectService {
         if (found.pinned) {
             throw new common_1.BadRequestException(`This project comment "${commentId}" is pinned. Pinned comment cannot be removed.`);
         }
-        await this.projectCommentRepository.delete({ id: commentId });
+        found.isDeleted = true;
+        await this.projectCommentRepository.save(found);
     }
 };
 ProjectService = __decorate([

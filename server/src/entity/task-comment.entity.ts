@@ -3,9 +3,7 @@ import { User } from "./user.entity";
 import { Task } from "./task.entity";
 
 @Entity()
-@Tree("closure-table", {
-    closureTableName: "task_comment_closure",
-})
+@Tree("closure-table")
 export class TaskComment extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -31,6 +29,6 @@ export class TaskComment extends BaseEntity {
     @ManyToOne((type) => User, (user) => user.taskComments, { eager: false })
     user: User;
 
-    @ManyToOne((type) => Task, (task) => task.comments, { eager: false })
+    @ManyToOne((type) => Task, (task) => task.comments, { eager: false, onDelete: "CASCADE" })
     task: Task;
 }

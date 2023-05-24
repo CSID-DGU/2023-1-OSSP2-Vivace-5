@@ -68,10 +68,18 @@ export class ProjectService {
                 "user.encodedImg",
                 "user.firstName",
                 "user.lastName",
+                "task.id",
+                "task.title",
+                "task.description",
+                "task.type",
+                "task.milestone",
+                "task.isFinished",
             ])
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
-            .leftJoinAndSelect("project.tasks", "task", "task.parentId is NULL")
+            .leftJoin("project.tasks", "task", "task.parentId IS NULL")
+            .leftJoinAndSelect("task.predecessors", "predecessors")
+            .leftJoinAndSelect("task.successors", "successors")
             .leftJoinAndSelect("project.comments", "comments")
             .where("project.id = :projectId", { projectId });
 
@@ -226,8 +234,9 @@ export class ProjectService {
         const query = this.projectRepository.createQueryBuilder("project");
 
         query
-            .leftJoinAndSelect("project.userToProjects", "userToProjects")
-            .leftJoinAndSelect("userToProjects.user", "user")
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+                userId: user.id,
+            })
             .where("project.id =:projectId", { projectId });
 
         const found: Project = await query.getOne();
@@ -236,25 +245,15 @@ export class ProjectService {
             throw new NotFoundException(`Project with id "${projectId}" is not found.`);
         }
 
-        let right: UserRight = null;
-
-        found.userToProjects.forEach((member: UserToProject) => {
-            if (member.user.id === user.id) {
-                right = member.right;
-            }
-        });
-
-        if (!right) {
+        if (!found.userToProjects[0]) {
             throw new UnauthorizedException(
                 `You "${user.email}" are not authorized to delete this project. Join this project for elimination.`,
             );
         }
 
-        if (right === UserRight.ADMIN) {
-            await this.userToProjectRepository.delete({ projectId });
-            await this.projectCommentRepository.delete({ projectId });
-            await this.taskRepository.delete({ projectId });
+        const right: UserRight = found.userToProjects[0].right;
 
+        if (right === UserRight.ADMIN) {
             await this.projectRepository.delete({ id: projectId });
         } else {
             throw new UnauthorizedException(
@@ -499,6 +498,7 @@ export class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
+        projectComment.isDeleted = false;
         projectComment.user = user;
         projectComment.project = foundProject;
 
@@ -551,6 +551,7 @@ export class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
+        projectComment.isDeleted = false;
         projectComment.parent = found;
         projectComment.user = user;
         projectComment.project = found.project;
@@ -710,6 +711,8 @@ export class ProjectService {
             );
         }
 
-        await this.projectCommentRepository.delete({ id: commentId });
+        found.isDeleted = true;
+
+        await this.projectCommentRepository.save(found);
     }
 }

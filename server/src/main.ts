@@ -1,9 +1,12 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
     const document = SwaggerModule.createDocument(
         app,
@@ -13,13 +16,13 @@ async function bootstrap() {
             .setVersion("1.0.0")
             .addBearerAuth(
                 {
-                  type: 'http',
-                  scheme: 'bearer',
-                  name: 'JWT',
-                  in: 'header',
+                    type: "http",
+                    scheme: "bearer",
+                    name: "JWT",
+                    in: "header",
                 },
-                'access-token',
-              )
+                "access-token",
+            )
             .build(),
     );
 

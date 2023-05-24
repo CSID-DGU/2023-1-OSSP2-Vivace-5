@@ -5,6 +5,8 @@ import {
     Get,
     Logger,
     Param,
+    ParseBoolPipe,
+    ParseUUIDPipe,
     Patch,
     Post,
     Put,
@@ -15,14 +17,12 @@ import {
 import { ProjectService } from "./project.service";
 import { User } from "src/entity/user.entity";
 import { AuthGuard } from "@nestjs/passport";
-import { GetUser } from "src/user/get-user.decorator";
+import { GetUser } from "src/decorator/get-user.decorator";
 import { ProjectInfoValidationPipe } from "../pipe/project-info-validation.pipe";
 import { MemberDto, ProjectInfoDto } from "./dto/project-info.dto";
 import { Project } from "../entity/project.entity";
 import { EncodedImgValidationPipe } from "../pipe/encoded-img-validation.pipe";
 import { ProjectComment } from "src/entity/project-comment.entity";
-import { UUIDValidationPipe } from "src/pipe/uuid-validation.pipe";
-import { BooleanValidationPipe } from "src/pipe/boolean-validation.pipe";
 import { NotEmptyStringValidationPipe } from "src/pipe/not-empty-string-validation.pipe";
 import {
     ApiTags,
@@ -158,7 +158,7 @@ export class ProjectController {
             "If the user who sent the request is not a member of this project, the user is not eligible to view the information. So, returns an unauthorized error.",
     })
     @ApiParam({ name: "id", type: "string", description: "project UUID" })
-    getProjectInfo(@GetUser() user: User, @Param("id", UUIDValidationPipe) projectId: string): Promise<Project> {
+    getProjectInfo(@GetUser() user: User, @Param("id", ParseUUIDPipe) projectId: string): Promise<Project> {
         this.logger.verbose(`User "${user.email}" trying to get the info of project "${projectId}".`);
         return this.projectService.getProjectInfo(user, projectId);
     }
@@ -397,7 +397,7 @@ export class ProjectController {
     })
     addCommment(
         @GetUser() user: User,
-        @Param("id", UUIDValidationPipe) projectId: string,
+        @Param("id", ParseUUIDPipe) projectId: string,
         @Body("content", NotEmptyStringValidationPipe) content: string,
     ): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to comment on this project "${projectId}".`);
@@ -430,7 +430,7 @@ export class ProjectController {
     })
     addReply(
         @GetUser() user: User,
-        @Param("commentId", UUIDValidationPipe) commentId: string,
+        @Param("commentId", ParseUUIDPipe) commentId: string,
         @Body("content", NotEmptyStringValidationPipe) content: string,
     ): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to reply on the comment "${commentId}".`);
@@ -480,7 +480,7 @@ export class ProjectController {
     @ApiQuery({ name: "q", type: "string", required: false })
     getAllComments(
         @GetUser() user: User,
-        @Param("id", UUIDValidationPipe) projectId: string,
+        @Param("id", ParseUUIDPipe) projectId: string,
         @Query("q") query: string,
     ): Promise<{ isQueried: boolean; queryResult: ProjectComment[] }> {
         this.logger.verbose(`User "${user.email}" trying to get all comments of this project "${projectId}".`);
@@ -513,7 +513,7 @@ export class ProjectController {
     })
     updateCommentContent(
         @GetUser() user: User,
-        @Param("id", UUIDValidationPipe) commentId: string,
+        @Param("id", ParseUUIDPipe) commentId: string,
         @Body("content", NotEmptyStringValidationPipe) content: string,
     ): Promise<void> {
         this.logger.verbose(
@@ -554,8 +554,8 @@ export class ProjectController {
     })
     updateCommentPinStatus(
         @GetUser() user: User,
-        @Param("id", UUIDValidationPipe) commentId: string,
-        @Body("pinned", BooleanValidationPipe) pinned: boolean,
+        @Param("id", ParseUUIDPipe) commentId: string,
+        @Body("pinned", ParseBoolPipe) pinned: boolean,
     ): Promise<{ pinnedStatus: boolean }> {
         this.logger.verbose(
             `User "${user.email}" trying to update pin status of the comment "${commentId}" in this project.`,
@@ -582,7 +582,7 @@ export class ProjectController {
             "If the comment you want to delete is pinned, return a Bad Request error because it cannot be deleted.",
     })
     @ApiParam({ name: "id", type: "string", description: "comment UUID" })
-    deleteComment(@GetUser() user: User, @Param("id", UUIDValidationPipe) commentId: string): Promise<void> {
+    deleteComment(@GetUser() user: User, @Param("id", ParseUUIDPipe) commentId: string): Promise<void> {
         this.logger.verbose(`User "${user.email}" trying to delete the comment "${commentId}" in this project.`);
         return this.projectService.deleteComment(user, commentId);
     }

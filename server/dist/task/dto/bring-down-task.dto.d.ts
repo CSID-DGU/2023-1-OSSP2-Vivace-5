@@ -1,4 +1,4 @@
 export declare class BringDownTaskDto {
     taskId: string;
-    underTaskId: string;
+    taskIdToParent: string;
 }

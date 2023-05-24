@@ -24,11 +24,16 @@ __decorate([
     __metadata("design:type", String)
 ], Bookmark.prototype, "title", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "userId" }),
+    __metadata("design:type", String)
+], Bookmark.prototype, "userId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => user_entity_1.User, (user) => user.bookmarks, { eager: false }),
+    (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_entity_1.User)
 ], Bookmark.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.bookmarks, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.bookmarks, { eager: false, onDelete: "CASCADE" }),
     __metadata("design:type", task_entity_1.Task)
 ], Bookmark.prototype, "task", void 0);
 __decorate([
@@ -41,9 +46,7 @@ __decorate([
 ], Bookmark.prototype, "children", void 0);
 Bookmark = __decorate([
     (0, typeorm_1.Entity)(),
-    (0, typeorm_1.Tree)("closure-table", {
-        closureTableName: "bookmark_closure",
-    })
+    (0, typeorm_1.Tree)("closure-table")
 ], Bookmark);
 exports.Bookmark = Bookmark;
 //# sourceMappingURL=bookmark.entity.js.map

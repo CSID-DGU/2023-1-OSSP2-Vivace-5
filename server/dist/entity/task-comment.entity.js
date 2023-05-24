@@ -48,14 +48,12 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], TaskComment.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.comments, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.comments, { eager: false, onDelete: "CASCADE" }),
     __metadata("design:type", task_entity_1.Task)
 ], TaskComment.prototype, "task", void 0);
 TaskComment = __decorate([
     (0, typeorm_1.Entity)(),
-    (0, typeorm_1.Tree)("closure-table", {
-        closureTableName: "task_comment_closure",
-    })
+    (0, typeorm_1.Tree)("closure-table")
 ], TaskComment);
 exports.TaskComment = TaskComment;
 //# sourceMappingURL=task-comment.entity.js.map

@@ -11,14 +11,14 @@ export declare class Task extends BaseEntity {
     title: string;
     description: string;
     type: SubTask;
-    mailstone: boolean;
+    milestone: boolean;
     createdAt: Date;
-    modifiedAt: Date;
     start: Date;
     end: Date;
     deadline: Date;
     isFinished: boolean;
     childColumns: KanbanColumn[];
+    parentColumnId: string;
     parentColumn: KanbanColumn;
     parent: Task;
     children: Task[];

@@ -7,30 +7,65 @@ import { AppendColumnDto } from "./dto/append-column.dto";
 import { MoveTaskBetweenColumnsDto } from "./dto/move-task-between-columns.dto";
 import { CreateBookmarkDto } from "./dto/create-bookmark.dto";
 import { BringDownBookmarkDto } from "./dto/bring-down-bookmark.dto";
+import { Task } from "src/entity/task.entity";
+import { SubTask } from "src/enum/sub-task.enum";
+import { DeleteTaskDto } from "./dto/delete-task.dto";
 export declare class TaskController {
     private taskService;
+    private logger;
     constructor(taskService: TaskService);
-    getTaskInfo(user: User, taskId: string): void;
-    createTask(user: User, createTaskDto: CreateTaskDto): void;
-    copyTask(user: User, taskId: string): void;
-    updateTaskTitle(user: User, taskId: string, newTitle: string): void;
-    updateDescription(user: User, taskId: string, newDescription: string): void;
-    updateStart(user: User, taskId: string, newStart: Date): void;
-    updateDeadline(user: User, taskId: string, newDeadline: Date): void;
-    updateMilestoneStatue(user: User, taskId: string, isMilestone: boolean): void;
-    updateFinishedStatue(user: User, taskId: string, isFinished: boolean): void;
+    getTaskInfo(user: User, taskId: string): Promise<Task>;
+    createTask(user: User, createTaskDto: CreateTaskDto): Promise<{
+        id: string;
+        title: string;
+        description: string;
+        type: SubTask;
+    }>;
+    updateTitle(user: User, taskId: string, newTitle: string): Promise<void>;
+    updateDescription(user: User, taskId: string, newDescription: string): Promise<void>;
+    updateStart(user: User, taskId: string, newStart: Date): Promise<void>;
+    updateDeadline(user: User, taskId: string, newDeadline: Date): Promise<void>;
+    updateMilestoneStatus(user: User, taskId: string, milestone: boolean): Promise<{
+        milestone: boolean;
+    }>;
+    updateFinishedStatus(user: User, taskId: string, isFinished: boolean): Promise<{
+        isFinished: boolean;
+    }>;
     createColumn(user: User, taskId: string, columnTitle: string): void;
     updateColumnTitle(user: User, columnId: string, newTitle: string): void;
     appendColumnBefore(user: User, appendColumnDto: AppendColumnDto): void;
     appendColumnAfter(user: User, appendColumnDto: AppendColumnDto): void;
     moveTaskBetweenColumns(user: User, moveTaskBetweenColumnsDto: MoveTaskBetweenColumnsDto): void;
     deleteColumn(user: User, columnId: string): void;
-    appendTaskBefore(user: User, appendTaskDto: AppendTaskDto): void;
-    appendTaskAfter(user: User, appendTaskDto: AppendTaskDto): void;
-    bringDownTask(user: User, bringDownDto: BringDownTaskDto): void;
-    bringUpTask(user: User, taskId: string): void;
-    invite(user: User, taskId: string, memberId: string[]): void;
-    dismiss(user: User, taskId: string, memberId: string[]): void;
+    appendTaskBefore(user: User, appendTaskDto: AppendTaskDto): Promise<{
+        taskId: string;
+        appendedTaskIds: string[];
+        notFoundTaskIds: string[];
+        differentParentTaskIds: string[];
+        alreadyPredecessorIds: string[];
+    }>;
+    appendTaskAfter(user: User, appendTaskDto: AppendTaskDto): Promise<{
+        taskId: string;
+        appendedTaskIds: string[];
+        notFoundTaskIds: string[];
+        differentParentTaskIds: string[];
+        alreadyPredecessorIds: string[];
+    }>;
+    bringDownTask(user: User, bringDownDto: BringDownTaskDto): Promise<void>;
+    bringUpTask(user: User, taskId: string): Promise<void>;
+    invite(user: User, taskId: string, memberIds: string[]): Promise<{
+        memberIds: string[];
+        addedMemberIds: string[];
+        notFoundUserIds: string[];
+        notProjectMemberIds: string[];
+        alreadyTaskMemberIds: string[];
+    }>;
+    dismiss(user: User, taskId: string, memberIds: string[]): Promise<{
+        memberIds: string[];
+        deletedMemberIds: string[];
+        notFoundUserIds: string[];
+        alreadyNotTaskMemberIds: string[];
+    }>;
     getAllBookmarks(user: User, query: string): void;
     getAllBookmarkFolders(user: User): void;
     createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): void;
@@ -48,5 +83,5 @@ export declare class TaskController {
     updateCommentContent(user: User, commentId: string, content: string): void;
     updateCommentPinStatus(user: User, commentId: string, pinned: boolean): void;
     deleteComment(user: User, commentId: string): void;
-    deleteTask(user: User, taskId: string): void;
+    deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<void>;
 }

@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KanbanColumn = void 0;
 const typeorm_1 = require("typeorm");
 const task_entity_1 = require("./task.entity");
+const project_entity_1 = require("./project.entity");
 let KanbanColumn = KanbanColumn_1 = class KanbanColumn extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -34,13 +35,17 @@ __decorate([
     __metadata("design:type", KanbanColumn)
 ], KanbanColumn.prototype, "successor", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.childColumns, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.childColumns, { eager: false, onDelete: "CASCADE" }),
     __metadata("design:type", task_entity_1.Task)
 ], KanbanColumn.prototype, "parent", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)((type) => task_entity_1.Task, (task) => task.parentColumn, { eager: false }),
     __metadata("design:type", Array)
 ], KanbanColumn.prototype, "children", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => project_entity_1.Project, (project) => project.columns, { eager: false, onDelete: "CASCADE" }),
+    __metadata("design:type", project_entity_1.Project)
+], KanbanColumn.prototype, "project", void 0);
 KanbanColumn = KanbanColumn_1 = __decorate([
     (0, typeorm_1.Entity)()
 ], KanbanColumn);

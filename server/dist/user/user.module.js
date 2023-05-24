@@ -24,7 +24,6 @@ UserModule = __decorate([
             passport_1.PassportModule.register({ defaultStrategy: "jwt" }),
             jwt_1.JwtModule.register({
                 secret: "F11B9C3B3E35999339B3E3A8CE362B6E309F08193B18D5FFD22991BBDBA2FAC18531BEDD358AD44951A98A87695A67C39E8C954F87A16C91B90BAB1EB26F409E",
-                signOptions: { expiresIn: 60 * 60 },
             }),
         ],
         controllers: [user_controller_1.UserController],

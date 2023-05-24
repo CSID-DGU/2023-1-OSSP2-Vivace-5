@@ -17,12 +17,10 @@ const common_1 = require("@nestjs/common");
 const project_service_1 = require("./project.service");
 const user_entity_1 = require("../entity/user.entity");
 const passport_1 = require("@nestjs/passport");
-const get_user_decorator_1 = require("../user/get-user.decorator");
+const get_user_decorator_1 = require("../decorator/get-user.decorator");
 const project_info_validation_pipe_1 = require("../pipe/project-info-validation.pipe");
 const project_info_dto_1 = require("./dto/project-info.dto");
 const encoded_img_validation_pipe_1 = require("../pipe/encoded-img-validation.pipe");
-const uuid_validation_pipe_1 = require("../pipe/uuid-validation.pipe");
-const boolean_validation_pipe_1 = require("../pipe/boolean-validation.pipe");
 const not_empty_string_validation_pipe_1 = require("../pipe/not-empty-string-validation.pipe");
 const swagger_1 = require("@nestjs/swagger");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
@@ -202,7 +200,7 @@ __decorate([
     }),
     (0, swagger_1.ApiParam)({ name: "id", type: "string", description: "project UUID" }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
@@ -438,7 +436,7 @@ __decorate([
         },
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __param(2, (0, common_1.Body)("content", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
@@ -470,7 +468,7 @@ __decorate([
         },
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("commentId", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(1, (0, common_1.Param)("commentId", common_1.ParseUUIDPipe)),
     __param(2, (0, common_1.Body)("content", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
@@ -519,7 +517,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: "id", type: "string", description: "project UUID" }),
     (0, swagger_1.ApiQuery)({ name: "q", type: "string", required: false }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __param(2, (0, common_1.Query)("q")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
@@ -551,7 +549,7 @@ __decorate([
         },
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __param(2, (0, common_1.Body)("content", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
@@ -589,8 +587,8 @@ __decorate([
         },
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
-    __param(2, (0, common_1.Body)("pinned", boolean_validation_pipe_1.BooleanValidationPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)("pinned", common_1.ParseBoolPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
     __metadata("design:returntype", Promise)
@@ -615,7 +613,7 @@ __decorate([
     }),
     (0, swagger_1.ApiParam)({ name: "id", type: "string", description: "comment UUID" }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", uuid_validation_pipe_1.UUIDValidationPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)

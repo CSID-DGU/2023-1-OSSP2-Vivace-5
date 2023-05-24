@@ -18,6 +18,6 @@ export class TaskContent extends BaseEntity {
     @Column()
     content: string;
 
-    @ManyToOne((type) => Task, (task) => task.contents, { eager: false })
+    @ManyToOne((type) => Task, (task) => task.contents, { eager: false, onDelete: "CASCADE" })
     task: Task;
 }

@@ -17,7 +17,7 @@ export class UserToProject extends BaseEntity {
     @Column({ name: "userId" })
     userId: string;
 
-    @ManyToOne((type) => Project, (project) => project.userToProjects, { eager: false })
+    @ManyToOne((type) => Project, (project) => project.userToProjects, { eager: false, onDelete: "CASCADE" })
     @JoinColumn({ name: "projectId" })
     project: Project;
 

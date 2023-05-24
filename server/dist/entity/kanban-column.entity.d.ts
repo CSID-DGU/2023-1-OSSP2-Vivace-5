@@ -1,5 +1,6 @@
 import { BaseEntity } from "typeorm";
 import { Task } from "./task.entity";
+import { Project } from "./project.entity";
 export declare class KanbanColumn extends BaseEntity {
     id: string;
     title: string;
@@ -7,4 +8,5 @@ export declare class KanbanColumn extends BaseEntity {
     successor: KanbanColumn;
     parent: Task;
     children: Task[];
+    project: Project;
 }

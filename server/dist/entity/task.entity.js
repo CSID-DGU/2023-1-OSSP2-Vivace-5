@@ -40,7 +40,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Boolean)
-], Task.prototype, "mailstone", void 0);
+], Task.prototype, "milestone", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
@@ -48,13 +48,9 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
-], Task.prototype, "modifiedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
 ], Task.prototype, "start", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Date)
 ], Task.prototype, "end", void 0);
 __decorate([
@@ -70,11 +66,16 @@ __decorate([
     __metadata("design:type", Array)
 ], Task.prototype, "childColumns", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "parentColumnId", nullable: true }),
+    __metadata("design:type", String)
+], Task.prototype, "parentColumnId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => kanban_column_entity_1.KanbanColumn, (parentColumn) => parentColumn.children, { eager: false }),
+    (0, typeorm_1.JoinColumn)({ name: "parentColumnId" }),
     __metadata("design:type", kanban_column_entity_1.KanbanColumn)
 ], Task.prototype, "parentColumn", void 0);
 __decorate([
-    (0, typeorm_1.TreeParent)(),
+    (0, typeorm_1.TreeParent)({ onDelete: "CASCADE" }),
     __metadata("design:type", Task)
 ], Task.prototype, "parent", void 0);
 __decorate([
@@ -82,11 +83,12 @@ __decorate([
     __metadata("design:type", Array)
 ], Task.prototype, "children", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => Task_1, (task) => task.successors, { eager: false }),
+    (0, typeorm_1.ManyToMany)((type) => Task_1, (task) => task.successors, { eager: false }),
+    (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Array)
 ], Task.prototype, "predecessors", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => Task_1, (task) => task.predecessors, { eager: false }),
+    (0, typeorm_1.ManyToMany)((type) => Task_1, (task) => task.predecessors, { eager: false }),
     __metadata("design:type", Array)
 ], Task.prototype, "successors", void 0);
 __decorate([
@@ -94,7 +96,7 @@ __decorate([
     __metadata("design:type", String)
 ], Task.prototype, "projectId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.tasks, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.tasks, { eager: false, onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], Task.prototype, "project", void 0);
@@ -117,9 +119,7 @@ __decorate([
 ], Task.prototype, "comments", void 0);
 Task = Task_1 = __decorate([
     (0, typeorm_1.Entity)(),
-    (0, typeorm_1.Tree)("closure-table", {
-        closureTableName: "task_closure",
-    })
+    (0, typeorm_1.Tree)("closure-table")
 ], Task);
 exports.Task = Task;
 //# sourceMappingURL=task.entity.js.map

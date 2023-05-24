@@ -13,9 +13,7 @@ import { Project } from "./project.entity";
 import { User } from "./user.entity";
 
 @Entity()
-@Tree("closure-table", {
-    closureTableName: "project_comment_closure",
-})
+@Tree("closure-table")
 export class ProjectComment extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -32,6 +30,9 @@ export class ProjectComment extends BaseEntity {
     @Column()
     pinned: boolean;
 
+    @Column()
+    isDeleted: boolean;
+
     @TreeParent()
     parent: ProjectComment;
 
@@ -44,7 +45,7 @@ export class ProjectComment extends BaseEntity {
     @Column({ name: "projectId" })
     projectId: string;
 
-    @ManyToOne((type) => Project, (project) => project.comments, { eager: false })
+    @ManyToOne((type) => Project, (project) => project.comments, { eager: false, onDelete: "CASCADE" })
     @JoinColumn({ name: "projectId" })
     project: Project;
 }

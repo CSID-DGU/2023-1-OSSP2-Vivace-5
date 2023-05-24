@@ -15,7 +15,7 @@ import { UserService } from "./user.service";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
 import { AuthGuard } from "@nestjs/passport";
-import { GetUser } from "./get-user.decorator";
+import { GetUser } from "../decorator/get-user.decorator";
 import { User } from "../entity/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UpdatePasswordDto } from "./dto/update-password.dto";

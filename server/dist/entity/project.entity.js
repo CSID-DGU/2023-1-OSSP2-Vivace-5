@@ -15,6 +15,7 @@ const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_to_project_entity_1 = require("./user-to-project.entity");
 const task_entity_1 = require("./task.entity");
 const project_comment_entity_1 = require("./project-comment.entity");
+const kanban_column_entity_1 = require("./kanban-column.entity");
 let Project = class Project extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -53,6 +54,10 @@ __decorate([
     (0, typeorm_1.OneToMany)((type) => user_to_project_entity_1.UserToProject, (userToProject) => userToProject.project, { eager: false }),
     __metadata("design:type", Array)
 ], Project.prototype, "userToProjects", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => kanban_column_entity_1.KanbanColumn, (column) => column.project, { eager: false }),
+    __metadata("design:type", Array)
+], Project.prototype, "columns", void 0);
 Project = __decorate([
     (0, typeorm_1.Entity)()
 ], Project);
