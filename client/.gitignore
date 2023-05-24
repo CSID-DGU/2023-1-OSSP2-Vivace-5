@@ -47,7 +47,6 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 
-.tsbuildinfo
-
 #client/node_modules
 client/node_modules/
+node_modules/
