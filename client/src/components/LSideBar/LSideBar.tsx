@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import "./LSideBar.css";
+import { API_HOST } from "../../config/constants";
+import axios, { AxiosResponse } from "axios";
+import { Avatar } from "antd";
 
 interface Project {
     id: number;
@@ -16,12 +19,43 @@ interface User {
 const LSidebar: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [userInfo, setUserInfo] = useState({ name: "", email: "", profileImage: "" });
 
-    const user: User = {
-        name: "John Doe",
-        email: "johndoe@example.com",
-        profileImage: "path/to/profile/image.jpg",
-    };
+    async function getUserData(): Promise<void> {
+        try {
+            const res: AxiosResponse = await axios.get(`${API_HOST}user/info`, {
+                headers: { Authorization: localStorage.getItem("access-token") },
+            });
+
+            if (res.status === 200) {
+                const {
+                    id,
+                    firstName,
+                    lastName,
+                    email,
+                    year,
+                    month,
+                    date,
+                    belong,
+                    country,
+                    region,
+                    encodedImg,
+                    createdAt,
+                } = res.data;
+
+                setUserInfo({ name: firstName + lastName, email, profileImage: encodedImg });
+                console.log(userInfo);
+            } else {
+                console.log("error!!");
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error);
+            }
+        }
+    }
+
+    getUserData();
 
     const projects: Project[] = [
         { id: 1, name: "Project 1" },
@@ -42,14 +76,14 @@ const LSidebar: React.FC = () => {
             <div className="content">
                 <div className="profile">
                     <div className="profileImageContainer">
-                        <AccountCircleIcon sx={{ fontSize: 40 }} />
+                        <Avatar src={userInfo.profileImage} size={40} />
                     </div>
 
                     <div className="userInfo">
                         <div className="userName">
-                            {user.name}
+                            {userInfo.name}
                             <br />
-                            <div className="userEmail">{user.email}</div>
+                            <div className="userEmail">{userInfo.email}</div>
                         </div>
                     </div>
                 </div>

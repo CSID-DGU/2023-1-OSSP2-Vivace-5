@@ -1,0 +1,76 @@
+.kanban {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.column-container {
+    display: flex;
+    gap: 20px;
+}
+
+.column {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding: 10px;
+    min-width: 250px;
+}
+
+.column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.column-title {
+    margin: 0;
+    flex: 1;
+}
+
+.column-title-button {
+    background: none;
+    border: none;
+    color: #000000;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.task {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.task-count {
+    font-size: 20px;
+    color: #666666;
+}
+
+.task-list {
+    background-color: #e8e8e8; /* Task Droppable 영역 */
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.add-column-button-container {
+    margin-top: 0px;
+}
+
+.add-column-button {
+    background-color: #b9b9b9;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.add-column-button:hover {
+    background-color: #0056b3;
+}

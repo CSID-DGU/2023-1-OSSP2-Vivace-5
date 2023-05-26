@@ -1,6 +1,5 @@
 # compiled output
 /dist
-/node_modules
 
 # Logs
 logs
@@ -49,5 +48,5 @@ lerna-debug.log*
 
 .tsbuildinfo
 
-#client/node_modules
-client/node_modules/
+/client/node_modules
+/server/node_modules
