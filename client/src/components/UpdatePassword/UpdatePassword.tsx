@@ -258,7 +258,7 @@ function UpdatePassword() {
                     <Link to="/">
                         <Button variant="outlined">변경</Button>
                     </Link>
-                    <Link to="/myForm">
+                    <Link to="/">
                         <Button variant="outlined">취소</Button>
                     </Link>
                 </div>

@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -6,87 +6,17 @@ import TextField from "@mui/material/TextField";
 import axios, { AxiosResponse } from "axios";
 import { API_HOST, MAIN_PATH } from "../../config/constants";
 import locale from "antd/es/date-picker/locale/en_US";
+import "./SignIn.css";
 
 function SignIn() {
     const navigate = useNavigate();
 
-    const mainScreen: CSSProperties = {
-        display: "flex",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        height: "400px",
-        flexDirection: "column",
-    };
-
-    const body: CSSProperties = {
-        margin: "0",
-        width: "100%",
-        height: "100%",
-    };
-
-    const inputsection: CSSProperties = {
-        display: "flex",
-        float: "left",
-    };
-
-    const navsection: CSSProperties = {
-        display: "block",
-        justifyContent: "space-between",
-        marginLeft: "0px",
-    };
-    //헤더 라인 스타일
-    const header: CSSProperties = {
-        backgroundColor: "#A6C0EE",
-        fontSize: "30px",
-        fontWeight: "bold",
-        paddingLeft: "20px",
-        height: "50px",
-    };
-
-    //'등록'박스 스타일
-    const boxStyle: CSSProperties = {
-        // backgroundColor:'red',
-        height: "2rem",
-        width: "10rem",
-        // margin: '1rem',
-        marginTop: "20px",
-    };
-
-    // h1 TEMPO 스타일
-    const titleStyle: CSSProperties = {
-        fontWeight: "bold",
-        fontSize: "60px",
-    };
-
-    //입력 박스 스타일
+    //입력 박스 CSS
     const inputBoxStyle: CSSProperties = {
         width: "300px",
         height: "30px",
         marginBottom: "30px",
         marginLeft: "10px",
-    };
-
-    //가로선 스타일
-    const hrStyle: CSSProperties = {
-        border: "1px solid black",
-        width: "700px",
-        // border: solid 10px red
-    };
-
-    //nav 버튼 스타일
-    const navBtnStyle: CSSProperties = {
-        fontWeight: "bold",
-        // display: 'flex:',
-        // flex: 1,
-        // alignItems: 'space-evenly',
-        // // justifyContent: 'space-evenly',
-        // width: '500px',
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
     };
 
     const [form, setForm] = useState({
@@ -161,12 +91,12 @@ function SignIn() {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={body}>
-            <header style={header}>New_Tempo_MyForm</header>
+        <form onSubmit={handleSubmit}>
+            <header>New_Tempo_MyForm</header>
 
-            <section style={mainScreen}>
-                <h1 style={titleStyle}>TEMPO</h1>
-                <div style={inputsection}>
+            <section className="mainScreen">
+                <h1>TEMPO</h1>
+                <div className="inputsection">
                     <div>
                         <h2>E-mail</h2>
                         <h2>Password</h2>
@@ -197,18 +127,19 @@ function SignIn() {
                     </div>
                 </div>
                 <Stack spacing={2} direction="row">
-                    <Button variant="contained" type="submit" style={boxStyle}>
+                    <Button variant="contained" type="submit" className="boxStyle">
                         로그인
                     </Button>
                 </Stack>
             </section>
-            <hr style={hrStyle}></hr>
-            <section style={navsection}>
-                <div style={navBtnStyle}>
+            <hr/>
+            <section className="navsection">
+                <div className="navBtnStyle">
                     <Link to="/signUp">
                         <Button variant="outlined">회원가입</Button>
                     </Link>
-                    <Link to="/pwChange">
+                    <Link to="/update/password">
+                        {/* PW변경 페이지 route 찾아야 함. */}
                         <Button variant="outlined">비밀번호 변경</Button>
                     </Link>
                 </div>

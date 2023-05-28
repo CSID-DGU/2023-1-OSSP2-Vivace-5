@@ -145,7 +145,15 @@ function UpdateProject() {
                         <tr style={trStyle}>
                             <th scope="row">프로젝트 멤버</th>
                             <td style={tdStyle}>
+{/* <<<<<<< Updated upstream:client/src/components/UpdateProject/UpdateProject.tsx */}
                                 props.name1 props.name2 props.name3 props.name4 props.name5
+=======
+                                {/* props.name1
+                                props.name2
+                                props.name3
+                                props.name4
+                                props.name5 */}
+{/* >>>>>>> Stashed changes:client/src/pages/NewCopyProjectCorr.tsx */}
                                 <button style={corrBtnStyle}>
                                     <i className="far fa-edit"></i>
                                 </button>

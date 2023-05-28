@@ -32,6 +32,9 @@ const App: React.FC = () => {
                     <Route path={UPDATE_PROJECT_PATH} Component={UpdateProject} />
                     <Route path={MAIN_PATH} Component={MainPage} />
                 </Routes>
+                {/* <Routes>
+                    <Route path="/" Component={MainPage} />
+                </Routes> */}
             </div>
         </BrowserRouter>
     );

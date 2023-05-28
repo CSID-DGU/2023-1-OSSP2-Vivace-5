@@ -508,8 +508,8 @@ function SignUp() {
                 <Button variant="outlined" style={boxStyle} type="submit">
                     제출
                 </Button>
-                <Link to="/myForm">
-                    <Button variant="outlined" style={boxStyle} type="submit">
+                <Link to="/">
+                    <Button variant="outlined" style={boxStyle}>
                         취소
                     </Button>
                 </Link>
