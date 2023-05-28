@@ -8,7 +8,7 @@ import { API_HOST, MAIN_PATH } from "../../config/constants";
 import locale from "antd/es/date-picker/locale/en_US";
 import "./SignIn.css";
 
-function SignIn() {
+function SignIn() { 
     const navigate = useNavigate();
 
     //입력 박스 CSS

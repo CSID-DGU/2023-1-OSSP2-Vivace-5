@@ -4,7 +4,7 @@ form {
     height:  100% ;
 }
 
-header {
+header { 
     background-color:  #A6C0EE ;
     font-size:  30px ;
     font-weight:  bold ;
@@ -34,7 +34,7 @@ h1 {
 
 .boxStyle {
     width: 10rem;
-    margin-top: 0px;
+    margin-top: 30px;
 }
 
 hr{
