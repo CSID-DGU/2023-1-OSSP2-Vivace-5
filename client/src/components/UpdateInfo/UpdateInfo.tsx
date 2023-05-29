@@ -4,6 +4,7 @@ import Select from "react-select";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import "./UpdateInfo.css";
 
 type InfoChangeProps = {
     onSubmit: (form: { name: string; birth: number; company: string; region: string }) => void;
@@ -47,43 +48,11 @@ function UpdateInfo() {
     // const {selectedOption} = this.state;
     function handleChange() {}
 
-    //css 시작
-
-    //20230521 02:00 AM 수정
-    const body: CSSProperties = {
-        margin: "0",
-        width: "100%",
-        height: "100%",
-    };
-
-    const inputsection: CSSProperties = {
-        display: "flex",
-        float: "left",
-    };
-
     const comfirmBtn: CSSProperties = {
         marginTop: "30px",
         // paddingLeft: '30px',
         display: "flex",
         justifyContent: "center",
-    };
-
-    const texts: CSSProperties = {
-        margin: "25px",
-        marginBottom: "30px",
-        marginTop: "30px",
-        paddingLeft: "70px",
-        marginRight: "-35px",
-    };
-
-    const textDiv: CSSProperties = {
-        marginTop: "1%",
-    };
-
-    const navsection: CSSProperties = {
-        display: "block",
-        justifyContent: "space-between",
-        marginLeft: "0px",
     };
 
     const mainRightDiv: CSSProperties = {
@@ -98,40 +67,6 @@ function UpdateInfo() {
         marginLeft: "50px",
         marginRight: "20px",
         marginBottom: "20px",
-    };
-
-    //헤더 라인 스타일
-    const header: CSSProperties = {
-        backgroundColor: "#A6C0EE",
-        fontSize: "30px",
-        fontWeight: "bold",
-        paddingLeft: "20px",
-        height: "50px",
-    };
-
-    //헤더 아리 전체 메인 화면 스타일
-    const mainScreen: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    };
-
-    //'등록'박스 스타일
-    const boxStyle: CSSProperties = {
-        // backgroundColor:'red',
-        height: "40px",
-        width: "8rem",
-        margin: "10px",
-        borderRadius: "10px",
-    };
-
-    const boxStyle2: CSSProperties = {
-        height: "40px",
-        width: "20rem",
-        margin: "10px",
-        borderRadius: "10px",
     };
 
     //메인 박스 스타일
@@ -150,14 +85,6 @@ function UpdateInfo() {
         align-items: 'center,
         min-height: '100vh',
         */
-    };
-
-    // h1 TEMPO 스타일
-    const titleStyle: CSSProperties = {
-        fontWeight: "bold",
-        fontSize: "60px",
-        textAlign: "center",
-        margin: "30px",
     };
 
     //입력 박스 스타일
@@ -184,25 +111,6 @@ function UpdateInfo() {
         width: "700px",
         marginTop: "30px",
         // border: solid 10px red
-    };
-
-    //nav 버튼 스타일
-    const navBtnStyle: CSSProperties = {
-        fontWeight: "bold",
-        // display: 'flex:',
-        // flex: 1,
-        // alignItems: 'space-evenly',
-        // // justifyContent: 'space-evenly',
-        // width: '500px',
-
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        // justifyContent: 'space-evenly',
-        width: "100%",
-        // paddingLeft: '30px',
-
-        justifyContent: "center",
     };
 
     //선택 옵션 리스트 스타일
@@ -275,24 +183,24 @@ function UpdateInfo() {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={body}>
-            <header style={header}>New_Tempo_InfoChange</header>
+        <form onSubmit={handleSubmit} className="body">
+            <header>Tempo_UpdateInfo</header>
 
-            <section style={mainScreen}>
-                <h1 style={titleStyle}>TEMPO</h1>
-                <div style={inputsection}>
-                    <div style={textDiv}>
-                        <h2 style={texts}>프로필 사진</h2>
-                        <h2 style={texts}>이름</h2>
-                        <h2 style={texts}>생년월일</h2>
-                        <h2 style={texts}>소속</h2>
-                        <h2 style={texts}>거주지</h2>
+            <section className="mainScreen">
+                <h1>TEMPO</h1>
+                <div className="inputsection">
+                    <div className="textDiv">
+                        <h2 className="texts">프로필 사진</h2>
+                        <h2 className="texts">이름</h2>
+                        <h2 className="texts">생년월일</h2>
+                        <h2 className="texts">소속</h2>
+                        <h2 className="texts">거주지</h2>
                     </div>
-                    <div style={mainRightDiv}>
+                    <div className="mainRightDiv">
                         <div style={inputBoxStyle}>
                             <section>
                                 <i className="fas fa-user-edit" style={userIcon}></i>
-                                <button style={boxStyle} type="submit">
+                                <button className="boxStyle" type="submit">
                                     내PC에서 찾기
                                 </button>
                             </section>
@@ -343,27 +251,27 @@ function UpdateInfo() {
                     </div>
                 </div>
             </section>
-            <hr style={hrStyle}></hr>
-            <section style={navsection}>
-                <div style={navBtnStyle}>
+            <hr className="hrStyle"></hr>
+            <section className="navsection">
+                <div className="navBtnStyle">
                     <Link to="/">
-                        <Button variant="outlined" style={boxStyle}>
+                        <Button variant="outlined" className="boxStyle">
                             변경
                         </Button>
                     </Link>
                     <Link to="/myForm">
-                        <Button variant="outlined" style={boxStyle}>
+                        <Button variant="outlined" className="boxStyle">
                             취소
                         </Button>
                     </Link>
                 </div>
             </section>
-            <div style={comfirmBtn}>
+            <div className="comfirmBtn">
                 <Stack spacing={2} direction="row">
-                    <Button variant="outlined" type="submit" style={boxStyle2}>
+                    <Button variant="outlined" type="submit" className="boxStyle2">
                         확인
                     </Button>
-                    <Button variant="outlined" color="error" style={boxStyle2}>
+                    <Button variant="outlined" color="error" className="boxStyle2">
                         계정 삭제
                     </Button>
                 </Stack>

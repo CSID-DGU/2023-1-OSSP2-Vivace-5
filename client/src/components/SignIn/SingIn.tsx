@@ -92,7 +92,7 @@ function SignIn() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <header>New_Tempo_MyForm</header>
+            <header>Tempo_signIn</header>
 
             <section className="mainScreen">
                 <h1>TEMPO</h1>
@@ -123,7 +123,6 @@ function SignIn() {
                             value={password}
                             onChange={onChange}
                         />
-                        {/* <input style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange} /> */}
                     </div>
                 </div>
                 <Stack spacing={2} direction="row">
@@ -139,7 +138,6 @@ function SignIn() {
                         <Button variant="outlined">회원가입</Button>
                     </Link>
                     <Link to="/update/password">
-                        {/* PW변경 페이지 route 찾아야 함. */}
                         <Button variant="outlined">비밀번호 변경</Button>
                     </Link>
                 </div>

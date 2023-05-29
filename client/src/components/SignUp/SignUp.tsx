@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import "./SignUp.css";
 
 type SignUpProps = {
     onSubmit: (form: {
@@ -48,49 +49,12 @@ function onSubmit(User: {
 }) {}
 
 function SignUp() {
-    //css 시작
-    // const all: CSSProperties = {
-    //     display: 'flex',
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    // }
-
-    //230520 19:42PM 새로 추가
     const inputsection: CSSProperties = {
         display: "flex",
         float: "left",
         width: "40%",
     };
 
-    const inputsection2: CSSProperties = {
-        display: "flex",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-
-        flexDirection: "row",
-    };
-
-    const mainScreenComponent: CSSProperties = {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "ceneter",
-        // borderBottom: '1px solid',
-        // width: '80%',
-        // textAlign: 'center'
-    };
-
-    const textDiv: CSSProperties = {
-        width: "300PX",
-        float: "left",
-        marginBottom: "30px",
-    };
-
-    const text: CSSProperties = {
-        marginTop: "30px",
-        marginBottom: "0px",
-    };
     //헤더 라인 스타일
     const header: CSSProperties = {
         backgroundColor: "#A6C0EE",
@@ -110,15 +74,6 @@ function SignUp() {
         justifyContent: "center",
         // borderBottom: '1px solid',
         width: "100%",
-    };
-
-    //'등록'박스 스타일
-    const boxStyle: CSSProperties = {
-        // backgroundColor:'red',
-        height: "40px",
-        width: "7rem",
-        margin: "10px",
-        borderRadius: "10px",
     };
 
     //메인 박스 스타일
@@ -145,15 +100,15 @@ function SignUp() {
         alignContent: "center",
     };
     // h1 TEMPO 스타일
-    const titleStyle: CSSProperties = {
-        fontWeight: "bold",
-        fontSize: "60px",
-        width: "100%",
-        height: "10px",
-        marginTop: "30px",
-        marginBottom: "8%",
-        textAlign: "center",
-    };
+    // const titleStyle: CSSProperties = {
+    //     fontWeight: "bold",
+    //     fontSize: "60px",
+    //     width: "100%",
+    //     height: "10px",
+    //     marginTop: "30px",
+    //     marginBottom: "8%",
+    //     textAlign: "center",
+    // };
 
     //입력 박스 스타일
     const inputBoxStyle: CSSProperties = {
@@ -172,29 +127,6 @@ function SignUp() {
         alignContent: "space-evenly",
     };
 
-    //가로선 스타일
-    const hrStyle: CSSProperties = {
-        border: "1px solid black",
-        width: "1400px",
-        marginTop: "30px",
-        // border: solid 10px red
-    };
-
-    //nav 버튼 스타일
-    const navBtnStyle: CSSProperties = {
-        fontWeight: "bold",
-        // display: 'flex:',
-        // flex: 1,
-        // alignItems: 'space-evenly',
-        // // justifyContent: 'space-evenly',
-        // width: '500px',
-
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-    };
-
     //선택 옵션 리스트 스타일
     const optionBoxStyle: CSSProperties = {
         // display: 'flex',
@@ -211,15 +143,6 @@ function SignUp() {
         marginTop: "5px",
     };
 
-    //세로선
-    const vLine: CSSProperties = {
-        height: "50vh",
-        width: "2px",
-        borderWidth: "0",
-        color: "#000",
-        backgroundColor: "#000",
-    };
-
     const mainBody: CSSProperties = {
         display: "flex",
         flexDirection: "row",
@@ -227,14 +150,6 @@ function SignUp() {
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
-    };
-
-    const userIcon: CSSProperties = {
-        fontSize: "4rem",
-        fontWeight: "lightweight",
-        borderColor: "gray",
-        marginLeft: "50px",
-        marginRight: "20px",
     };
 
     const leftDiv: CSSProperties = {
@@ -248,16 +163,6 @@ function SignUp() {
     const letfDivComp: CSSProperties = {
         marginLeft: "20%",
     };
-
-    const rightDiv: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        marginLeft: "0px",
-        width: "40%",
-        float: "left",
-    };
-
-    //css 끝
 
     const [form, setForm] = useState({
         email: "",
@@ -340,18 +245,18 @@ function SignUp() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <header style={header}>New_Tempo_SignUp</header>
+            <header>Tempo_SignUp</header>
 
-            <section style={mainScreen}>
-                <h1 style={titleStyle}>Tempo</h1>
-                <div style={mainScreenComponent}>
-                    <div style={inputsection}>
+            <section className="mainScreen">
+                <h1 className="titleStyle">Tempo</h1>
+                <div className="mainScreenComponent">
+                    <div className="inputsection">
                         <div>
                             <h2>E-mail</h2>
                             <h2>Password</h2>
                             <h2>Password-Check</h2>
                         </div>
-                        <div style={inputBoxStyle}>
+                        <div className="inputBoxStyle">
                             <TextField
                                 id="outlined-basic"
                                 label="이메일"
@@ -384,25 +289,24 @@ function SignUp() {
                                 value={passwordCk}
                                 onChange={onChange}
                             />
-                            {/* <input style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange} /> */}
                         </div>
                     </div>
 
-                    <hr style={vLine}></hr>
+                    <hr className="vLine"></hr>
 
-                    <div style={rightDiv}>
-                        <div style={inputsection2}>
-                            <div style={textDiv}>
-                                <h2 style={text}>프로필 사진</h2>
-                                <h2 style={text}>이름</h2>
-                                <h2 style={text}>생년월일</h2>
-                                <h2 style={text}>소속</h2>
-                                <h2 style={text}>거주지</h2>
+                    <div className="rightDiv">
+                        <div className="inputsection2">
+                            <div className="textDiv">
+                                <h2 className="text">프로필 사진</h2>
+                                <h2 className="text">이름</h2>
+                                <h2 className="text">생년월일</h2>
+                                <h2 className="text">소속</h2>
+                                <h2 className="text">거주지</h2>
                             </div>
                             <div>
                                 <section>
-                                    <i className="far fa-user-circle" style={userIcon}></i>
-                                    <button style={boxStyle} type="submit">
+                                    <i className="far fa-user-circle, userIcon"></i>
+                                    <button className="boxStyle" type="submit">
                                         내PC에서 찾기
                                     </button>
                                 </section>
@@ -452,64 +356,16 @@ function SignUp() {
                                 <br />
                             </div>
                         </div>
-                        {/* 다시 SELECT OPTION 넣을 땐 밑에 코드 이용해서 넣을 예정 (20230520 21:00 수정) */}
-                        {/* <div style={mainBoxStyle}>
-                                    <div style={inputTextStyle}>
-                                        <div>
-                                            프로필 사진
-                                            <i className="far fa-user-circle" style={userIcon}></i>
-                                            <button style={boxStyle} type="submit">내PC에서 찾기</button>
-                                        </div>
-                                        <div>
-                                            이름
-                                            <input style={inputBoxStyle} className="idBox" type="text" name="name" value={name} onChange={onChange} />
-                                        </div>
-                                        <div style={birthBox}>
-                                            생년월일
-                                                value={year}
-                                            <div>
-                                                <select style={optionBoxStyle} name="yearValue" onChange={selectChange}>
-                                                    <option style={optionBox} value="2003">2003</option>
-                                                    <option style={optionBox} value="2002">2002</option>
-                                                    
-                                                </select>
-                                                <select style={optionBoxStyle}>
-                                                    <option style={optionBox}>1</option>
-                                                    <option style={optionBox}>2</option>
-                                                    
-                                                </select>
-                                                <select style={optionBoxStyle}>
-                                                    <option style={optionBox}>1</option>
-                                                    <option style={optionBox}>2</option>
-                                                    
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            소속
-                                            <input style={inputBoxStyle} type="text" name="company" value={company} onChange={onChange} />
-                                        </div>
-                                        <div>
-                                            거주지
-                                            <br/>
-                                            <select style={optionBoxStyle} name="city" id="region">
-                                                <option style={optionBox} value="US">US</option>
-                                                <option style={optionBox} value="UK">UK</option>
-                                            </select>
-                                            <input style={inputBoxStyle} type="text" name="region" value={region} onChange={onChange} placeholder={"$document.getElementById('city')"}/>
-                                        </div>
-                                    </div>
-                                </div> */}
                     </div>
                 </div>
             </section>
-            <hr style={hrStyle}></hr>
-            <div style={navBtnStyle}>
-                <Button variant="outlined" style={boxStyle} type="submit">
+            <hr className="hrStyle"></hr>
+            <div className="navBtnStyle">
+                <Button variant="outlined" className="boxStyle" type="submit">
                     제출
                 </Button>
                 <Link to="/">
-                    <Button variant="outlined" style={boxStyle}>
+                    <Button variant="outlined" className="boxStyle">
                         취소
                     </Button>
                 </Link>
