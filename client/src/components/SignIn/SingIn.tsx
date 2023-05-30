@@ -7,6 +7,7 @@ import axios, { AxiosResponse } from "axios";
 import { API_HOST, MAIN_PATH } from "../../config/constants";
 import locale from "antd/es/date-picker/locale/en_US";
 import "./SignIn.css";
+import { ReloadOutlined } from '@ant-design/icons';
 
 function SignIn() {
     const navigate = useNavigate();
@@ -34,10 +35,28 @@ function SignIn() {
         });
     };
 
+    // class EmailWaring extends React.Component {
+    // }
+
+    function EmailWarning () {
+        return (
+            <div>
+                비밀번호 틀림
+            </div>
+        )
+    }
+
+    // console.log("It is not an email format"); // 이 부분은 이메일 입력 창 아래에 빨간색으로 메세지가 뜨게 만들어주세요
+    let isEmail:boolean;
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         let isEmail = true;
+
+        let Pannel = isEmail ? EmailWarning : "";
+        let elementee = <Pannel />;
+
         let isProperLength = true;
         let isAlphaNumeric = true;
         let isEachCharAtLeastOne = true;
@@ -45,7 +64,11 @@ function SignIn() {
         const emailRegex: RegExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
         if (!emailRegex.test(name)) {
             isEmail = false;
-            console.log("It is not an email format"); // 이 부분은 이메일 입력 창 아래에 빨간색으로 메세지가 뜨게 만들어주세요
+            alert("It is not an email format"); // 이 부분은 이메일 입력 창 아래에 빨간색으로 메세지가 뜨게 만들어주세요
+            // 20230530 12:36 
+            // 빨간색 text 구현은 아직.
+            // alert 클릭 후 창 새로고침으로 변경.
+            window.location.reload();
         }
 
         if (8 > password.length || password.length > 24) {
@@ -113,6 +136,11 @@ function SignIn() {
                             onChange={onChange}
                         />
                         <br />
+                        
+                        <div>
+                            
+                        </div>
+
                         <TextField
                             id="outlined-basic"
                             label="input password"
