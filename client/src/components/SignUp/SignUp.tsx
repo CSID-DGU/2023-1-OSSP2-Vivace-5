@@ -55,60 +55,11 @@ function SignUp() {
         width: "40%",
     };
 
-    //헤더 라인 스타일
-    const header: CSSProperties = {
-        backgroundColor: "#A6C0EE",
-        fontSize: "30px",
-        fontWeight: "bold",
-        paddingLeft: "20px",
-        height: "50px",
-    };
-
-    //헤더 아리 전체 메인 화면 스타일
-    const mainScreen: CSSProperties = {
-        display: "flex",
-        flexWrap: "wrap",
-        flexDirection: "row",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        // borderBottom: '1px solid',
-        width: "100%",
-    };
-
-    //메인 박스 스타일
-    const mainBoxStyle: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        // backgroundColor:'orange',
-        height: "50vh",
-        paddingTop: "100px",
-        paddingBottom: "60px",
-        /*
-        display: 'flex',
-        justifyContent: 'center',
-        align-items: 'center,
-        min-height: '100vh',
-        */
-    };
-
     const titleBox: CSSProperties = {
         display: "flex",
         justifyContent: "center",
         alignContent: "center",
     };
-    // h1 TEMPO 스타일
-    // const titleStyle: CSSProperties = {
-    //     fontWeight: "bold",
-    //     fontSize: "60px",
-    //     width: "100%",
-    //     height: "10px",
-    //     marginTop: "30px",
-    //     marginBottom: "8%",
-    //     textAlign: "center",
-    // };
 
     //입력 박스 스타일
     const inputBoxStyle: CSSProperties = {
@@ -116,52 +67,6 @@ function SignUp() {
         height: "40px",
         marginLeft: "25px",
         marginBottom: "25px",
-    };
-
-    //입력 박스 옆 텍스트
-    const inputTextStyle: CSSProperties = {
-        fontSize: "25px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-evenly",
-        alignContent: "space-evenly",
-    };
-
-    //선택 옵션 리스트 스타일
-    const optionBoxStyle: CSSProperties = {
-        // display: 'flex',
-        // flex: 1,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'space-evenly',
-        height: "40px",
-        width: "5rem",
-        // margin: '10px',
-        // borderRadius: '10px',
-        display: "inline-block",
-        marginRight: "20px",
-        marginTop: "5px",
-    };
-
-    const mainBody: CSSProperties = {
-        display: "flex",
-        flexDirection: "row",
-        placeItems: "center",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-    };
-
-    const leftDiv: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        width: "40%",
-        borderRight: "3px solid gray",
-        marginLeft: "50px",
-    };
-
-    const letfDivComp: CSSProperties = {
-        marginLeft: "20%",
     };
 
     const [form, setForm] = useState({
@@ -217,6 +122,21 @@ function SignUp() {
             region: "",
         }); // 초기화
     };
+
+    const [imageSrc, setImageSrc]: any = useState(null);
+
+    const onUpload = (e: any) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        return new Promise<void>((resolve) => { 
+            reader.onload = () => {	
+                setImageSrc(reader.result || null); // 파일의 컨텐츠
+                resolve();
+            };
+        });
+    }
 
     //Select Box 값 바꿨을 때 console.log에 선택값이 들어오지 않음. 현재 이 값을 받기 위한 작업중.(2023-05-16 12:26 PM)
 
@@ -306,8 +226,21 @@ function SignUp() {
                             <div>
                                 <section>
                                     <i className="far fa-user-circle, userIcon"></i>
+                                    <input 
+                                        accept="image/*" 
+                                        multiple type="file"
+                                        onChange={e => onUpload(e)}
+                                    />
+                                    <img 
+                                        width={'70px'}
+                                        height={'70px'} 
+                                        src={imageSrc} 
+                                    />
                                     <button className="boxStyle" type="submit">
                                         내PC에서 찾기
+                                    </button>
+                                    <button className="boxStyle" type="submit">
+                                        취소
                                     </button>
                                 </section>
                                 <TextField

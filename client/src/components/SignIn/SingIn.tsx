@@ -38,25 +38,13 @@ function SignIn() {
     // class EmailWaring extends React.Component {
     // }
 
-    function EmailWarning () {
-        return (
-            <div>
-                비밀번호 틀림
-            </div>
-        )
-    }
-
-    // console.log("It is not an email format"); // 이 부분은 이메일 입력 창 아래에 빨간색으로 메세지가 뜨게 만들어주세요
-    let isEmail:boolean;
+    //E-mail과 Password 사이 span에 글자를 넣기 위한 quertSelector
+    const el:HTMLElement = document.querySelector(".elSpan") as unknown as HTMLFormElement;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         let isEmail = true;
-
-        let Pannel = isEmail ? EmailWarning : "";
-        let elementee = <Pannel />;
-
         let isProperLength = true;
         let isAlphaNumeric = true;
         let isEachCharAtLeastOne = true;
@@ -64,11 +52,9 @@ function SignIn() {
         const emailRegex: RegExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
         if (!emailRegex.test(name)) {
             isEmail = false;
-            alert("It is not an email format"); // 이 부분은 이메일 입력 창 아래에 빨간색으로 메세지가 뜨게 만들어주세요
-            // 20230530 12:36 
-            // 빨간색 text 구현은 아직.
-            // alert 클릭 후 창 새로고침으로 변경.
-            window.location.reload();
+            el.innerHTML= ("It is not an email format.");
+            // 페이지 전체 새로고침하는 코드
+            // window.location.reload();
         }
 
         if (8 > password.length || password.length > 24) {
@@ -138,7 +124,7 @@ function SignIn() {
                         <br />
                         
                         <div>
-                            
+                            <span className="elSpan"></span>
                         </div>
 
                         <TextField

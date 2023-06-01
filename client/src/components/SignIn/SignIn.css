@@ -55,3 +55,7 @@ hr{
     align-items: center;
     justify-content: space-evenly;
 }
+
+.elSpan {
+    color: red;
+}
