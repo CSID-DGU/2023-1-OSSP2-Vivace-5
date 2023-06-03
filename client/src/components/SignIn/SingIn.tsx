@@ -5,7 +5,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import axios, { AxiosResponse } from "axios";
 import { API_HOST, MAIN_PATH } from "../../config/constants";
-import locale from "antd/es/date-picker/locale/en_US";
 
 function SignIn() {
     const navigate = useNavigate();

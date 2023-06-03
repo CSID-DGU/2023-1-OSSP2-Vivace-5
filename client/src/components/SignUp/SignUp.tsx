@@ -1,8 +1,10 @@
 import React, { CSSProperties, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import axios, { AxiosResponse } from "axios";
+import { API_HOST, SIGN_IN_PATH } from "../../config/constants";
 
 type SignUpProps = {
     onSubmit: (form: {
@@ -48,6 +50,8 @@ function onSubmit(User: {
 }) {}
 
 function SignUp() {
+    const navigate = useNavigate();
+
     //css 시작
     // const all: CSSProperties = {
     //     display: 'flex',
@@ -286,22 +290,39 @@ function SignUp() {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        onSubmit(form);
-        console.log("출력테스트");
-        // 비밀번호 틀리면 아래 form이 제출되지 않도록 함.
-        if (form.password !== form.passwordCk) {
-            console.log("비밀번호를 확인하십시오.");
+
+        if (password !== passwordCk) {
             return;
         }
-        // 현재까지 year에 값 넣은 채로 회원가입 버튼 누르면 그 값 나타내기는 가능.
-        //그러나 form안에 그 값이 들어가지 않음. 수정 필요. (2023-05-18 01:43 AM)
-        console.log(selectedOption);
-        console.log("출력테스트1");
-        let birthM = selectedOption;
-        console.log("bitthM:" + birthM);
-        console.log(form);
+
+        try {
+            const res: AxiosResponse = await axios.post(`${API_HOST}user/signup`, {
+                firstname: "kim",
+                lastName: "dohun",
+                email: "raaak8@gmail.com",
+                year: 1998,
+                month: 12,
+                date: 15,
+                password: "",
+                belong: "",
+                country: "",
+                region: "",
+                encodedImg: "",
+            });
+
+            if (res.status === 200) {
+                navigate(SIGN_IN_PATH);
+            } else if (res.status === 401) {
+                console.log("login failed!");
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error);
+            }
+        }
+
         setForm({
             email: "",
             password: "",
@@ -310,7 +331,7 @@ function SignUp() {
             birth: 0,
             company: "",
             region: "",
-        }); // 초기화
+        });
     };
 
     //Select Box 값 바꿨을 때 console.log에 선택값이 들어오지 않음. 현재 이 값을 받기 위한 작업중.(2023-05-16 12:26 PM)

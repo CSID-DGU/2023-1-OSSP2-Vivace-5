@@ -99,7 +99,9 @@ let TaskController = class TaskController {
         this.logger.verbose(`User ${user.email} trying to dismiss members from task with id ${taskId}`);
         return this.taskService.dismiss(user, taskId, memberIds);
     }
-    getAllBookmarks(user, query) { }
+    getAllBookmarks(user, query) {
+        return this.taskService.getAllBookmarks(user, query);
+    }
     getAllBookmarkFolders(user) { }
     createBookmark(user, createBookmarkDto) { }
     bringDownBookmark(user, bringDownBookmarkDto) { }

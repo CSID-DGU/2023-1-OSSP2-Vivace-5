@@ -21,11 +21,13 @@ const project_repository_1 = require("../project/project.repository");
 const user_right_enum_1 = require("../enum/user-right.enum");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_repository_1 = require("../user/user.repository");
+const bookmark_repository_1 = require("./bookmark.repository");
 let TaskService = class TaskService {
-    constructor(taskRepository, projectRepository, userRepository) {
+    constructor(taskRepository, projectRepository, userRepository, bookmarkRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.bookmarkRepository = bookmarkRepository;
     }
     async getTaskInfo(user, taskId) {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
@@ -70,7 +72,7 @@ let TaskService = class TaskService {
                 .leftJoinAndSelect("columns.parent", "parent");
         }
         else {
-            projectQuery.leftJoinAndSelect("project.asks", "tasks", "tasks.id = :parentId", { parentId });
+            projectQuery.leftJoinAndSelect("project.tasks", "tasks", "tasks.id = :parentId", { parentId });
         }
         projectQuery.where("project.id = :projectId", { projectId });
         const project = await projectQuery.getOne();
@@ -510,8 +512,18 @@ let TaskService = class TaskService {
                 alreadyTaskMemberIds.push(memberId);
                 continue;
             }
-            foundUser.tasks.push(task);
-            await this.userRepository.save(foundUser);
+            const ancestorsQuery = this.taskRepository.createAncestorsQueryBuilder("task", "taskClosure", task);
+            ancestorsQuery.leftJoinAndSelect("task.members", "members");
+            const ancestors = await ancestorsQuery.getMany();
+            for (const ancestor of ancestors) {
+                for (const member of ancestor.members) {
+                    if (member.id === memberId) {
+                        continue;
+                    }
+                }
+                ancestor.members.push(foundUser);
+                await this.taskRepository.save(ancestor);
+            }
             addedMemberIds.push(memberId);
         }
         return { memberIds, addedMemberIds, notFoundUserIds, notProjectMemberIds, alreadyTaskMemberIds };
@@ -554,10 +566,11 @@ let TaskService = class TaskService {
                 alreadyNotTaskMemberIds.push(memberId);
                 continue;
             }
-            foundUser.tasks = foundUser.tasks.filter((task) => {
-                task.id !== taskId;
-            });
-            await this.userRepository.save(foundUser);
+            const descendants = await this.taskRepository.findDescendants(task, { relations: ["members"] });
+            for (const descendant of descendants) {
+                descendant.members = descendant.members.filter((member) => member.id !== memberId);
+                await this.taskRepository.save(descendant);
+            }
             deletedMemberIds.push(memberId);
         }
         return { memberIds, deletedMemberIds, notFoundUserIds, alreadyNotTaskMemberIds };
@@ -593,15 +606,29 @@ let TaskService = class TaskService {
         await this.taskRepository.findDescendants(task);
         await this.taskRepository.delete({ id: taskId });
     }
+    async getAllBookmarks(user, query) {
+        const bookmarkQuery = this.bookmarkRepository.createQueryBuilder("bookmark");
+        bookmarkQuery
+            .select(["bookmark.id", "bookmark.title"])
+            .leftJoin("bookmark.task", "task")
+            .where("bookmark.userId = :userId", { userId: user.id });
+        if (query) {
+            bookmarkQuery.andWhere("bookmark.title LIKE :query", { query: `%${query}%` });
+        }
+        const bookmarks = await bookmarkQuery.getMany();
+        return bookmarks;
+    }
 };
 TaskService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(task_repository_1.TaskRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(project_repository_1.ProjectRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(user_repository_1.UserRepository)),
+    __param(3, (0, typeorm_1.InjectRepository)(bookmark_repository_1.BookmarkRepository)),
     __metadata("design:paramtypes", [task_repository_1.TaskRepository,
         project_repository_1.ProjectRepository,
-        user_repository_1.UserRepository])
+        user_repository_1.UserRepository,
+        bookmark_repository_1.BookmarkRepository])
 ], TaskService);
 exports.TaskService = TaskService;
 //# sourceMappingURL=task.service.js.map

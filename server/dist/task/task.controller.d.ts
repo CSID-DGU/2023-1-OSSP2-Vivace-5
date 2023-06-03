@@ -66,7 +66,7 @@ export declare class TaskController {
         notFoundUserIds: string[];
         alreadyNotTaskMemberIds: string[];
     }>;
-    getAllBookmarks(user: User, query: string): void;
+    getAllBookmarks(user: User, query: string): Promise<import("../entity/bookmark.entity").Bookmark[]>;
     getAllBookmarkFolders(user: User): void;
     createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): void;
     bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;

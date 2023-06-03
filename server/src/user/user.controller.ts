@@ -26,6 +26,8 @@ import {
     ApiConflictResponse,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
+    ApiNotAcceptableResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
     ApiTags,
@@ -44,6 +46,9 @@ export class UserController {
     @ApiOperation({
         summary: "Sign up API",
         description: "Sign up",
+    })
+    @ApiOkResponse({
+        description: "User successfully sign up in this service",
     })
     @ApiConflictResponse({
         description: "If entered email is already existing",
@@ -123,10 +128,13 @@ export class UserController {
     @Get("/info/:id")
     @UseGuards(AuthGuard())
     @ApiBearerAuth("access-token")
+    @ApiOperation({
+        summary: "아이디를 통해 원하는 유저 정보 조회 API",
+    })
     @ApiOkResponse({
         description: "Return User info.",
         schema: {
-            type: "onject",
+            type: "object",
             properties: {
                 id: { type: "string", description: "User UUID", example: "bf536e46-90d3-44b8-9bf9-c17bf1a8fe42" },
                 firstName: { type: "string", example: "Hong" },
@@ -148,8 +156,8 @@ export class UserController {
             },
         },
     })
-    @ApiOperation({
-        summary: "아이디를 통해 원하는 유저 정보 조회 API",
+    @ApiNotFoundResponse({
+        description: "If no user corresponds to the specified userId",
     })
     getUserInfo(@Param("id") userId: string): Promise<UserInfo> {
         this.logger.verbose(`User trying to get information of "${userId}".`);
@@ -161,6 +169,9 @@ export class UserController {
     @ApiBearerAuth("access-token")
     @ApiOperation({
         summary: "유저 정보 변경 API",
+    })
+    @ApiOkResponse({
+        description: "User information are successfully updated",
     })
     updateUser(
         @GetUser() user: User,
@@ -176,6 +187,12 @@ export class UserController {
     @ApiOperation({
         summary: "비밀번호 변경 API",
     })
+    @ApiOkResponse({
+        description: "Password are successfully updated",
+    })
+    @ApiNotAcceptableResponse({
+        description: "If the password before and after the change are the same.",
+    })
     updatePassword(@GetUser() user: User, @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto): Promise<void> {
         this.logger.verbose(`"${user.email}" trying to update password.`);
         return this.userService.updatePassword(user, updatePasswordDto);
@@ -186,6 +203,9 @@ export class UserController {
     @ApiBearerAuth("access-token")
     @ApiOperation({
         summary: "유저 탈퇴 API",
+    })
+    @ApiOkResponse({
+        description: "User are successfully deleted",
     })
     withdraw(@GetUser() user: User, @Body(ValidationPipe) confirmPasswordDto: ConfirmPasswordDto): Promise<void> {
         this.logger.verbose(`"${user.email}" trying to withdraw from this service.`);

@@ -788,7 +788,9 @@ export class TaskController {
     }
 
     @Get("/bookmark")
-    getAllBookmarks(@GetUser() user: User, @Query("q") query: string) {}
+    getAllBookmarks(@GetUser() user: User, @Query("q") query: string) {
+        return this.taskService.getAllBookmarks(user, query);
+    }
 
     @Get("/bookmark/folder")
     getAllBookmarkFolders(@GetUser() user: User) {}

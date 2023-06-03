@@ -65,6 +65,9 @@ __decorate([
         summary: "Sign up API",
         description: "Sign up",
     }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "User successfully sign up in this service",
+    }),
     (0, swagger_1.ApiConflictResponse)({
         description: "If entered email is already existing",
     }),
@@ -143,10 +146,13 @@ __decorate([
     (0, common_1.Get)("/info/:id"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, swagger_1.ApiBearerAuth)("access-token"),
+    (0, swagger_1.ApiOperation)({
+        summary: "아이디를 통해 원하는 유저 정보 조회 API",
+    }),
     (0, swagger_1.ApiOkResponse)({
         description: "Return User info.",
         schema: {
-            type: "onject",
+            type: "object",
             properties: {
                 id: { type: "string", description: "User UUID", example: "bf536e46-90d3-44b8-9bf9-c17bf1a8fe42" },
                 firstName: { type: "string", example: "Hong" },
@@ -167,8 +173,8 @@ __decorate([
             },
         },
     }),
-    (0, swagger_1.ApiOperation)({
-        summary: "아이디를 통해 원하는 유저 정보 조회 API",
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: "If no user corresponds to the specified userId",
     }),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
@@ -181,6 +187,9 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
         summary: "유저 정보 변경 API",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "User information are successfully updated",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe, encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
@@ -196,6 +205,12 @@ __decorate([
     (0, swagger_1.ApiOperation)({
         summary: "비밀번호 변경 API",
     }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "Password are successfully updated",
+    }),
+    (0, swagger_1.ApiNotAcceptableResponse)({
+        description: "If the password before and after the change are the same.",
+    }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe)),
     __metadata("design:type", Function),
@@ -208,6 +223,9 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)("access-token"),
     (0, swagger_1.ApiOperation)({
         summary: "유저 탈퇴 API",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "User are successfully deleted",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)(common_1.ValidationPipe)),

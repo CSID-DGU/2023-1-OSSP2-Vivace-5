@@ -11,6 +11,9 @@ import { AppendTaskDto } from "./dto/append-task.dto";
 import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { UserRepository } from "src/user/user.repository";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
+import { BookmarkRepository } from "./bookmark.repository";
+import { Bookmark } from "src/entity/bookmark.entity";
+import { Brackets } from "typeorm";
 
 @Injectable()
 export class TaskService {
@@ -18,6 +21,7 @@ export class TaskService {
         @InjectRepository(TaskRepository) private taskRepository: TaskRepository,
         @InjectRepository(ProjectRepository) private projectRepository: ProjectRepository,
         @InjectRepository(UserRepository) private userRepository: UserRepository,
+        @InjectRepository(BookmarkRepository) private bookmarkRepository: BookmarkRepository,
     ) {}
 
     async getTaskInfo(user: User, taskId: string): Promise<Task> {
@@ -82,7 +86,7 @@ export class TaskService {
                 .leftJoinAndSelect("project.columns", "columns", "columns.id = :parentId", { parentId })
                 .leftJoinAndSelect("columns.parent", "parent");
         } else {
-            projectQuery.leftJoinAndSelect("project.asks", "tasks", "tasks.id = :parentId", { parentId });
+            projectQuery.leftJoinAndSelect("project.tasks", "tasks", "tasks.id = :parentId", { parentId });
         }
 
         projectQuery.where("project.id = :projectId", { projectId });
@@ -725,9 +729,22 @@ export class TaskService {
                 continue;
             }
 
-            foundUser.tasks.push(task);
+            const ancestorsQuery = this.taskRepository.createAncestorsQueryBuilder("task", "taskClosure", task);
 
-            await this.userRepository.save(foundUser);
+            ancestorsQuery.leftJoinAndSelect("task.members", "members");
+
+            const ancestors: Task[] = await ancestorsQuery.getMany();
+
+            for (const ancestor of ancestors) {
+                for (const member of ancestor.members) {
+                    if (member.id === memberId) {
+                        continue;
+                    }
+                }
+
+                ancestor.members.push(foundUser);
+                await this.taskRepository.save(ancestor);
+            }
 
             addedMemberIds.push(memberId);
         }
@@ -800,11 +817,12 @@ export class TaskService {
                 continue;
             }
 
-            foundUser.tasks = foundUser.tasks.filter((task) => {
-                task.id !== taskId;
-            });
+            const descendants: Task[] = await this.taskRepository.findDescendants(task, { relations: ["members"] });
 
-            await this.userRepository.save(foundUser);
+            for (const descendant of descendants) {
+                descendant.members = descendant.members.filter((member) => member.id !== memberId);
+                await this.taskRepository.save(descendant);
+            }
 
             deletedMemberIds.push(memberId);
         }
@@ -856,5 +874,22 @@ export class TaskService {
 
         await this.taskRepository.findDescendants(task);
         await this.taskRepository.delete({ id: taskId });
+    }
+
+    async getAllBookmarks(user: User, query: string) {
+        const bookmarkQuery = this.bookmarkRepository.createQueryBuilder("bookmark");
+
+        bookmarkQuery
+            .select(["bookmark.id", "bookmark.title"])
+            .leftJoin("bookmark.task", "task")
+            .where("bookmark.userId = :userId", { userId: user.id });
+
+        if (query) {
+            bookmarkQuery.andWhere("bookmark.title LIKE :query", { query: `%${query}%` });
+        }
+
+        const bookmarks: Bookmark[] = await bookmarkQuery.getMany();
+
+        return bookmarks;
     }
 }

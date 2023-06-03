@@ -18,7 +18,7 @@ export declare class UserService {
     getUserEntity(id: string): Promise<User>;
     saveUserEntity(user: User): Promise<void>;
     extractPublicInfo(user: User): UserInfo;
-    getUserInfo(id: string): Promise<UserInfo>;
+    getUserInfo(userId: string): Promise<UserInfo>;
     updateUser(user: User, updateUserDto: UpdateUserDto): Promise<void>;
     updatePassword(user: User, updatePasswordDto: UpdatePasswordDto): Promise<void>;
     withdraw(user: User, confirmPasswordDto: ConfirmPasswordDto): Promise<void>;

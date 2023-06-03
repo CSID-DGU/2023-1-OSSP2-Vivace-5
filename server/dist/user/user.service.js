@@ -61,10 +61,10 @@ let UserService = class UserService {
         };
         return userInfo;
     }
-    async getUserInfo(id) {
-        const user = await this.getUserEntity(id);
+    async getUserInfo(userId) {
+        const user = await this.getUserEntity(userId);
         if (!user) {
-            throw new common_1.NotFoundException(`User ${id} is not found.`);
+            throw new common_1.NotFoundException(`User ${userId} is not found.`);
         }
         return this.extractPublicInfo(user);
     }
@@ -94,9 +94,6 @@ let UserService = class UserService {
         const { password } = confirmPasswordDto;
         if (await bcrypt.compare(password, user.password)) {
             const result = await this.userRepository.delete({ id: user.id });
-            if (result.affected === 0) {
-                throw new common_1.InternalServerErrorException("Unknown Error.");
-            }
         }
     }
 };

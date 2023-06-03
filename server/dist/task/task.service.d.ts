@@ -8,11 +8,14 @@ import { AppendTaskDto } from "./dto/append-task.dto";
 import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { UserRepository } from "src/user/user.repository";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
+import { BookmarkRepository } from "./bookmark.repository";
+import { Bookmark } from "src/entity/bookmark.entity";
 export declare class TaskService {
     private taskRepository;
     private projectRepository;
     private userRepository;
-    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository);
+    private bookmarkRepository;
+    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository, bookmarkRepository: BookmarkRepository);
     getTaskInfo(user: User, taskId: string): Promise<Task>;
     createTask(user: User, createTaskDto: CreateTaskDto): Promise<{
         id: string;
@@ -60,4 +63,5 @@ export declare class TaskService {
         alreadyNotTaskMemberIds: string[];
     }>;
     deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<void>;
+    getAllBookmarks(user: User, query: string): Promise<Bookmark[]>;
 }
