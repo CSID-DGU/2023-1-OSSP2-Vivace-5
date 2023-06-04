@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import "./TaskList.css";
+import styles from "./TaskList.module.css";
 
 interface Task {
     id: string;
@@ -34,24 +34,25 @@ const TaskList: React.FC<TaskListProps> = () => {
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="taskList">
                 {(provided) => (
-                    <ul {...provided.droppableProps} ref={provided.innerRef}>
+                    <ul className={styles.taskList} {...provided.droppableProps} ref={provided.innerRef}>
                         {taskList.map((task, index) => (
                             <Draggable key={task.id} draggableId={task.id} index={index}>
                                 {(provided) => (
                                     <li
+                                        className={styles.taskItem}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
                                         ref={provided.innerRef}
                                         style={provided.draggableProps.style}
                                     >
-                                        <div className="task-wrapper">
-                                            <div className="task-content">
-                                                <div className="drag-icon">
+                                        <div className={styles.taskWrapper}>
+                                            <div className={styles.taskContent}>
+                                                <div className={styles.dragIcon}>
                                                     <DragIndicatorIcon />
                                                 </div>
-                                                <div className="separator" />
+                                                <div className={styles.separator} />
                                                 <h3>{task.title}</h3>
-                                                <div className="separator" />
+                                                <div className={styles.separator} />
                                                 <p>{task.description}</p>
                                             </div>
                                         </div>

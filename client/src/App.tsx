@@ -23,7 +23,7 @@ const App: React.FC = () => {
         <BrowserRouter>
             <div className="App">
                 <Routes>
-                    <Route path="/" Component={ToSignin} />
+                    <Route path="/" Component={MainPage} />
                     <Route path={SIGN_IN_PATH} Component={SignIn} />
                     <Route path={SIGN_UP_PATH} Component={SignUp} />
                     <Route path={UPDATE_PASSWORD_PATH} Component={UpdatePassword} />

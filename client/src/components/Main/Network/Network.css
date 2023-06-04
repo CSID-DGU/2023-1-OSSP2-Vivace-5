@@ -36,12 +36,6 @@
     stroke-width: 1px;
 }
 
-.node-circle {
-    stroke: #000;
-    stroke-width: 1px;
-    fill: #fff;
-}
-
 .node-background {
     cursor: default;
 }
