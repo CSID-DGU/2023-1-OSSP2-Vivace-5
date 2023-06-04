@@ -1,44 +1,43 @@
 .form {
-    margin:  0 ;
-    width:  100% ;
-    height:  100% ;
+    margin: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .header {
-    background-color:  #A6C0EE ;
-    font-size:  30px ;
-    font-weight:  bold ;
-    padding-left:  20px ;
-    height:  50px ;
+    background-color: #a6c0ee;
+    font-size: 30px;
+    font-weight: bold;
+    padding-left: 20px;
+    height: 50px;
 }
 
 .mainScreen {
-    display:  flex ;
+    display: flex;
     flex: 1;
-    align-items:  center ;
-    justify-content:  center ;
-    width:  100% ;
-    height:  430px ;
-    flex-direction:  column ;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 430px;
+    flex-direction: column;
 }
 
 .h1 {
-    font-weight:  bold ;
-    font-size:  60px ;
+    font-weight: bold;
+    font-size: 60px;
 }
 
 .inputsection {
-    display:  flex ;
+    display: flex;
     justify-content: center;
 }
 
 .inputTitle {
     display: flex;
-    justify-content: center ;
-    align-items: center ;
-    flex-direction: column ;
-    text-align: center ;
-
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
 }
 
 .boxStyle {
@@ -46,18 +45,18 @@
     margin-top: 30px;
 }
 
-.hr{
+.hr {
     border: 1px solid black;
     width: 700px;
 }
 
-.navsection{
+.navsection {
     display: block;
     justify-content: space-between;
-    margin-left: 0px;    
+    margin-left: 0px;
 }
 
-.navBtnStyle{
+.navBtnStyle {
     font-weight: bold;
     display: flex;
     flex-direction: row;
