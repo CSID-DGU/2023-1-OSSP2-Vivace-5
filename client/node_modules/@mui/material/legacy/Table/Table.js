@@ -1,0 +1,132 @@
+import _objectWithoutProperties from "@babel/runtime/helpers/esm/objectWithoutProperties";
+import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
+import { unstable_composeClasses as composeClasses } from '@mui/base';
+import TableContext from './TableContext';
+import useThemeProps from '../styles/useThemeProps';
+import styled from '../styles/styled';
+import { getTableUtilityClass } from './tableClasses';
+import { jsx as _jsx } from "react/jsx-runtime";
+var useUtilityClasses = function useUtilityClasses(ownerState) {
+  var classes = ownerState.classes,
+    stickyHeader = ownerState.stickyHeader;
+  var slots = {
+    root: ['root', stickyHeader && 'stickyHeader']
+  };
+  return composeClasses(slots, getTableUtilityClass, classes);
+};
+var TableRoot = styled('table', {
+  name: 'MuiTable',
+  slot: 'Root',
+  overridesResolver: function overridesResolver(props, styles) {
+    var ownerState = props.ownerState;
+    return [styles.root, ownerState.stickyHeader && styles.stickyHeader];
+  }
+})(function (_ref) {
+  var theme = _ref.theme,
+    ownerState = _ref.ownerState;
+  return _objectSpread({
+    display: 'table',
+    width: '100%',
+    borderCollapse: 'collapse',
+    borderSpacing: 0,
+    '& caption': _objectSpread(_objectSpread({}, theme.typography.body2), {}, {
+      padding: theme.spacing(2),
+      color: (theme.vars || theme).palette.text.secondary,
+      textAlign: 'left',
+      captionSide: 'bottom'
+    })
+  }, ownerState.stickyHeader && {
+    borderCollapse: 'separate'
+  });
+});
+var defaultComponent = 'table';
+var Table = /*#__PURE__*/React.forwardRef(function Table(inProps, ref) {
+  var props = useThemeProps({
+    props: inProps,
+    name: 'MuiTable'
+  });
+  var className = props.className,
+    _props$component = props.component,
+    component = _props$component === void 0 ? defaultComponent : _props$component,
+    _props$padding = props.padding,
+    padding = _props$padding === void 0 ? 'normal' : _props$padding,
+    _props$size = props.size,
+    size = _props$size === void 0 ? 'medium' : _props$size,
+    _props$stickyHeader = props.stickyHeader,
+    stickyHeader = _props$stickyHeader === void 0 ? false : _props$stickyHeader,
+    other = _objectWithoutProperties(props, ["className", "component", "padding", "size", "stickyHeader"]);
+  var ownerState = _objectSpread(_objectSpread({}, props), {}, {
+    component: component,
+    padding: padding,
+    size: size,
+    stickyHeader: stickyHeader
+  });
+  var classes = useUtilityClasses(ownerState);
+  var table = React.useMemo(function () {
+    return {
+      padding: padding,
+      size: size,
+      stickyHeader: stickyHeader
+    };
+  }, [padding, size, stickyHeader]);
+  return /*#__PURE__*/_jsx(TableContext.Provider, {
+    value: table,
+    children: /*#__PURE__*/_jsx(TableRoot, _objectSpread({
+      as: component,
+      role: component === defaultComponent ? null : 'table',
+      ref: ref,
+      className: clsx(classes.root, className),
+      ownerState: ownerState
+    }, other))
+  });
+});
+process.env.NODE_ENV !== "production" ? Table.propTypes /* remove-proptypes */ = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the table, normally `TableHead` and `TableBody`.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: PropTypes.elementType,
+  /**
+   * Allows TableCells to inherit padding of the Table.
+   * @default 'normal'
+   */
+  padding: PropTypes.oneOf(['checkbox', 'none', 'normal']),
+  /**
+   * Allows TableCells to inherit size of the Table.
+   * @default 'medium'
+   */
+  size: PropTypes /* @typescript-to-proptypes-ignore */.oneOfType([PropTypes.oneOf(['medium', 'small']), PropTypes.string]),
+  /**
+   * Set the header sticky.
+   *
+   * ⚠️ It doesn't work with IE11.
+   * @default false
+   */
+  stickyHeader: PropTypes.bool,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+} : void 0;
+export default Table;
