@@ -41,7 +41,7 @@ let ProjectService = class ProjectService {
             "project.title",
             "project.description",
             "project.type",
-            "userToProjects.userRight",
+            "userToProjects.right",
             "project.encodedImg",
         ])
             .leftJoin("project.userToProjects", "userToProjects")
@@ -62,15 +62,23 @@ let ProjectService = class ProjectService {
             "project.type",
             "project.encodedImg",
             "project.createdAt",
-            "userToProjects.userRight",
+            "userToProjects.right",
             "user.id",
             "user.encodedImg",
             "user.firstName",
             "user.lastName",
+            "task.id",
+            "task.title",
+            "task.description",
+            "task.type",
+            "task.milestone",
+            "task.isFinished",
         ])
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
-            .leftJoinAndSelect("project.tasks", "task")
+            .leftJoin("project.tasks", "task", "task.parentId IS NULL")
+            .leftJoinAndSelect("task.predecessors", "predecessors")
+            .leftJoinAndSelect("task.successors", "successors")
             .leftJoinAndSelect("project.comments", "comments")
             .where("project.id = :projectId", { projectId });
         const found = await query.getOne();
@@ -102,7 +110,7 @@ let ProjectService = class ProjectService {
         project.createdAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
         await this.projectRepository.save(project);
         const userToProject = new user_to_project_entity_1.UserToProject();
-        userToProject.userRight = user_right_enum_1.UserRight.ADMIN;
+        userToProject.right = user_right_enum_1.UserRight.ADMIN;
         userToProject.project = project;
         userToProject.user = user;
         await this.userToProjectRepository.save(userToProject);
@@ -111,7 +119,7 @@ let ProjectService = class ProjectService {
             const memberEntity = await this.userRepository.findOneBy({ id: member.id });
             if (memberEntity) {
                 const memberToProject = new user_to_project_entity_1.UserToProject();
-                memberToProject.userRight = member.right;
+                memberToProject.right = member.right;
                 memberToProject.project = project;
                 memberToProject.user = memberEntity;
                 await this.userToProjectRepository.save(memberToProject);
@@ -136,7 +144,7 @@ let ProjectService = class ProjectService {
         let right = null;
         found.userToProjects.forEach((member) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
         if (right !== user_right_enum_1.UserRight.ADMIN) {
@@ -150,7 +158,7 @@ let ProjectService = class ProjectService {
             await this.userToProjectRepository.delete({ id: member.id });
         }
         const userToProject = new user_to_project_entity_1.UserToProject();
-        userToProject.userRight = right;
+        userToProject.right = right;
         userToProject.project = found;
         userToProject.user = user;
         await this.userToProjectRepository.save(userToProject);
@@ -159,7 +167,7 @@ let ProjectService = class ProjectService {
             const memberEntity = await this.userRepository.findOneBy({ id: member.id });
             if (memberEntity) {
                 const memberToProject = new user_to_project_entity_1.UserToProject();
-                memberToProject.userRight = member.right;
+                memberToProject.right = member.right;
                 memberToProject.project = found;
                 memberToProject.user = memberEntity;
                 await this.userToProjectRepository.save(memberToProject);
@@ -173,26 +181,19 @@ let ProjectService = class ProjectService {
     async deleteProject(user, projectId) {
         const query = this.projectRepository.createQueryBuilder("project");
         query
-            .leftJoinAndSelect("project.userToProjects", "userToProjects")
-            .leftJoinAndSelect("userToProjects.user", "user")
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
             .where("project.id =:projectId", { projectId });
         const found = await query.getOne();
         if (!found) {
             throw new common_1.NotFoundException(`Project with id "${projectId}" is not found.`);
         }
-        let right = null;
-        found.userToProjects.forEach((member) => {
-            if (member.user.id === user.id) {
-                right = member.userRight;
-            }
-        });
-        if (!right) {
+        if (!found.userToProjects[0]) {
             throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to delete this project. Join this project for elimination.`);
         }
+        const right = found.userToProjects[0].right;
         if (right === user_right_enum_1.UserRight.ADMIN) {
-            await this.userToProjectRepository.delete({ projectId });
-            await this.projectCommentRepository.delete({ projectId });
-            await this.taskRepository.delete({ projectId });
             await this.projectRepository.delete({ id: projectId });
         }
         else {
@@ -212,7 +213,7 @@ let ProjectService = class ProjectService {
         let right = null;
         foundProject.userToProjects.forEach((member) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
         if (!right) {
@@ -236,10 +237,10 @@ let ProjectService = class ProjectService {
                 if (!foundUser) {
                     const memberToProject = new user_to_project_entity_1.UserToProject();
                     if (right === user_right_enum_1.UserRight.ADMIN) {
-                        memberToProject.userRight = member.right;
+                        memberToProject.right = member.right;
                     }
                     else {
-                        memberToProject.userRight = user_right_enum_1.UserRight.COMPLETION_MOD;
+                        memberToProject.right = user_right_enum_1.UserRight.COMPLETION_MOD;
                     }
                     memberToProject.project = foundProject;
                     memberToProject.user = memberEntity;
@@ -268,7 +269,7 @@ let ProjectService = class ProjectService {
         let right = null;
         foundProject.userToProjects.forEach((member) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
         if (!right) {
@@ -291,7 +292,7 @@ let ProjectService = class ProjectService {
                     .andWhere("project.id = :projectId", { projectId });
                 const foundUser = await query.getOne();
                 if (foundUser) {
-                    if (foundUser.userRight !== user_right_enum_1.UserRight.ADMIN || right === user_right_enum_1.UserRight.ADMIN) {
+                    if (foundUser.right !== user_right_enum_1.UserRight.ADMIN || right === user_right_enum_1.UserRight.ADMIN) {
                         await this.userToProjectRepository.delete({ id: foundUser.id });
                     }
                     else {
@@ -322,7 +323,7 @@ let ProjectService = class ProjectService {
         let userToProject = null;
         foundProject.userToProjects.forEach((member) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
                 userToProject = member;
             }
         });
@@ -359,6 +360,7 @@ let ProjectService = class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
+        projectComment.isDeleted = false;
         projectComment.user = user;
         projectComment.project = foundProject;
         await this.projectCommentRepository.save(projectComment);
@@ -389,6 +391,7 @@ let ProjectService = class ProjectService {
         projectComment.modifiedAt = new Date(projectComment.createdAt.getTime());
         projectComment.content = content;
         projectComment.pinned = false;
+        projectComment.isDeleted = false;
         projectComment.parent = found;
         projectComment.user = user;
         projectComment.project = found.project;
@@ -458,7 +461,7 @@ let ProjectService = class ProjectService {
         let right = null;
         found.project.userToProjects.forEach((member) => {
             if (member.user.id === user.id) {
-                right = member.userRight;
+                right = member.right;
             }
         });
         if (!right) {
@@ -484,7 +487,8 @@ let ProjectService = class ProjectService {
         if (found.pinned) {
             throw new common_1.BadRequestException(`This project comment "${commentId}" is pinned. Pinned comment cannot be removed.`);
         }
-        await this.projectCommentRepository.delete({ id: commentId });
+        found.isDeleted = true;
+        await this.projectCommentRepository.save(found);
     }
 };
 ProjectService = __decorate([

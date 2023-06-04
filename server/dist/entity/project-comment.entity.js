@@ -36,6 +36,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], ProjectComment.prototype, "pinned", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], ProjectComment.prototype, "isDeleted", void 0);
+__decorate([
     (0, typeorm_1.TreeParent)(),
     __metadata("design:type", ProjectComment)
 ], ProjectComment.prototype, "parent", void 0);
@@ -52,15 +56,13 @@ __decorate([
     __metadata("design:type", String)
 ], ProjectComment.prototype, "projectId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.comments, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.comments, { eager: false, onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], ProjectComment.prototype, "project", void 0);
 ProjectComment = __decorate([
     (0, typeorm_1.Entity)(),
-    (0, typeorm_1.Tree)("closure-table", {
-        closureTableName: "project_comment_closure",
-    })
+    (0, typeorm_1.Tree)("closure-table")
 ], ProjectComment);
 exports.ProjectComment = ProjectComment;
 //# sourceMappingURL=project-comment.entity.js.map

@@ -10,10 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthCredentialsDto = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class AuthCredentialsDto {
 }
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'gdhong@dongguk.edu',
+        description: 'user email',
+        required: true,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Matches)(/[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i, {
@@ -22,6 +28,11 @@ __decorate([
     __metadata("design:type", String)
 ], AuthCredentialsDto.prototype, "email", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: "Qwas1234!",
+        description: "Password",
+        required: true,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(8, { message: "The password entered is too short." }),
     (0, class_validator_1.MaxLength)(24, { message: "The password entered is too long." }),

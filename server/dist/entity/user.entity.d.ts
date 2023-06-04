@@ -1,7 +1,9 @@
 import { UserToProject } from "src/entity/user-to-project.entity";
-import { UserToTask } from "src/entity/user-to-task.entity";
 import { BaseEntity } from "typeorm";
 import { ProjectComment } from "./project-comment.entity";
+import { Task } from "./task.entity";
+import { Bookmark } from "./bookmark.entity";
+import { TaskComment } from "./task-comment.entity";
 export declare class User extends BaseEntity {
     id: string;
     firstName: string;
@@ -17,6 +19,8 @@ export declare class User extends BaseEntity {
     encodedImg: string;
     createdAt: Date;
     userToProjects: UserToProject[];
-    userToTasks: UserToTask[];
+    tasks: Task[];
     projectComments: ProjectComment[];
+    taskComments: TaskComment[];
+    bookmarks: Bookmark[];
 }

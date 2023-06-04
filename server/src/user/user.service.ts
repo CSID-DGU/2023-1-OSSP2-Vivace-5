@@ -13,9 +13,10 @@ import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "../entity/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { ConfirmPasswordDto } from "./dto/update-password.dto";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { UserInfo } from "./user-info.interface";
 import { DeleteResult } from "typeorm";
+import { ConfirmPasswordDto } from "./dto/confirm-password.dto";
 
 @Injectable()
 export class UserService {
@@ -70,11 +71,11 @@ export class UserService {
         return userInfo;
     }
 
-    async getUserInfo(id: string): Promise<UserInfo> {
-        const user = await this.getUserEntity(id);
+    async getUserInfo(userId: string): Promise<UserInfo> {
+        const user = await this.getUserEntity(userId);
 
         if (!user) {
-            throw new NotFoundException(`User ${id} is not found.`);
+            throw new NotFoundException(`User ${userId} is not found.`);
         }
 
         return this.extractPublicInfo(user);
@@ -94,7 +95,7 @@ export class UserService {
         await this.userRepository.save(user);
     }
 
-    async updatePassword(user: User, updatePasswordDto: ConfirmPasswordDto): Promise<void> {
+    async updatePassword(user: User, updatePasswordDto: UpdatePasswordDto): Promise<void> {
         const { before, after } = updatePasswordDto;
 
         if (before === after) {
@@ -110,18 +111,10 @@ export class UserService {
     }
 
     async withdraw(user: User, confirmPasswordDto: ConfirmPasswordDto): Promise<void> {
-        const { before, after } = confirmPasswordDto;
+        const { password } = confirmPasswordDto;
 
-        if (before !== after) {
-            throw new NotAcceptableException("The password you re-entered is not the same as the first one.");
-        }
-
-        if (await bcrypt.compare(after, user.password)) {
+        if (await bcrypt.compare(password, user.password)) {
             const result: DeleteResult = await this.userRepository.delete({ id: user.id });
-
-            if (result.affected === 0) {
-                throw new InternalServerErrorException("Unknown Error.");
-            }
         }
     }
 }

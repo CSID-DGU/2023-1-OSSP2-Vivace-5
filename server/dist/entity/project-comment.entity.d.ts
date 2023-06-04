@@ -7,6 +7,7 @@ export declare class ProjectComment extends BaseEntity {
     modifiedAt: Date;
     content: string;
     pinned: boolean;
+    isDeleted: boolean;
     parent: ProjectComment;
     children: ProjectComment[];
     user: User;

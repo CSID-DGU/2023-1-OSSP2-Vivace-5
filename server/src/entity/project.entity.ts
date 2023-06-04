@@ -3,6 +3,7 @@ import { SubTask } from "../enum/sub-task.enum";
 import { UserToProject } from "./user-to-project.entity";
 import { Task } from "src/entity/task.entity";
 import { ProjectComment } from "./project-comment.entity";
+import { KanbanColumn } from "./kanban-column.entity";
 
 @Entity()
 export class Project extends BaseEntity {
@@ -32,4 +33,7 @@ export class Project extends BaseEntity {
 
     @OneToMany((type) => UserToProject, (userToProject) => userToProject.project, { eager: false })
     userToProjects: UserToProject[];
+
+    @OneToMany((type) => KanbanColumn, (column) => column.project, { eager: false })
+    columns: KanbanColumn[];
 }

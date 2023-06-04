@@ -23,7 +23,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserToProject.prototype, "userRight", void 0);
+], UserToProject.prototype, "right", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: "projectId" }),
     __metadata("design:type", String)
@@ -33,7 +33,7 @@ __decorate([
     __metadata("design:type", String)
 ], UserToProject.prototype, "userId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.userToProjects, { eager: false }),
+    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.userToProjects, { eager: false, onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], UserToProject.prototype, "project", void 0);
