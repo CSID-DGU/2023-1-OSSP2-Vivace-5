@@ -21,11 +21,15 @@ const project_repository_1 = require("../project/project.repository");
 const user_right_enum_1 = require("../enum/user-right.enum");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_repository_1 = require("../user/user.repository");
+const bookmark_repository_1 = require("./bookmark.repository");
+const kanban_column_repository_1 = require("./kanban-column.repository");
 let TaskService = class TaskService {
-    constructor(taskRepository, projectRepository, userRepository) {
+    constructor(taskRepository, projectRepository, userRepository, bookmarkRepository, kanbanColumnRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.bookmarkRepository = bookmarkRepository;
+        this.kanbanColumnRepository = kanbanColumnRepository;
     }
     async getTaskInfo(user, taskId) {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
@@ -58,7 +62,7 @@ let TaskService = class TaskService {
     async createTask(user, createTaskDto) {
         const { projectId, parentId, isKanban, title, description, type, start, deadline } = createTaskDto;
         if (isKanban && !parentId) {
-            throw new common_1.BadRequestException(`If the parent task is a Kanban board, the column id must be specified.`);
+            throw new common_1.NotAcceptableException(`If the parent task is a Kanban board, the column id must be specified.`);
         }
         const projectQuery = this.projectRepository.createQueryBuilder("project");
         projectQuery.leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
@@ -70,7 +74,7 @@ let TaskService = class TaskService {
                 .leftJoinAndSelect("columns.parent", "parent");
         }
         else {
-            projectQuery.leftJoinAndSelect("project.asks", "tasks", "tasks.id = :parentId", { parentId });
+            projectQuery.leftJoinAndSelect("project.tasks", "tasks", "tasks.id = :parentId", { parentId });
         }
         projectQuery.where("project.id = :projectId", { projectId });
         const project = await projectQuery.getOne();
@@ -92,8 +96,9 @@ let TaskService = class TaskService {
                 }
                 const columnTaskQuery = this.taskRepository.createQueryBuilder("task");
                 columnTaskQuery
+                    .leftJoin("task.successors", "successors")
                     .where("task.parentColumnId = :parentId", { parentId })
-                    .andWhere("task.successors IS NULL");
+                    .having("COUNT(successors) = :count", { count: 0 });
                 last = await columnTaskQuery.getOne();
             }
             else {
@@ -103,8 +108,16 @@ let TaskService = class TaskService {
                 if (project.tasks[0].type === sub_task_enum_1.SubTask.KANBAN) {
                     throw new common_1.BadRequestException(`The parent task with id ${parentId} cannot be the type of kanban board.`);
                 }
-                if (project.type === sub_task_enum_1.SubTask.TERMINAL) {
+                if (project.tasks[0].type === sub_task_enum_1.SubTask.TERMINAL) {
                     throw new common_1.BadRequestException(`Cannot create sub-task under terminal type task.`);
+                }
+                if (project.tasks[0].type === sub_task_enum_1.SubTask.LIST) {
+                    const lastTaskQuery = this.taskRepository.createQueryBuilder("task");
+                    lastTaskQuery
+                        .leftJoin("task.successors", "successors")
+                        .where("task.parentId = :parentId", { parentId })
+                        .having("COUNT(successors) = :count", { count: 0 });
+                    last = await lastTaskQuery.getOne();
                 }
             }
         }
@@ -125,6 +138,9 @@ let TaskService = class TaskService {
         newTask.isFinished = false;
         if (!isKanban && parentId) {
             newTask.parent = project.tasks[0];
+            if (project.tasks[0].type === sub_task_enum_1.SubTask.LIST) {
+                newTask.predecessors = [last];
+            }
         }
         if (isKanban) {
             newTask.parentColumn = project.columns[0];
@@ -185,6 +201,9 @@ let TaskService = class TaskService {
         found.isFinished = isFinished;
         await this.taskRepository.save(found);
         return { isFinished };
+    }
+    async createColumn(user, taskId, columnTitle) {
+        return null;
     }
     async appendTaskBefore(user, appendTaskDto) {
         const { taskId, taskIdsToAppend } = appendTaskDto;
@@ -396,7 +415,6 @@ let TaskService = class TaskService {
         }
         const taskToParentQuery = this.taskRepository.createQueryBuilder("task");
         taskToParentQuery
-            .select(["task.id"])
             .leftJoin("task.parent", "parent")
             .addSelect(["parent.id"])
             .leftJoin("task.project", "project")
@@ -420,19 +438,69 @@ let TaskService = class TaskService {
         else {
             throw new common_1.BadRequestException(`Task ${taskId} and Task ${taskIdToParent} has a different parent.`);
         }
-        task.predecessors = [];
-        task.successors = [];
-        task.parent = taskToParent;
+        if (taskToParent.type === sub_task_enum_1.SubTask.TERMINAL) {
+            throw new common_1.BadRequestException(`Task ${taskIdToParent} is terminal task.`);
+        }
+        else if (taskToParent.type === sub_task_enum_1.SubTask.GRAPH) {
+            task.predecessors = [];
+            task.successors = [];
+            task.parent = taskToParent;
+        }
+        else if (taskToParent.type === sub_task_enum_1.SubTask.LIST) {
+            const lastTaskQuery = this.taskRepository.createQueryBuilder("task");
+            lastTaskQuery
+                .leftJoin("task.successors", "successors")
+                .where("task.parentId = :parentId", { parentId: taskIdToParent })
+                .having("COUNT(successors) = :count", { count: 0 });
+            const last = await lastTaskQuery.getOne();
+            if (last) {
+                task.predecessors = [last];
+            }
+            else {
+                task.predecessors = [];
+            }
+            task.successors = [];
+            task.parent = taskToParent;
+        }
+        else {
+            const firstColumnQuery = this.kanbanColumnRepository.createQueryBuilder("column");
+            firstColumnQuery
+                .leftJoin("column.predecessor", "predecessor")
+                .leftJoinAndSelect("column.children", "children")
+                .leftJoinAndSelect("children.successors", "successors")
+                .where("column.parentId = :parentId", { parentId: taskIdToParent })
+                .andWhere("predecessor IS NULL");
+            const firstColumn = await firstColumnQuery.getOne();
+            let last = null;
+            for (const columnTask of firstColumn.children) {
+                if (columnTask.successors.length === 0) {
+                    last = columnTask;
+                }
+            }
+            if (last) {
+                task.predecessors = [last];
+            }
+            else {
+                task.predecessors = [];
+            }
+            task.successors = [];
+            task.parent = taskToParent;
+            if (firstColumn) {
+                task.parentColumn = firstColumn;
+            }
+            else {
+                const createdColumn = await this.createColumn(user, taskToParent.id, "Untitled");
+                task.parentColumn = createdColumn;
+            }
+        }
         await this.taskRepository.save(task);
     }
     async bringUpTask(user, taskId) {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
         taskQuery
-            .select(["task.id"])
             .leftJoinAndSelect("task.parent", "parent")
             .leftJoinAndSelect("parent.parent", "grandparent")
             .leftJoin("task.project", "project")
-            .addSelect(["project.id"])
             .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
             userId: user.id,
         })
@@ -453,14 +521,74 @@ let TaskService = class TaskService {
         if (!task.parent) {
             throw new common_1.BadRequestException(`Task ${taskId} is a root task of the project ${task.project.id}`);
         }
-        task.predecessors = [];
-        task.successors = [];
-        task.parentColumn = null;
+        let type = sub_task_enum_1.SubTask.TERMINAL;
         if (!task.parent.parent) {
             task.parent = null;
+            type = task.project.type;
         }
         else {
             task.parent = task.parent.parent;
+            type = task.parent.parent.type;
+        }
+        if (type === sub_task_enum_1.SubTask.GRAPH) {
+            task.predecessors = [];
+            task.successors = [];
+            task.parentColumn = null;
+        }
+        else if (type === sub_task_enum_1.SubTask.LIST) {
+            const lastTaskQuery = this.taskRepository.createQueryBuilder("task");
+            lastTaskQuery.leftJoin("task.successors", "successors").having("COUNT(successors) = :count", { count: 0 });
+            if (!task.parent.parent) {
+                lastTaskQuery
+                    .where("task.parent IS NULL")
+                    .andWhere("task.projectId = :projectId", { projectId: task.project.id });
+            }
+            else {
+                lastTaskQuery.where("task.parentId = :parentId", { parentId: task.parent.parent.id });
+            }
+            const last = await lastTaskQuery.getOne();
+            if (last) {
+                task.predecessors = [last];
+            }
+            else {
+                task.predecessors = [];
+            }
+            task.successors = [];
+            task.parentColumn = null;
+        }
+        else if (type === sub_task_enum_1.SubTask.KANBAN) {
+            const firstColumnQuery = this.kanbanColumnRepository.createQueryBuilder("column");
+            firstColumnQuery
+                .leftJoin("column.predecessor", "predecessor")
+                .leftJoinAndSelect("column.children", "children")
+                .leftJoinAndSelect("children.successors", "successors")
+                .where("predecessor IS NULL");
+            if (!task.parent.parent) {
+                firstColumnQuery
+                    .andWhere("column.parent IS NULL")
+                    .andWhere("column.projectId = :projectId", { projectId: task.project.id });
+            }
+            else {
+                firstColumnQuery.andWhere("column.parentId = :parentId", { parentId: task.parent.parent.id });
+            }
+            const firstColumn = await firstColumnQuery.getOne();
+            let last = null;
+            for (const columnTask of firstColumn.children) {
+                if (columnTask.successors.length === 0) {
+                    last = columnTask;
+                }
+            }
+            if (last) {
+                task.predecessors = [last];
+            }
+            else {
+                task.predecessors = [];
+            }
+            task.successors = [];
+            task.parentColumn = firstColumn;
+        }
+        else {
+            throw new common_1.BadRequestException(`The parent of parent task ${task.parent.parent.id} cannot be terminal task.`);
         }
         await this.taskRepository.save(task);
     }
@@ -510,8 +638,18 @@ let TaskService = class TaskService {
                 alreadyTaskMemberIds.push(memberId);
                 continue;
             }
-            foundUser.tasks.push(task);
-            await this.userRepository.save(foundUser);
+            const ancestorsQuery = this.taskRepository.createAncestorsQueryBuilder("task", "taskClosure", task);
+            ancestorsQuery.leftJoinAndSelect("task.members", "members");
+            const ancestors = await ancestorsQuery.getMany();
+            for (const ancestor of ancestors) {
+                for (const member of ancestor.members) {
+                    if (member.id === memberId) {
+                        continue;
+                    }
+                }
+                ancestor.members.push(foundUser);
+                await this.taskRepository.save(ancestor);
+            }
             addedMemberIds.push(memberId);
         }
         return { memberIds, addedMemberIds, notFoundUserIds, notProjectMemberIds, alreadyTaskMemberIds };
@@ -554,10 +692,11 @@ let TaskService = class TaskService {
                 alreadyNotTaskMemberIds.push(memberId);
                 continue;
             }
-            foundUser.tasks = foundUser.tasks.filter((task) => {
-                task.id !== taskId;
-            });
-            await this.userRepository.save(foundUser);
+            const descendants = await this.taskRepository.findDescendants(task, { relations: ["members"] });
+            for (const descendant of descendants) {
+                descendant.members = descendant.members.filter((member) => member.id !== memberId);
+                await this.taskRepository.save(descendant);
+            }
             deletedMemberIds.push(memberId);
         }
         return { memberIds, deletedMemberIds, notFoundUserIds, alreadyNotTaskMemberIds };
@@ -566,9 +705,9 @@ let TaskService = class TaskService {
         const { taskId, cascading } = deleteTaskDto;
         const taskQuery = this.taskRepository.createQueryBuilder("task");
         taskQuery
-            .select(["task.id"])
+            .leftJoin("task.parent", "parent")
             .leftJoin("task.project", "project")
-            .addSelect(["project.id"])
+            .addSelect(["project.id", "project.type"])
             .leftJoinAndSelect("task.children", "children")
             .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
             userId: user.id,
@@ -593,15 +732,28 @@ let TaskService = class TaskService {
         await this.taskRepository.findDescendants(task);
         await this.taskRepository.delete({ id: taskId });
     }
+    fixHole(task) {
+        let type = sub_task_enum_1.SubTask.TERMINAL;
+        if (task.parent) {
+            type = task.parent.type;
+        }
+        else {
+            type = task.project.type;
+        }
+    }
 };
 TaskService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(task_repository_1.TaskRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(project_repository_1.ProjectRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(user_repository_1.UserRepository)),
+    __param(3, (0, typeorm_1.InjectRepository)(bookmark_repository_1.BookmarkRepository)),
+    __param(4, (0, typeorm_1.InjectRepository)(kanban_column_repository_1.KanbanColumnRepository)),
     __metadata("design:paramtypes", [task_repository_1.TaskRepository,
         project_repository_1.ProjectRepository,
-        user_repository_1.UserRepository])
+        user_repository_1.UserRepository,
+        bookmark_repository_1.BookmarkRepository,
+        kanban_column_repository_1.KanbanColumnRepository])
 ], TaskService);
 exports.TaskService = TaskService;
 //# sourceMappingURL=task.service.js.map

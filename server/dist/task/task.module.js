@@ -15,11 +15,22 @@ const task_repository_1 = require("./task.repository");
 const user_module_1 = require("../user/user.module");
 const project_repository_1 = require("../project/project.repository");
 const user_repository_1 = require("../user/user.repository");
+const bookmark_repository_1 = require("./bookmark.repository");
+const kanban_column_repository_1 = require("./kanban-column.repository");
 let TaskModule = class TaskModule {
 };
 TaskModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_ex_module_1.TypeOrmExModule.forCustomRepository([task_repository_1.TaskRepository, project_repository_1.ProjectRepository, user_repository_1.UserRepository]), user_module_1.UserModule],
+        imports: [
+            typeorm_ex_module_1.TypeOrmExModule.forCustomRepository([
+                task_repository_1.TaskRepository,
+                project_repository_1.ProjectRepository,
+                user_repository_1.UserRepository,
+                bookmark_repository_1.BookmarkRepository,
+                kanban_column_repository_1.KanbanColumnRepository,
+            ]),
+            user_module_1.UserModule,
+        ],
         controllers: [task_controller_1.TaskController],
         providers: [task_service_1.TaskService],
         exports: [],

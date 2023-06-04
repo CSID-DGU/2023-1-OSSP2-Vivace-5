@@ -6,7 +6,9 @@ export declare class KanbanColumn extends BaseEntity {
     title: string;
     predecessor: KanbanColumn;
     successor: KanbanColumn;
+    parentId: string;
     parent: Task;
     children: Task[];
+    projectId: string;
     project: Project;
 }

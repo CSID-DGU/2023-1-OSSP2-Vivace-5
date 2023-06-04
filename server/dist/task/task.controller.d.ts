@@ -32,6 +32,7 @@ export declare class TaskController {
         isFinished: boolean;
     }>;
     createColumn(user: User, taskId: string, columnTitle: string): void;
+    createColumnInRoot(user: User, projectId: string, columnTitle: string): void;
     updateColumnTitle(user: User, columnId: string, newTitle: string): void;
     appendColumnBefore(user: User, appendColumnDto: AppendColumnDto): void;
     appendColumnAfter(user: User, appendColumnDto: AppendColumnDto): void;

@@ -70,6 +70,7 @@ let TaskController = class TaskController {
         return this.taskService.updateFinishedStatus(user, taskId, isFinished);
     }
     createColumn(user, taskId, columnTitle) { }
+    createColumnInRoot(user, projectId, columnTitle) { }
     updateColumnTitle(user, columnId, newTitle) { }
     appendColumnBefore(user, appendColumnDto) { }
     appendColumnAfter(user, appendColumnDto) { }
@@ -279,7 +280,7 @@ __decorate([
             },
         },
     }),
-    (0, swagger_1.ApiBadRequestResponse)({
+    (0, swagger_1.ApiNotAcceptableResponse)({
         description: "If column Id is not designated as parentId even though it is a Kanban board, or if the parent's work is Kanban board when it is not designated as a Kanban board, or if the parent's work is terminal work.",
     }),
     (0, swagger_1.ApiNotFoundResponse)({
@@ -496,6 +497,15 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "createColumn", null);
+__decorate([
+    (0, common_1.Post)("/create/column/root/:id"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)("columnTitle", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", void 0)
+], TaskController.prototype, "createColumnInRoot", null);
 __decorate([
     (0, common_1.Patch)("/update/column/title/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),

@@ -27,12 +27,20 @@ export class KanbanColumn extends BaseEntity {
     @JoinColumn({ name: "successorId" })
     successor: KanbanColumn;
 
+    @Column({ name: "parentId" })
+    parentId: string;
+
     @ManyToOne((type) => Task, (task) => task.childColumns, { eager: false, onDelete: "CASCADE" })
+    @JoinColumn({ name: "parentId" })
     parent: Task;
 
     @OneToMany((type) => Task, (task) => task.parentColumn, { eager: false })
     children: Task[];
 
+    @Column({ name: "projectId" })
+    projectId: string;
+
     @ManyToOne(() => Project, (project) => project.columns, { eager: false, onDelete: "CASCADE" })
+    @JoinColumn({ name: "projectId" })
     project: Project;
 }

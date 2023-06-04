@@ -71,11 +71,11 @@ export class UserService {
         return userInfo;
     }
 
-    async getUserInfo(id: string): Promise<UserInfo> {
-        const user = await this.getUserEntity(id);
+    async getUserInfo(userId: string): Promise<UserInfo> {
+        const user = await this.getUserEntity(userId);
 
         if (!user) {
-            throw new NotFoundException(`User ${id} is not found.`);
+            throw new NotFoundException(`User ${userId} is not found.`);
         }
 
         return this.extractPublicInfo(user);
@@ -115,10 +115,6 @@ export class UserService {
 
         if (await bcrypt.compare(password, user.password)) {
             const result: DeleteResult = await this.userRepository.delete({ id: user.id });
-
-            if (result.affected === 0) {
-                throw new InternalServerErrorException("Unknown Error.");
-            }
         }
     }
 }
