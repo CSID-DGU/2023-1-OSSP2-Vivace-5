@@ -35,6 +35,7 @@ import {
     ApiBadRequestResponse,
     ApiBearerAuth,
     ApiBody,
+    ApiNotAcceptableResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
@@ -210,7 +211,7 @@ export class TaskController {
             },
         },
     })
-    @ApiBadRequestResponse({
+    @ApiNotAcceptableResponse({
         description:
             "If column Id is not designated as parentId even though it is a Kanban board, or if the parent's work is Kanban board when it is not designated as a Kanban board, or if the parent's work is terminal work.",
     })
@@ -443,6 +444,13 @@ export class TaskController {
     createColumn(
         @GetUser() user: User,
         @Param("id", ParseUUIDPipe) taskId: string,
+        @Body("columnTitle", NotEmptyStringValidationPipe) columnTitle: string,
+    ) {}
+
+    @Post("/create/column/root/:id")
+    createColumnInRoot(
+        @GetUser() user: User,
+        @Param("id", ParseUUIDPipe) projectId: string,
         @Body("columnTitle", NotEmptyStringValidationPipe) columnTitle: string,
     ) {}
 
@@ -788,9 +796,7 @@ export class TaskController {
     }
 
     @Get("/bookmark")
-    getAllBookmarks(@GetUser() user: User, @Query("q") query: string) {
-        return this.taskService.getAllBookmarks(user, query);
-    }
+    getAllBookmarks(@GetUser() user: User, @Query("q") query: string) {}
 
     @Get("/bookmark/folder")
     getAllBookmarkFolders(@GetUser() user: User) {}

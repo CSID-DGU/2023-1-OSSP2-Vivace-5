@@ -9,13 +9,15 @@ import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { UserRepository } from "src/user/user.repository";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
 import { BookmarkRepository } from "./bookmark.repository";
-import { Bookmark } from "src/entity/bookmark.entity";
+import { KanbanColumnRepository } from "./kanban-column.repository";
+import { KanbanColumn } from "src/entity/kanban-column.entity";
 export declare class TaskService {
     private taskRepository;
     private projectRepository;
     private userRepository;
     private bookmarkRepository;
-    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository, bookmarkRepository: BookmarkRepository);
+    private kanbanColumnRepository;
+    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository, bookmarkRepository: BookmarkRepository, kanbanColumnRepository: KanbanColumnRepository);
     getTaskInfo(user: User, taskId: string): Promise<Task>;
     createTask(user: User, createTaskDto: CreateTaskDto): Promise<{
         id: string;
@@ -33,6 +35,7 @@ export declare class TaskService {
     updateFinishedStatus(user: User, taskId: string, isFinished: boolean): Promise<{
         isFinished: boolean;
     }>;
+    createColumn(user: User, taskId: string, columnTitle: string): Promise<KanbanColumn>;
     appendTaskBefore(user: User, appendTaskDto: AppendTaskDto): Promise<{
         taskId: string;
         appendedTaskIds: string[];
@@ -63,5 +66,5 @@ export declare class TaskService {
         alreadyNotTaskMemberIds: string[];
     }>;
     deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<void>;
-    getAllBookmarks(user: User, query: string): Promise<Bookmark[]>;
+    private fixHole;
 }

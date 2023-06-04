@@ -32,6 +32,7 @@ export declare class TaskController {
         isFinished: boolean;
     }>;
     createColumn(user: User, taskId: string, columnTitle: string): void;
+    createColumnInRoot(user: User, projectId: string, columnTitle: string): void;
     updateColumnTitle(user: User, columnId: string, newTitle: string): void;
     appendColumnBefore(user: User, appendColumnDto: AppendColumnDto): void;
     appendColumnAfter(user: User, appendColumnDto: AppendColumnDto): void;
@@ -66,7 +67,7 @@ export declare class TaskController {
         notFoundUserIds: string[];
         alreadyNotTaskMemberIds: string[];
     }>;
-    getAllBookmarks(user: User, query: string): Promise<import("../entity/bookmark.entity").Bookmark[]>;
+    getAllBookmarks(user: User, query: string): void;
     getAllBookmarkFolders(user: User): void;
     createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): void;
     bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;

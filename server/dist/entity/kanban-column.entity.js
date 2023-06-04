@@ -35,7 +35,12 @@ __decorate([
     __metadata("design:type", KanbanColumn)
 ], KanbanColumn.prototype, "successor", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "parentId" }),
+    __metadata("design:type", String)
+], KanbanColumn.prototype, "parentId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.childColumns, { eager: false, onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "parentId" }),
     __metadata("design:type", task_entity_1.Task)
 ], KanbanColumn.prototype, "parent", void 0);
 __decorate([
@@ -43,7 +48,12 @@ __decorate([
     __metadata("design:type", Array)
 ], KanbanColumn.prototype, "children", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "projectId" }),
+    __metadata("design:type", String)
+], KanbanColumn.prototype, "projectId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => project_entity_1.Project, (project) => project.columns, { eager: false, onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "projectId" }),
     __metadata("design:type", project_entity_1.Project)
 ], KanbanColumn.prototype, "project", void 0);
 KanbanColumn = KanbanColumn_1 = __decorate([

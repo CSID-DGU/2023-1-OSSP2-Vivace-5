@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, ParseUUIDPipe, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Logger, Param, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { AnalysisService } from "./analysis.service";
 import { GetUser } from "src/decorator/get-user.decorator";
 import { User } from "src/entity/user.entity";

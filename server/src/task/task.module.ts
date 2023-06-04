@@ -7,10 +7,17 @@ import { UserModule } from "src/user/user.module";
 import { ProjectRepository } from "src/project/project.repository";
 import { UserRepository } from "src/user/user.repository";
 import { BookmarkRepository } from "./bookmark.repository";
+import { KanbanColumnRepository } from "./kanban-column.repository";
 
 @Module({
     imports: [
-        TypeOrmExModule.forCustomRepository([TaskRepository, ProjectRepository, UserRepository, BookmarkRepository]),
+        TypeOrmExModule.forCustomRepository([
+            TaskRepository,
+            ProjectRepository,
+            UserRepository,
+            BookmarkRepository,
+            KanbanColumnRepository,
+        ]),
         UserModule,
     ],
     controllers: [TaskController],
