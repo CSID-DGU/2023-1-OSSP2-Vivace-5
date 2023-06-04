@@ -1,10 +1,12 @@
 import React, { CSSProperties, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios, { AxiosResponse } from "axios";
+import { API_HOST, MAIN_PATH } from "../../config/constants";
 
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import axios, { AxiosResponse } from "axios";
-import { API_HOST, SIGN_IN_PATH } from "../../config/constants";
+import styles from "./SignUp.module.css";
+
 
 type SignUpProps = {
     onSubmit: (form: {
@@ -40,124 +42,21 @@ interface Birth {
 }
 
 function onSubmit(User: {
-    email: string;
-    password: string;
-    passwordCk: string;
-    name: string;
-    birth: number;
-    company: string;
-    region: string;
+    firstName: string;
+        lastName: string;
+        email: string;
+        year: number;
+        month: number;
+        date: number;
+        password: string;
+        belong: string;
+        country: string;
+        region: string;
+        encodedImg:string;
 }) {}
 
 function SignUp() {
     const navigate = useNavigate();
-
-    //css 시작
-    // const all: CSSProperties = {
-    //     display: 'flex',
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    // }
-
-    //230520 19:42PM 새로 추가
-    const inputsection: CSSProperties = {
-        display: "flex",
-        float: "left",
-        width: "40%",
-    };
-
-    const inputsection2: CSSProperties = {
-        display: "flex",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-
-        flexDirection: "row",
-    };
-
-    const mainScreenComponent: CSSProperties = {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "ceneter",
-        // borderBottom: '1px solid',
-        // width: '80%',
-        // textAlign: 'center'
-    };
-
-    const textDiv: CSSProperties = {
-        width: "300PX",
-        float: "left",
-        marginBottom: "30px",
-    };
-
-    const text: CSSProperties = {
-        marginTop: "30px",
-        marginBottom: "0px",
-    };
-    //헤더 라인 스타일
-    const header: CSSProperties = {
-        backgroundColor: "#A6C0EE",
-        fontSize: "30px",
-        fontWeight: "bold",
-        paddingLeft: "20px",
-        height: "50px",
-    };
-
-    //헤더 아리 전체 메인 화면 스타일
-    const mainScreen: CSSProperties = {
-        display: "flex",
-        flexWrap: "wrap",
-        flexDirection: "row",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        // borderBottom: '1px solid',
-        width: "100%",
-    };
-
-    //'등록'박스 스타일
-    const boxStyle: CSSProperties = {
-        // backgroundColor:'red',
-        height: "40px",
-        width: "7rem",
-        margin: "10px",
-        borderRadius: "10px",
-    };
-
-    //메인 박스 스타일
-    const mainBoxStyle: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        // backgroundColor:'orange',
-        height: "50vh",
-        paddingTop: "100px",
-        paddingBottom: "60px",
-        /*
-        display: 'flex',
-        justifyContent: 'center',
-        align-items: 'center,
-        min-height: '100vh',
-        */
-    };
-
-    const titleBox: CSSProperties = {
-        display: "flex",
-        justifyContent: "center",
-        alignContent: "center",
-    };
-    // h1 TEMPO 스타일
-    const titleStyle: CSSProperties = {
-        fontWeight: "bold",
-        fontSize: "60px",
-        width: "100%",
-        height: "10px",
-        marginTop: "30px",
-        marginBottom: "8%",
-        textAlign: "center",
-    };
 
     //입력 박스 스타일
     const inputBoxStyle: CSSProperties = {
@@ -166,114 +65,34 @@ function SignUp() {
         marginLeft: "25px",
         marginBottom: "25px",
     };
-
-    //입력 박스 옆 텍스트
-    const inputTextStyle: CSSProperties = {
-        fontSize: "25px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-evenly",
-        alignContent: "space-evenly",
-    };
-
-    //가로선 스타일
-    const hrStyle: CSSProperties = {
-        border: "1px solid black",
-        width: "1400px",
-        marginTop: "30px",
-        // border: solid 10px red
-    };
-
-    //nav 버튼 스타일
-    const navBtnStyle: CSSProperties = {
-        fontWeight: "bold",
-        // display: 'flex:',
-        // flex: 1,
-        // alignItems: 'space-evenly',
-        // // justifyContent: 'space-evenly',
-        // width: '500px',
-
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-    };
-
-    //선택 옵션 리스트 스타일
-    const optionBoxStyle: CSSProperties = {
-        // display: 'flex',
-        // flex: 1,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'space-evenly',
-        height: "40px",
-        width: "5rem",
-        // margin: '10px',
-        // borderRadius: '10px',
-        display: "inline-block",
-        marginRight: "20px",
-        marginTop: "5px",
-    };
-
-    //세로선
-    const vLine: CSSProperties = {
-        height: "50vh",
-        width: "2px",
-        borderWidth: "0",
-        color: "#000",
-        backgroundColor: "#000",
-    };
-
-    const mainBody: CSSProperties = {
-        display: "flex",
-        flexDirection: "row",
-        placeItems: "center",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-    };
-
-    const userIcon: CSSProperties = {
-        fontSize: "4rem",
-        fontWeight: "lightweight",
-        borderColor: "gray",
-        marginLeft: "50px",
-        marginRight: "20px",
-    };
-
-    const leftDiv: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        width: "40%",
-        borderRight: "3px solid gray",
-        marginLeft: "50px",
-    };
-
-    const letfDivComp: CSSProperties = {
-        marginLeft: "20%",
-    };
-
-    const rightDiv: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        marginLeft: "0px",
-        width: "40%",
-        float: "left",
-    };
-
-    //css 끝
+// 20230603 [18:25] POST component 맞추기 작업 중.
+// 바로 밑 form은 components의 종류/숫자가 맞지 않아서 잠시 주석처리
+    // const [form, setForm] = useState({
+    //     email: "",
+    //     password: "",
+    //     passwordCk: "",
+    //     name: "",
+    //     birth: 0,
+    //     company: "",
+    //     region: "",
+    // });
 
     const [form, setForm] = useState({
+        firstName: "",
+        lastName: "",
         email: "",
+        year: 0,
+        month: 0,
+        date: 0,
         password: "",
-        passwordCk: "",
-        name: "",
-        birth: 0,
-        company: "",
+        belong: "",
+        country: "",
         region: "",
+        encodedImg:"",
     });
 
-    const { email, password, passwordCk, name, birth, company, region } = form;
+    // const { email, password, passwordCk, name, birth, company, region } = form;
+    const { firstName,lastName,email,year,month,date,password,belong,country,region,encodedImg } = form;
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.name == "yearValue") {
@@ -293,27 +112,106 @@ function SignUp() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (password !== passwordCk) {
+        onSubmit(form);
+        console.log("출력테스트");
+
+        // 20230603 [18:28] 현재 API에는 passwordCk 칸이 없어서 잠시 주석처리 함.
+
+
+        // 비밀번호 틀리면 아래 form이 제출되지 않도록 함.
+        // if (form.password !== form.passwordCk) {
+        //     alert("비밀번호를 확인하십시오.");
+        //     return;
+        // }
+
+        // 현재까지 year에 값 넣은 채로 회원가입 버튼 누르면 그 값 나타내기는 가능.
+        //그러나 form안에 그 값이 들어가지 않음. 수정 필요. (2023-05-18 01:43 AM)
+        console.log(selectedOption);
+        console.log("출력테스트1");
+        let birthM = selectedOption;
+        console.log("bitthM:" + birthM);
+        console.log(form);
+
+        setForm({
+            firstName: "",
+            lastName: "",
+            email: "",
+            year: 0,
+            month: 0,
+            date: 0,
+            password: "",
+            belong: "",
+            country: "",
+            region: "",
+            encodedImg:"",
+        }); // 초기화
+    
+    
+        let isEmail = true;
+        let isProperLength = true;
+        let isAlphaNumeric = true;
+        let isEachCharAtLeastOne = true;
+
+        // const emailRegex: RegExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
+        // // if (!emailRegex.test(name)) {
+        // //     alert("Please enter a valid email address");
+        // //     // window.location.reload();
+        // // }
+
+        // if (8 > password.length || password.length > 24) {
+        //     isProperLength = false;
+        //     alert("The length of password must be at least 8 characters and not more than 24 characters.");
+        // }
+
+        // const passwordAlphaNumericRegex: RegExp = /^[A-Za-z0-9`~!@#\$%\^&\*\(\)_=\+-]*$/;
+        // if (!passwordAlphaNumericRegex.test(password)) {
+        //     isAlphaNumeric = false;
+        //     alert("password only accepts alphanumeric and some special character.(`~!@#$%^&*()-_=+)");
+        // }
+
+        // const eachCharAtLeastOneRegex: RegExp = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`~!@#\$%\^&\*\(\)_=\+-]).*/;
+        // if (!eachCharAtLeastOneRegex.test(password)) {
+        //     isEachCharAtLeastOne = false;
+        //     alert(
+        //         "password should include at least one Upper case, one lower case, one numerical character, and one special character.(`~!@#$%^&*()_=+-)",
+        //     );
+        // }
+
+        if (!isEmail || !isProperLength || !isAlphaNumeric || !isEachCharAtLeastOne) {
             return;
         }
 
         try {
-            const res: AxiosResponse = await axios.post(`${API_HOST}user/signup`, {
-                firstname: "kim",
-                lastName: "dohun",
-                email: "raaak8@gmail.com",
-                year: 1998,
-                month: 12,
-                date: 15,
-                password: "",
-                belong: "",
-                country: "",
-                region: "",
-                encodedImg: "",
-            });
+            console.log(password);
+            console.log(email);
+            // const res: AxiosResponse = await axios.post(`${API_HOST}user/signup`, {
+            //     email: email,
+            //     password: password,
+            //     passwordCk: passwordCk,
+            //     name: name,
+            //     company: company,
+            //     region: region,
+            //     birth: birth,
+            // });
 
-            if (res.status === 200) {
-                navigate(SIGN_IN_PATH);
+            const res: AxiosResponse = await axios.post(`${API_HOST}user/signup`, {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                year: year,
+                month: month,
+                date: date,
+                password: password,
+                belong: belong,
+                country: country,
+                region: region,
+                encodedImg: encodedImg,
+            });
+            console.log(res);
+
+            if (res.status === 201) {
+                localStorage.setItem("access-token", "Bearer " + res.data.accessToken);
+                navigate(MAIN_PATH);
             } else if (res.status === 401) {
                 console.log("login failed!");
             }
@@ -322,17 +220,23 @@ function SignUp() {
                 console.log(error);
             }
         }
-
-        setForm({
-            email: "",
-            password: "",
-            passwordCk: "",
-            name: "",
-            birth: 0,
-            company: "",
-            region: "",
-        });
     };
+
+    // PC에서 이미지 가져오는 코드
+    const [imageSrc, setImageSrc]: any = useState(null);
+
+    const onUpload = (e: any) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        return new Promise<void>((resolve) => { 
+            reader.onload = () => {	
+                setImageSrc(reader.result || null); // 파일의 컨텐츠
+                resolve();
+            };
+        });
+    }
 
     //Select Box 값 바꿨을 때 console.log에 선택값이 들어오지 않음. 현재 이 값을 받기 위한 작업중.(2023-05-16 12:26 PM)
 
@@ -361,20 +265,21 @@ function SignUp() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <header style={header}>New_Tempo_SignUp</header>
+            <header className={styles.header}>Tempo_SignUp</header>
 
-            <section style={mainScreen}>
-                <h1 style={titleStyle}>Tempo</h1>
-                <div style={mainScreenComponent}>
-                    <div style={inputsection}>
+            <section className={styles.mainScreen}>
+                <h1 className={styles.h1}>Tempo</h1>
+                <div className={styles.mainScreenComponent}>
+                    <div className={styles.inputsection}>
                         <div>
                             <h2>E-mail</h2>
                             <h2>Password</h2>
                             <h2>Password-Check</h2>
                         </div>
-                        <div style={inputBoxStyle}>
+                        <div className={styles.inputBoxStyle}>
+                            {/* id="outlined-basic에서 id="outlined-{name}"으로 변경" */}
                             <TextField
-                                id="outlined-basic"
+                                id="outlined-email"
                                 label="이메일"
                                 variant="outlined"
                                 style={inputBoxStyle}
@@ -385,7 +290,7 @@ function SignUp() {
                             />
                             <br />
                             <TextField
-                                id="outlined-basic"
+                                id="outlined-password"
                                 label="문자, 숫자, 특수기호 포함 8~16자리"
                                 variant="outlined"
                                 style={inputBoxStyle}
@@ -396,72 +301,104 @@ function SignUp() {
                             />
                             <br />
                             <TextField
-                                id="outlined-basic"
-                                label="비밀번호를 다시 입력하세요"
+                                id="outlined-passwordCk"
+                                label="First Name"
                                 variant="outlined"
                                 style={inputBoxStyle}
-                                type="password"
-                                name="passwordCk"
-                                value={passwordCk}
+                                type="text"
+                                name="firstName"
+                                value={firstName}
                                 onChange={onChange}
                             />
-                            {/* <input style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange} /> */}
                         </div>
                     </div>
 
-                    <hr style={vLine}></hr>
+                    <hr className={styles.vLine}></hr>
 
-                    <div style={rightDiv}>
-                        <div style={inputsection2}>
-                            <div style={textDiv}>
-                                <h2 style={text}>프로필 사진</h2>
-                                <h2 style={text}>이름</h2>
-                                <h2 style={text}>생년월일</h2>
-                                <h2 style={text}>소속</h2>
-                                <h2 style={text}>거주지</h2>
+                    <div className={styles.rightDiv}>
+                        <div className={styles.inputsection2}>
+                            <div className={styles.textDiv}>
+                                <h2 className={styles.text}>프로필 사진</h2>
+                                <h2 className={styles.text}>이름</h2>
+                                <h2 className={styles.text}>생년월일</h2>
+                                <h2 className={styles.text}>소속</h2>
+                                <h2 className={styles.text}>거주지</h2>
                             </div>
                             <div>
                                 <section>
-                                    <i className="far fa-user-circle" style={userIcon}></i>
-                                    <button style={boxStyle} type="submit">
+                                    <i className={`${styles.far} ${styles["fa-user-circle"]} ${styles.userIcon}`}></i>
+                                    <input 
+                                        accept="image/*" 
+                                        multiple type="file"
+                                        onChange={e => onUpload(e)}
+                                    />
+                                    <img 
+                                        width={'70px'}
+                                        height={'70px'} 
+                                        src={imageSrc} 
+                                    />
+                                    <button className={styles.boxStyle} type="submit">
                                         내PC에서 찾기
+                                    </button>
+                                    <button className={styles.boxStyle} type="submit">
+                                        취소
                                     </button>
                                 </section>
                                 <TextField
-                                    id="outlined-basic"
-                                    label="name"
+                                    id="outlined-name"
+                                    label="last name"
                                     variant="outlined"
                                     style={inputBoxStyle}
                                     type="text"
-                                    name="name"
-                                    value={name}
+                                    name="lastName"
+                                    value={lastName}
                                     onChange={onChange}
                                 />
                                 <br />
                                 <TextField
-                                    id="outlined-basic"
-                                    label="YYYYMMDD 형식으로 입력하세요(ex.19991127)"
+                                    id="outlined-birth"
+                                    label="YYYYMMDD 형식으로 입력하세요(ex.19991127)year"
                                     variant="outlined"
                                     style={inputBoxStyle}
                                     type="text"
-                                    name="birth"
-                                    value={birth}
+                                    name="year"
+                                    value={year}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-birth"
+                                    label="YYYYMMDD 형식으로 입력하세요(ex.19991127)month"
+                                    variant="outlined"
+                                    style={inputBoxStyle}
+                                    type="text"
+                                    name="month"
+                                    value={month}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-birth"
+                                    label="YYYYMMDD 형식으로 입력하세요(ex.19991127)date"
+                                    variant="outlined"
+                                    style={inputBoxStyle}
+                                    type="text"
+                                    name="date"
+                                    value={date}
                                     onChange={onChange}
                                 />
                                 <br />
                                 <TextField
-                                    id="outlined-basic"
+                                    id="outlined-company"
                                     label="company"
                                     variant="outlined"
                                     style={inputBoxStyle}
                                     type="text"
-                                    name="company"
-                                    value={company}
+                                    name="belong"
+                                    value={belong}
                                     onChange={onChange}
                                 />
                                 <br />
                                 <TextField
-                                    id="outlined-basic"
+                                    id="outlined-region"
                                     label="region"
                                     variant="outlined"
                                     style={inputBoxStyle}
@@ -470,67 +407,39 @@ function SignUp() {
                                     value={region}
                                     onChange={onChange}
                                 />
+                                <TextField
+                                    id="outlined-region"
+                                    label="country"
+                                    variant="outlined"
+                                    style={inputBoxStyle}
+                                    type="text"
+                                    name="country"
+                                    value={country}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-region"
+                                    label="encodedImg"
+                                    variant="outlined"
+                                    style={inputBoxStyle}
+                                    type="text"
+                                    name="encodedImg"
+                                    value={encodedImg}
+                                    onChange={onChange}
+                                />
                                 <br />
                             </div>
                         </div>
-                        {/* 다시 SELECT OPTION 넣을 땐 밑에 코드 이용해서 넣을 예정 (20230520 21:00 수정) */}
-                        {/* <div style={mainBoxStyle}>
-                                    <div style={inputTextStyle}>
-                                        <div>
-                                            프로필 사진
-                                            <i className="far fa-user-circle" style={userIcon}></i>
-                                            <button style={boxStyle} type="submit">내PC에서 찾기</button>
-                                        </div>
-                                        <div>
-                                            이름
-                                            <input style={inputBoxStyle} className="idBox" type="text" name="name" value={name} onChange={onChange} />
-                                        </div>
-                                        <div style={birthBox}>
-                                            생년월일
-                                                value={year}
-                                            <div>
-                                                <select style={optionBoxStyle} name="yearValue" onChange={selectChange}>
-                                                    <option style={optionBox} value="2003">2003</option>
-                                                    <option style={optionBox} value="2002">2002</option>
-                                                    
-                                                </select>
-                                                <select style={optionBoxStyle}>
-                                                    <option style={optionBox}>1</option>
-                                                    <option style={optionBox}>2</option>
-                                                    
-                                                </select>
-                                                <select style={optionBoxStyle}>
-                                                    <option style={optionBox}>1</option>
-                                                    <option style={optionBox}>2</option>
-                                                    
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            소속
-                                            <input style={inputBoxStyle} type="text" name="company" value={company} onChange={onChange} />
-                                        </div>
-                                        <div>
-                                            거주지
-                                            <br/>
-                                            <select style={optionBoxStyle} name="city" id="region">
-                                                <option style={optionBox} value="US">US</option>
-                                                <option style={optionBox} value="UK">UK</option>
-                                            </select>
-                                            <input style={inputBoxStyle} type="text" name="region" value={region} onChange={onChange} placeholder={"$document.getElementById('city')"}/>
-                                        </div>
-                                    </div>
-                                </div> */}
                     </div>
                 </div>
             </section>
-            <hr style={hrStyle}></hr>
-            <div style={navBtnStyle}>
-                <Button variant="outlined" style={boxStyle} type="submit">
+            <hr className={styles.hrStyle}></hr>
+            <div className={styles.navBtnStyle}>
+                <Button variant="outlined" className={styles.boxStyle} type="submit">
                     제출
                 </Button>
-                <Link to="/myForm">
-                    <Button variant="outlined" style={boxStyle} type="submit">
+                <Link to="/">
+                    <Button variant="outlined" className={styles.boxStyle}>
                         취소
                     </Button>
                 </Link>

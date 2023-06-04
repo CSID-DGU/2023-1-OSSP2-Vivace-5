@@ -1,91 +1,26 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import axios, { AxiosResponse } from "axios";
 import { API_HOST, MAIN_PATH } from "../../config/constants";
+<<<<<<< HEAD
+import locale from "antd/es/date-picker/locale/en_US";
+import styles from './SignIn.module.css';
+import { ReloadOutlined } from '@ant-design/icons';
+=======
+>>>>>>> main
 
 function SignIn() {
     const navigate = useNavigate();
 
-    const mainScreen: CSSProperties = {
-        display: "flex",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        height: "400px",
-        flexDirection: "column",
-    };
-
-    const body: CSSProperties = {
-        margin: "0",
-        width: "100%",
-        height: "100%",
-    };
-
-    const inputsection: CSSProperties = {
-        display: "flex",
-        float: "left",
-    };
-
-    const navsection: CSSProperties = {
-        display: "block",
-        justifyContent: "space-between",
-        marginLeft: "0px",
-    };
-    //헤더 라인 스타일
-    const header: CSSProperties = {
-        backgroundColor: "#A6C0EE",
-        fontSize: "30px",
-        fontWeight: "bold",
-        paddingLeft: "20px",
-        height: "50px",
-    };
-
-    //'등록'박스 스타일
-    const boxStyle: CSSProperties = {
-        // backgroundColor:'red',
-        height: "2rem",
-        width: "10rem",
-        // margin: '1rem',
-        marginTop: "20px",
-    };
-
-    // h1 TEMPO 스타일
-    const titleStyle: CSSProperties = {
-        fontWeight: "bold",
-        fontSize: "60px",
-    };
-
-    //입력 박스 스타일
+    //입력 박스 CSS
     const inputBoxStyle: CSSProperties = {
         width: "300px",
         height: "30px",
         marginBottom: "30px",
         marginLeft: "10px",
-    };
-
-    //가로선 스타일
-    const hrStyle: CSSProperties = {
-        border: "1px solid black",
-        width: "700px",
-        // border: solid 10px red
-    };
-
-    //nav 버튼 스타일
-    const navBtnStyle: CSSProperties = {
-        fontWeight: "bold",
-        // display: 'flex:',
-        // flex: 1,
-        // alignItems: 'space-evenly',
-        // // justifyContent: 'space-evenly',
-        // width: '500px',
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
     };
 
     const [form, setForm] = useState({
@@ -103,6 +38,12 @@ function SignIn() {
         });
     };
 
+    // class EmailWaring extends React.Component {
+    // }
+
+    //E-mail과 Password 사이 span에 글자를 넣기 위한 quertSelector
+    const el:HTMLElement = document.querySelector(".elSpan") as unknown as HTMLFormElement;
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -114,7 +55,10 @@ function SignIn() {
         const emailRegex: RegExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
         if (!emailRegex.test(name)) {
             isEmail = false;
-            console.log("It is not an email format"); // 이 부분은 이메일 입력 창 아래에 빨간색으로 메세지가 뜨게 만들어주세요
+            console.log(el);
+            el.innerHTML= ("It is not an email format.");
+            // 페이지 전체 새로고침하는 코드
+            // window.location.reload();
         }
 
         if (8 > password.length || password.length > 24) {
@@ -160,13 +104,13 @@ function SignIn() {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={body}>
-            <header style={header}>New_Tempo_MyForm</header>
+        <form className={styles.form} onSubmit={handleSubmit}>
+            <header className={styles.header}>Tempo_signIn</header>
 
-            <section style={mainScreen}>
-                <h1 style={titleStyle}>TEMPO</h1>
-                <div style={inputsection}>
-                    <div>
+            <section className={styles.mainScreen}>
+                <h1 className={styles.h1}>TEMPO</h1>
+                <div className={styles.inputsection}>
+                    <div className={styles.inputTitle}>
                         <h2>E-mail</h2>
                         <h2>Password</h2>
                     </div>
@@ -182,6 +126,11 @@ function SignIn() {
                             onChange={onChange}
                         />
                         <br />
+                        
+                        <div>
+                            <span className={styles.elSpan}></span>
+                        </div>
+
                         <TextField
                             id="outlined-basic"
                             label="input password"
@@ -192,22 +141,21 @@ function SignIn() {
                             value={password}
                             onChange={onChange}
                         />
-                        {/* <input style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange} /> */}
                     </div>
                 </div>
                 <Stack spacing={2} direction="row">
-                    <Button variant="contained" type="submit" style={boxStyle}>
+                    <Button variant="contained" type="submit" className={styles.boxStyle}>
                         로그인
                     </Button>
                 </Stack>
             </section>
-            <hr style={hrStyle}></hr>
-            <section style={navsection}>
-                <div style={navBtnStyle}>
+            <hr className={styles.hr} />
+            <section className={styles.navsection}>
+                <div className={styles.navBtnStyle}>
                     <Link to="/signUp">
                         <Button variant="outlined">회원가입</Button>
                     </Link>
-                    <Link to="/pwChange">
+                    <Link to="/update/password">
                         <Button variant="outlined">비밀번호 변경</Button>
                     </Link>
                 </div>
