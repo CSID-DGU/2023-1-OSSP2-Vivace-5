@@ -7,7 +7,7 @@ import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import RouteRoundedIcon from "@mui/icons-material/RouteRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import "./RSideBar.css";
+import styles from "./RSideBar.module.css";
 
 const Sidebar = () => {
     const [value, setValue] = React.useState("one");
@@ -124,150 +124,152 @@ const Sidebar = () => {
     };
 
     return (
-        <Box sx={{ display: "flex" }}>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Tabs
-                    orientation="horizontal"
-                    variant="scrollable"
-                    value={value}
-                    onChange={handleChange}
-                    aria-label="sidebar tabs"
-                    sx={{ marginBottom: "16px" }}
-                >
-                    <Tab value="one" icon={<NotificationsActiveRoundedIcon />} sx={{ minWidth: "7px" }} />
-                    <Tab value="two" icon={<AccountCircleRoundedIcon />} sx={{ minWidth: "7px" }} />
-                    <Tab value="three" icon={<StarRoundedIcon />} sx={{ minWidth: "7px" }} />
-                    <Tab value="four" icon={<RouteRoundedIcon />} sx={{ minWidth: "7px" }} />
-                    <Tab value="five" icon={<CommentRoundedIcon />} sx={{ minWidth: "7px" }} />
-                </Tabs>
-                <Box sx={{ flexGrow: 1, padding: "16px" }}>
-                    {value === "one" && (
-                        <div>
-                            {inviteList.map((invite) => (
-                                <div key={invite.projectID} className="notifi">
-                                    <div className="inviteText">
-                                        <AccountCircleRoundedIcon sx={{ fontSize: 50 }} />
-                                        <div className="inviteInfo">
-                                            {invite.userName} invited
-                                            <br />
-                                            you to {invite.projectName}
+        <div className="RSideB">
+            <Box className={styles.container}>
+                <Box className={styles.sidebar}>
+                    <Tabs
+                        orientation="horizontal"
+                        variant="scrollable"
+                        value={value}
+                        onChange={handleChange}
+                        aria-label="sidebar tabs"
+                        className={styles.tabs}
+                    >
+                        <Tab value="one" icon={<NotificationsActiveRoundedIcon />} className={styles.tab} />
+                        <Tab value="two" icon={<AccountCircleRoundedIcon />} className={styles.tab} />
+                        <Tab value="three" icon={<StarRoundedIcon />} className={styles.tab} />
+                        <Tab value="four" icon={<RouteRoundedIcon />} className={styles.tab} />
+                        <Tab value="five" icon={<CommentRoundedIcon />} className={styles.tab} />
+                    </Tabs>
+                    <Box className={styles.content}>
+                        {value === "one" && (
+                            <div>
+                                {inviteList.map((invite) => (
+                                    <div key={invite.projectID} className={styles.notification}>
+                                        <div className={styles.inviteText}>
+                                            <AccountCircleRoundedIcon className={styles.icon} />
+                                            <div className={styles.inviteInfo}>
+                                                {invite.userName} invited
+                                                <br />
+                                                you to {invite.projectName}
+                                            </div>
+                                        </div>
+                                        <div className={styles.inviteButtons}>
+                                            <button
+                                                className={styles.acceptButton}
+                                                onClick={() => handleAcceptInvite(invite.projectID)}
+                                            >
+                                                Accept
+                                            </button>
+                                            <button
+                                                className={styles.declineButton}
+                                                onClick={() => handleDeclineInvite(invite.projectID)}
+                                            >
+                                                Decline
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="inviteButtons">
-                                        <button
-                                            className="acceptButton"
-                                            onClick={() => handleAcceptInvite(invite.projectID)}
-                                        >
-                                            Accept
-                                        </button>
-                                        <button
-                                            className="declineButton"
-                                            onClick={() => handleDeclineInvite(invite.projectID)}
-                                        >
-                                            Decline
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {value === "two" && (
-                        <div>
-                            {userList.map((user) => (
-                                <div
-                                    className="notifi"
-                                    key={user.userId}
-                                    onClick={() => handleMemberClick(user.userId)}
-                                >
-                                    <div className="profile">
-                                        <div className="userProfile">
-                                            <AccountCircleRoundedIcon sx={{ fontSize: 40 }} />
-                                        </div>
-                                        <div className="userInfo">
-                                            <div className="userName">{user.userName}</div>
-                                            <div className="userEmail">{user.userEmail}</div>
+                                ))}
+                            </div>
+                        )}
+                        {value === "two" && (
+                            <div>
+                                {userList.map((user) => (
+                                    <div
+                                        className={styles.notification}
+                                        key={user.userId}
+                                        onClick={() => handleMemberClick(user.userId)}
+                                    >
+                                        <div className={styles.profile}>
+                                            <div className={styles.userProfile}>
+                                                <AccountCircleRoundedIcon className={styles.icon} />
+                                            </div>
+                                            <div className={styles.userInfo}>
+                                                <div className={styles.userName}>{user.userName}</div>
+                                                <div className={styles.userEmail}>{user.userEmail}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                            {selectedMemberId && <div>Selected Member ID: {selectedMemberId}</div>}
-                        </div>
-                    )}
+                                ))}
+                                {selectedMemberId && <div>Selected Member ID: {selectedMemberId}</div>}
+                            </div>
+                        )}
 
-                    {value === "three" && (
-                        <div>
-                            <div className="kanban-board">
-                                <div className="column">
-                                    <div className="column-header">BookMark</div>
-                                    {bookmarks.map((task, index) => (
-                                        <div className="task" key={index}>
-                                            {task}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="column">
-                                    <div className="column-header">MileStone</div>
-                                    {milestones.map((task, index) => (
-                                        <div className="task" key={index}>
-                                            {task}
-                                        </div>
-                                    ))}
+                        {value === "three" && (
+                            <div>
+                                <div className={styles.kanbanBoard}>
+                                    <div className={styles.column}>
+                                        <div className={styles.columnHeader}>BookMark</div>
+                                        {bookmarks.map((task, index) => (
+                                            <div className={styles.task} key={index}>
+                                                {task}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={styles.column}>
+                                        <div className={styles.columnHeader}>MileStone</div>
+                                        {milestones.map((task, index) => (
+                                            <div className={styles.task} key={index}>
+                                                {task}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                    {value === "four" && (
-                        <div>
-                            <div className="kanban-board">
-                                <div className="column">
-                                    <div className="column-header">To-do</div>
-                                    {tasks.todo.map((task, index) => (
-                                        <div className="task" key={index}>
-                                            {task}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="column">
-                                    <div className="column-header">Progress</div>
-                                    {tasks.progress.map((task, index) => (
-                                        <div className="task" key={index}>
-                                            {task}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="column">
-                                    <div className="column-header">Done</div>
-                                    {tasks.done.map((task, index) => (
-                                        <div className="task" key={index}>
-                                            {task}
-                                        </div>
-                                    ))}
+                        )}
+                        {value === "four" && (
+                            <div>
+                                <div className={styles.kanbanBoard}>
+                                    <div className={styles.column}>
+                                        <div className={styles.columnHeader}>To-do</div>
+                                        {tasks.todo.map((task, index) => (
+                                            <div className={styles.task} key={index}>
+                                                {task}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={styles.column}>
+                                        <div className={styles.columnHeader}>Progress</div>
+                                        {tasks.progress.map((task, index) => (
+                                            <div className={styles.task} key={index}>
+                                                {task}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={styles.column}>
+                                        <div className={styles.columnHeader}>Done</div>
+                                        {tasks.done.map((task, index) => (
+                                            <div className={styles.task} key={index}>
+                                                {task}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {value === "five" && (
-                        <div>
-                            {commentList.map((comment) => (
-                                <div key={comment.commentId} className="comment">
-                                    <div className="commentHeader">
-                                        <AccountCircleRoundedIcon sx={{ fontSize: 40 }} />
-                                        <div className="commentInfo">
-                                            <div className="commentUser">{comment.userName}</div>
+                        {value === "five" && (
+                            <div>
+                                {commentList.map((comment) => (
+                                    <div key={comment.commentId} className={styles.comment}>
+                                        <div className={styles.commentHeader}>
+                                            <AccountCircleRoundedIcon className={styles.icon} />
+                                            <div className={styles.commentInfo}>
+                                                <div className={styles.commentUser}>{comment.userName}</div>
+                                            </div>
                                         </div>
+                                        <div className={styles.commentContent}>
+                                            <div className={styles.commentText}>{comment.comment}</div>
+                                        </div>
+                                        <div className={styles.commentTime}>{comment.time}</div>
                                     </div>
-                                    <div className="commentContent">
-                                        <div className="commentText">{comment.comment}</div>
-                                    </div>
-                                    <div className="commentTime">{comment.time}</div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                ))}
+                            </div>
+                        )}
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </div>
     );
 };
 

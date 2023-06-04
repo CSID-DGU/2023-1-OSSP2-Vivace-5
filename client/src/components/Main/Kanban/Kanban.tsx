@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import AddIcon from "@mui/icons-material/Add";
-import "./Kanban.css";
+import styles from "./Kanban.module.css";
 
 const initialColumns = [
     { id: "column-1", title: "column 1", tasks: ["task-1", "task-2", "task-3"] },
@@ -97,40 +97,44 @@ const Kanban: React.FC = () => {
     };
 
     return (
-        <div className="kanban">
+        <div className={styles.kanban}>
             <DragDropContext onDragEnd={handleDragEnd}>
-                <div className="column-container">
+                <div className={styles.columnContainer}>
                     <Droppable droppableId="all-columns" direction="horizontal" type="column">
                         {(provided) => (
-                            <div className="column-container" ref={provided.innerRef} {...provided.droppableProps}>
+                            <div
+                                className={styles.columnContainer}
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
                                 {columns.map((column, columnIndex) => (
                                     <Draggable draggableId={column.id} index={columnIndex} key={column.id}>
                                         {(provided) => (
                                             <div
-                                                className="column"
+                                                className={styles.column}
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
-                                                <div className="column-header">
-                                                    <h2 className="column-title">{column.title}</h2>
+                                                <div className={styles.columnHeader}>
+                                                    <h2 className={styles.columnTitle}>{column.title}</h2>
                                                     <button
-                                                        className="column-title-button"
+                                                        className={styles.columnTitleButton}
                                                         onClick={() => {
-                                                            const newTitle = prompt("새로운 열 제목을 입력하세요:");
+                                                            const newTitle = prompt("Enter the new column title:");
                                                             if (newTitle) {
                                                                 updateColumnTitle(column.id, newTitle);
                                                             }
                                                         }}
                                                     >
-                                                        <BorderColorIcon className="reName" />
+                                                        <BorderColorIcon className={styles.reName} />
                                                     </button>
-                                                    <span className="task-count">{column.tasks.length}</span>
+                                                    <span className={styles.taskCount}>{column.tasks.length}</span>
                                                 </div>
                                                 <Droppable droppableId={column.id} type="task">
                                                     {(provided) => (
                                                         <div
-                                                            className="task-list"
+                                                            className={styles.taskList}
                                                             ref={provided.innerRef}
                                                             {...provided.droppableProps}
                                                         >
@@ -142,7 +146,7 @@ const Kanban: React.FC = () => {
                                                                 >
                                                                     {(provided) => (
                                                                         <div
-                                                                            className="task"
+                                                                            className={styles.task}
                                                                             ref={provided.innerRef}
                                                                             {...provided.draggableProps}
                                                                             {...provided.dragHandleProps}
@@ -161,8 +165,8 @@ const Kanban: React.FC = () => {
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-                                <div className="add-column-button-container">
-                                    <button className="add-column-button" onClick={addColumn}>
+                                <div className={styles.addColumnButtonContainer}>
+                                    <button className={styles.addColumnButton} onClick={addColumn}>
                                         <AddIcon />
                                     </button>
                                 </div>

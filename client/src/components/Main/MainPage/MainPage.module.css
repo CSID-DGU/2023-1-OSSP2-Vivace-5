@@ -1,4 +1,4 @@
-.main-page {
+.mainPage {
     display: flex;
     height: 100vh;
     position: relative;
@@ -15,7 +15,7 @@
     position: relative;
 }
 
-.toggle-button {
+.toggleButton {
     position: relative;
     top: 50vh;
     left: 0px;
@@ -25,11 +25,11 @@
     z-index: 2;
 }
 
-.sidebar.closed .toggle-button {
+.sidebar.closed .toggleButton {
     left: 10px;
 }
 
-.sidebar .toggle-button {
+.sidebar .toggleButton {
     right: 10px;
 }
 

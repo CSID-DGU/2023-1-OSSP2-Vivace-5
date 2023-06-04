@@ -1,19 +1,45 @@
+import React from "react";
 import MarkDown from "../MarkDown/MarkDown";
+import Network from "../Network/Network";
+import Kanban from "../Kanban/Kanban";
+import TaskList from "../TaskList/TaskList";
 import AddIcon from "@mui/icons-material/Add";
+import styles from "./MainSect.module.css";
 
-function MainSection() {
+interface MainSectionProps {
+    currentTask: any; // Task에 맞춰서 추후 정의
+    onUpdateCurrentTask: (task: any) => void; // Task에 맞춰서 추후 정의
+}
+
+const MainSection: React.FC<MainSectionProps> = ({ currentTask, onUpdateCurrentTask }) => {
     const handleAddTask = () => {
         console.log("Add Task 버튼 클릭");
     };
 
+    // switch로 currentTask의 type에 따라 다른 컴포넌트를 렌더링
+    const renderComponent = () => {
+        if (currentTask) {
+            switch (currentTask.type) {
+                case "markdown":
+                    return <MarkDown />;
+                case "network":
+                    return <Network />;
+                case "kanban":
+                    return <Kanban />;
+                case "tasklist":
+                    return <TaskList />;
+                default:
+                    return null;
+            }
+        }
+        return null;
+    };
+
     return (
-        <div className="main-section">
-            {/* <Network /> */}
-            {/* <Kanban /> */}
-            {/* <TaskList /> */}
-            <MarkDown />
+        <div className={styles.mainSection}>
+            {renderComponent()}
             <div
-                className="add-task-button"
+                className={styles.addTaskButton}
                 style={{
                     position: "fixed",
                     bottom: "10px",
@@ -35,6 +61,6 @@ function MainSection() {
             </div>
         </div>
     );
-}
+};
 
 export default MainSection;

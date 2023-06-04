@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import "./LSideBar.css";
+import styles from "./LSideBar.module.css";
 import { API_HOST } from "../../config/constants";
 import axios, { AxiosResponse } from "axios";
 import { Avatar } from "antd";
 
 interface Project {
-    id: number;
-    name: string;
+    id: string;
+    title: string;
+    description: string;
+    type: string;
+    encodedImg: string;
+    userToProjects: {
+        right: string;
+    };
 }
 
 interface User {
@@ -16,10 +22,24 @@ interface User {
     profileImage: string;
 }
 
-const LSidebar: React.FC = () => {
+interface MainPageProps {
+    onProjectClick: (projectId: string) => void;
+}
+
+const LSidebar: React.FC<MainPageProps> = ({ onProjectClick }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [userInfo, setUserInfo] = useState({ name: "", email: "", profileImage: "" });
+    const [userInfo, setUserInfo] = useState<User>({
+        name: "",
+        email: "",
+        profileImage: "",
+    });
+    const [projects, setProjects] = useState<Project[]>([]);
+
+    useEffect(() => {
+        getUserData();
+        getProjects();
+    }, []);
 
     async function getUserData(): Promise<void> {
         try {
@@ -28,43 +48,45 @@ const LSidebar: React.FC = () => {
             });
 
             if (res.status === 200) {
-                const {
-                    id,
-                    firstName,
-                    lastName,
-                    email,
-                    year,
-                    month,
-                    date,
-                    belong,
-                    country,
-                    region,
-                    encodedImg,
-                    createdAt,
-                } = res.data;
+                const { firstName, lastName, email, encodedImg } = res.data;
 
-                setUserInfo({ name: firstName + lastName, email, profileImage: encodedImg });
+                setUserInfo({
+                    name: firstName + lastName,
+                    email: email,
+                    profileImage: encodedImg,
+                });
                 console.log(userInfo);
             } else {
-                console.log("error!!");
+                console.log("error");
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                console.log(error);
+                console.log("error");
             }
         }
     }
 
-    getUserData();
+    async function getProjects(): Promise<void> {
+        try {
+            const res: AxiosResponse = await axios.get(`${API_HOST}project`, {
+                headers: { Authorization: localStorage.getItem("access-token") },
+            });
 
-    const projects: Project[] = [
-        { id: 1, name: "Project 1" },
-        { id: 2, name: "Project 2" },
-        { id: 3, name: "Project 3" },
-    ];
+            if (res.status === 200) {
+                const projectsData: Project[] = res.data;
+                setProjects(projectsData);
+            } else {
+                console.log("error");
+            }
+        } catch (error) {
+            if (axios.isAxiosError("error")) {
+                console.log("error");
+            }
+        }
+    }
 
     const filteredProjects = projects.filter((project) =>
-        project.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        project.title.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     const handleToggleSidebar = () => {
@@ -72,18 +94,18 @@ const LSidebar: React.FC = () => {
     };
 
     return (
-        <div className={`sidebar ${isSidebarOpen ? "" : "closed"}`}>
-            <div className="content">
-                <div className="profile">
-                    <div className="profileImageContainer">
+        <div className={`${styles.sidebar} ${isSidebarOpen ? "" : styles.closed}`}>
+            <div className={styles.content}>
+                <div className={styles.profile}>
+                    <div className={styles.profileImageContainer}>
                         <Avatar src={userInfo.profileImage} size={40} />
                     </div>
 
-                    <div className="userInfo">
-                        <div className="userName">
+                    <div className={styles.userInfo}>
+                        <div className={styles.userName}>
                             {userInfo.name}
                             <br />
-                            <div className="userEmail">{userInfo.email}</div>
+                            <div className={styles.userEmail}>{userInfo.email}</div>
                         </div>
                     </div>
                 </div>
@@ -93,14 +115,14 @@ const LSidebar: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <ul className="project-list">
+                <ul className={styles.projectList}>
                     {filteredProjects.map((project) => (
-                        <li key={project.id} onClick={() => console.log(project.id)}>
-                            {project.name}
+                        <li key={project.id} onClick={() => onProjectClick(project.id)}>
+                            {project.title}
                         </li>
                     ))}
                 </ul>
-                <button className="add-project-button">Add Project</button>
+                <button className={styles.addProjectButton}>Add Project</button>
             </div>
         </div>
     );

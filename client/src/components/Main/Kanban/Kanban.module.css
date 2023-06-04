@@ -5,7 +5,7 @@
     padding: 20px;
 }
 
-.column-container {
+.columnContainer {
     display: flex;
     gap: 20px;
 }
@@ -17,19 +17,19 @@
     min-width: 250px;
 }
 
-.column-header {
+.columnHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
 }
 
-.column-title {
+.columnTitle {
     margin: 0;
     flex: 1;
 }
 
-.column-title-button {
+.columnTitleButton {
     background: none;
     border: none;
     color: #000000;
@@ -46,23 +46,23 @@
     margin-bottom: 10px;
 }
 
-.task-count {
+.taskCount {
     font-size: 20px;
     color: #666666;
 }
 
-.task-list {
+.taskList {
     background-color: #e8e8e8; /* Task Droppable 영역 */
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px;
 }
 
-.add-column-button-container {
+.addColumnButtonContainer {
     margin-top: 0px;
 }
 
-.add-column-button {
+.addColumnButton {
     background-color: #b9b9b9;
     color: #ffffff;
     border: none;
@@ -71,6 +71,6 @@
     cursor: pointer;
 }
 
-.add-column-button:hover {
+.addColumnButton:hover {
     background-color: #0056b3;
 }

@@ -49,14 +49,14 @@ input[type="text"] {
     align-items: center;
 }
 
-.project-list {
+.projectList {
     display: flex;
     flex-direction: column;
     list-style-type: none;
     padding: 0;
 }
 
-.project-list li {
+.projectList li {
     width: 75%;
     list-style-type: none;
     padding: 5px;
@@ -64,7 +64,7 @@ input[type="text"] {
     margin-bottom: 2px;
 }
 
-.add-project-button {
+.addProjectButton {
     width: 86%;
     padding: 8px;
     margin-left: 10px;
@@ -75,6 +75,6 @@ input[type="text"] {
     cursor: pointer;
 }
 
-.add-project-button:hover {
+.addProjectButton:hover {
     background-color: #e0e0e0;
 }
