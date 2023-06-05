@@ -43,6 +43,7 @@ import {
     ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { UserRight } from "src/enum/user-right.enum";
+import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
 
 @Controller("task")
 @UseGuards(AuthGuard())
@@ -794,7 +795,8 @@ export class TaskController {
     getAllBookmarkFolders(@GetUser() user: User) {}
 
     @Post("/create/bookmark")
-    createBookmark(@GetUser() user: User, @Body() createBookmarkDto: CreateBookmarkDto) {}
+    createBookmark(@GetUser() user: User, @Body() taskId: string) {
+    }
 
     @Patch("/bring/down/bookmark")
     bringDownBookmark(@GetUser() user: User, @Body() bringDownBookmarkDto: BringDownBookmarkDto) {}
@@ -813,20 +815,32 @@ export class TaskController {
     deleteBookmark(@GetUser() user: User, @Param("id", ParseUUIDPipe) bookmarkId: string) {}
 
     @Get("/content/:id")
-    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {}
+    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {
+        this.logger.verbose(`User ${user.email} trying to get all contents for task with id ${taskId}`);
+        return this.taskService.getAllContents(user, taskId);
+    }
 
     @Post("/create/content/:id")
-    createContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {}
+    createContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string, createContentDto: CreateContentDto) {
+        this.logger.verbose(`User ${user.email} trying to create content for task with id ${taskId}`);
+        return this.taskService.createContent(user, taskId, createContentDto);
+    }
 
     @Put("/update/content/:id")
     updateContent(
         @GetUser() user: User,
         @Param("id", ParseUUIDPipe) contentId: string,
-        @Body("content") content: string,
-    ) {}
+        @Body() updateContentDto: UpdateContentDto,
+    ) {
+        this.logger.verbose(`User ${user.email} trying to update content with id ${contentId}`);
+        return this.taskService.updateContent(user, contentId, updateContentDto);
+    }
 
     @Delete("/delete/content/:id")
-    deleteContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) contentId: string) {}
+    deleteContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) contentId: string) {
+        this.logger.verbose(`User ${user.email} trying to delete content with id ${contentId}`);
+        return this.taskService.deleteContent(user, contentId);
+    }
 
     @Get("/comment/:id")
     getAllComments(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string, @Query("q") query: string) {}
@@ -879,3 +893,5 @@ export class TaskController {
         return this.taskService.deleteTask(user, deleteTaskDto);
     }
 }
+
+

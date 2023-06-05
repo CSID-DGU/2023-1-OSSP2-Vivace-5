@@ -5,11 +5,11 @@ import { AppendTaskDto } from "./dto/append-task.dto";
 import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { AppendColumnDto } from "./dto/append-column.dto";
 import { MoveTaskBetweenColumnsDto } from "./dto/move-task-between-columns.dto";
-import { CreateBookmarkDto } from "./dto/create-bookmark.dto";
 import { BringDownBookmarkDto } from "./dto/bring-down-bookmark.dto";
 import { Task } from "src/entity/task.entity";
 import { SubTask } from "src/enum/sub-task.enum";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
+import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
 export declare class TaskController {
     private taskService;
     private logger;
@@ -68,15 +68,30 @@ export declare class TaskController {
     }>;
     getAllBookmarks(user: User, query: string): void;
     getAllBookmarkFolders(user: User): void;
-    createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): void;
+    createBookmark(user: User, taskId: string): void;
     bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;
     bringUpBookmark(user: User, bookmarkId: string): void;
     updateBookmarkTitle(user: User, bookmarkId: string, newTitle: string): void;
     deleteBookmark(user: User, bookmarkId: string): void;
-    getAllContents(user: User, taskId: string): void;
-    createContent(user: User, taskId: string): void;
-    updateContent(user: User, contentId: string, content: string): void;
-    deleteContent(user: User, contentId: string): void;
+    getAllContents(user: User, taskId: string): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        taskId: string;
+    }>;
+    createContent(user: User, taskId: string, createContentDto: CreateContentDto): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        taskId: string;
+    }>;
+    updateContent(user: User, contentId: string, updateContentDto: UpdateContentDto): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        taskId: string;
+    }>;
+    deleteContent(user: User, contentId: string): Promise<void>;
     getAllComments(user: User, taskId: string, query: string): void;
     createCommment(user: User, taskId: string, content: string): void;
     createReply(user: User, commentId: string, content: string): void;

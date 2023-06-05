@@ -21,11 +21,13 @@ const project_repository_1 = require("../project/project.repository");
 const user_right_enum_1 = require("../enum/user-right.enum");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_repository_1 = require("../user/user.repository");
+const content_repository_1 = require("./content.repository");
 let TaskService = class TaskService {
-    constructor(taskRepository, projectRepository, userRepository) {
+    constructor(taskRepository, projectRepository, userRepository, contentRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.contentRepository = contentRepository;
     }
     async getTaskInfo(user, taskId) {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
@@ -593,15 +595,77 @@ let TaskService = class TaskService {
         await this.taskRepository.findDescendants(task);
         await this.taskRepository.delete({ id: taskId });
     }
+    async createContent(user, taskId, createContentDto) {
+        const { title, content } = createContentDto;
+        const taskQuery = this.taskRepository.createQueryBuilder("task");
+        taskQuery.select(["task.id"]).leftJoin("task.project", "project").addSelect(["project.id"]).where("task.id = :taskId", { taskId });
+        const task = await taskQuery.getOne();
+        if (!task) {
+            throw new common_1.NotFoundException(`The task with id ${taskId} is not found.`);
+        }
+        if (!title) {
+            throw new common_1.BadRequestException(`Title is required.`);
+        }
+        const newContent = this.contentRepository.create({
+            title,
+            content,
+            task,
+        });
+        await this.contentRepository.save(newContent);
+        return { id: newContent.id, title: newContent.title, content: newContent.content, taskId: newContent.task.id };
+    }
+    async getAllContents(user, taskId) {
+        const taskQuery = this.taskRepository.createQueryBuilder("task");
+        taskQuery.select(["task.id"]).leftJoin("task.project", "project").addSelect(["project.id"]).where("task.id = :taskId", { taskId });
+        const task = await taskQuery.getOne();
+        if (!task) {
+            throw new common_1.NotFoundException(`The task with id ${taskId} is not found.`);
+        }
+        const contentQuery = this.contentRepository.createQueryBuilder("content");
+        contentQuery.select(["content.id", "content.title", "content.content"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("task.id = :taskId", { taskId });
+        const content = await contentQuery.getOne();
+        if (!content) {
+            throw new common_1.NotFoundException(`The content of task with id ${taskId} is not found.`);
+        }
+        return { id: content.id, title: content.title, content: content.content, taskId: content.task.id };
+    }
+    async updateContent(user, contentId, updateContentDto) {
+        const { title, content } = updateContentDto;
+        const contentQuery = this.contentRepository.createQueryBuilder("content");
+        contentQuery.select(["content.id", "content.title", "content.content"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("content.id = :contentId", { contentId });
+        const foundContent = await contentQuery.getOne();
+        if (!foundContent) {
+            throw new common_1.NotFoundException(`The content with id ${contentId} is not found.`);
+        }
+        if (title) {
+            foundContent.title = title;
+        }
+        if (content) {
+            foundContent.content = content;
+        }
+        await this.contentRepository.save(foundContent);
+        return { id: foundContent.id, title: foundContent.title, content: foundContent.content, taskId: foundContent.task.id };
+    }
+    async deleteContent(user, contentId) {
+        const contentQuery = this.contentRepository.createQueryBuilder("content");
+        contentQuery.select(["content.id"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("content.id = :contentId", { contentId });
+        const foundContent = await contentQuery.getOne();
+        if (!foundContent) {
+            throw new common_1.NotFoundException(`The content with id ${contentId} is not found.`);
+        }
+        await this.contentRepository.delete({ id: contentId });
+    }
 };
 TaskService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(task_repository_1.TaskRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(project_repository_1.ProjectRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(user_repository_1.UserRepository)),
+    __param(3, (0, typeorm_1.InjectRepository)(content_repository_1.TaskContentRepository)),
     __metadata("design:paramtypes", [task_repository_1.TaskRepository,
         project_repository_1.ProjectRepository,
-        user_repository_1.UserRepository])
+        user_repository_1.UserRepository,
+        content_repository_1.TaskContentRepository])
 ], TaskService);
 exports.TaskService = TaskService;
 //# sourceMappingURL=task.service.js.map

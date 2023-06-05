@@ -25,13 +25,13 @@ const not_empty_string_validation_pipe_1 = require("../pipe/not-empty-string-val
 const time_format_validation_pipe_1 = require("../pipe/time-format.validation.pipe");
 const append_column_dto_1 = require("./dto/append-column.dto");
 const move_task_between_columns_dto_1 = require("./dto/move-task-between-columns.dto");
-const create_bookmark_dto_1 = require("./dto/create-bookmark.dto");
 const bring_down_bookmark_dto_1 = require("./dto/bring-down-bookmark.dto");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const boolean_pipe_1 = require("../pipe/boolean.pipe");
 const delete_task_dto_1 = require("./dto/delete-task.dto");
 const swagger_1 = require("@nestjs/swagger");
 const user_right_enum_1 = require("../enum/user-right.enum");
+const create_content_dto_1 = require("./dto/create-content.dto");
 let TaskController = class TaskController {
     constructor(taskService) {
         this.taskService = taskService;
@@ -101,15 +101,28 @@ let TaskController = class TaskController {
     }
     getAllBookmarks(user, query) { }
     getAllBookmarkFolders(user) { }
-    createBookmark(user, createBookmarkDto) { }
+    createBookmark(user, taskId) {
+    }
     bringDownBookmark(user, bringDownBookmarkDto) { }
     bringUpBookmark(user, bookmarkId) { }
     updateBookmarkTitle(user, bookmarkId, newTitle) { }
     deleteBookmark(user, bookmarkId) { }
-    getAllContents(user, taskId) { }
-    createContent(user, taskId) { }
-    updateContent(user, contentId, content) { }
-    deleteContent(user, contentId) { }
+    getAllContents(user, taskId) {
+        this.logger.verbose(`User ${user.email} trying to get all contents for task with id ${taskId}`);
+        return this.taskService.getAllContents(user, taskId);
+    }
+    createContent(user, taskId, createContentDto) {
+        this.logger.verbose(`User ${user.email} trying to create content for task with id ${taskId}`);
+        return this.taskService.createContent(user, taskId, createContentDto);
+    }
+    updateContent(user, contentId, updateContentDto) {
+        this.logger.verbose(`User ${user.email} trying to update content with id ${contentId}`);
+        return this.taskService.updateContent(user, contentId, updateContentDto);
+    }
+    deleteContent(user, contentId) {
+        this.logger.verbose(`User ${user.email} trying to delete content with id ${contentId}`);
+        return this.taskService.deleteContent(user, contentId);
+    }
     getAllComments(user, taskId, query) { }
     createCommment(user, taskId, content) { }
     createReply(user, commentId, content) { }
@@ -848,7 +861,7 @@ __decorate([
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, create_bookmark_dto_1.CreateBookmarkDto]),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "createBookmark", null);
 __decorate([
@@ -897,16 +910,16 @@ __decorate([
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, create_content_dto_1.CreateContentDto]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "createContent", null);
 __decorate([
     (0, common_1.Put)("/update/content/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
-    __param(2, (0, common_1.Body)("content")),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, create_content_dto_1.UpdateContentDto]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "updateContent", null);
 __decorate([

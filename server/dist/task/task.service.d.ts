@@ -8,11 +8,14 @@ import { AppendTaskDto } from "./dto/append-task.dto";
 import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { UserRepository } from "src/user/user.repository";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
+import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
+import { TaskContentRepository } from "./content.repository";
 export declare class TaskService {
     private taskRepository;
     private projectRepository;
     private userRepository;
-    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository);
+    private contentRepository;
+    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository, contentRepository: TaskContentRepository);
     getTaskInfo(user: User, taskId: string): Promise<Task>;
     createTask(user: User, createTaskDto: CreateTaskDto): Promise<{
         id: string;
@@ -60,4 +63,23 @@ export declare class TaskService {
         alreadyNotTaskMemberIds: string[];
     }>;
     deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<void>;
+    createContent(user: User, taskId: string, createContentDto: CreateContentDto): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        taskId: string;
+    }>;
+    getAllContents(user: User, taskId: string): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        taskId: string;
+    }>;
+    updateContent(user: User, contentId: string, updateContentDto: UpdateContentDto): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        taskId: string;
+    }>;
+    deleteContent(user: User, contentId: string): Promise<void>;
 }

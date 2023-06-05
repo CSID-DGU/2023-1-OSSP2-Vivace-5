@@ -6,9 +6,10 @@ import { TaskRepository } from "./task.repository";
 import { UserModule } from "src/user/user.module";
 import { ProjectRepository } from "src/project/project.repository";
 import { UserRepository } from "src/user/user.repository";
+import { TaskContentRepository } from "./content.repository";
 
 @Module({
-    imports: [TypeOrmExModule.forCustomRepository([TaskRepository, ProjectRepository, UserRepository]), UserModule],
+    imports: [TypeOrmExModule.forCustomRepository([TaskRepository, ProjectRepository, UserRepository, TaskContentRepository]), UserModule],
     controllers: [TaskController],
     providers: [TaskService],
     exports: [],
