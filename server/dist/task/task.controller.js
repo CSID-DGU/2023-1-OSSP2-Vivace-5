@@ -99,14 +99,20 @@ let TaskController = class TaskController {
         this.logger.verbose(`User ${user.email} trying to dismiss members from task with id ${taskId}`);
         return this.taskService.dismiss(user, taskId, memberIds);
     }
-    getAllBookmarks(user, query) { }
-    getAllBookmarkFolders(user) { }
+    getAllBookmarks(user) {
+        this.logger.verbose(`User ${user.email} trying to get all bookmarks`);
+        return this.taskService.getAllBookmarks(user);
+    }
     createBookmark(user, taskId) {
+        this.logger.verbose(`User ${user.email} trying to create bookmark for task with id ${taskId}`);
+        return this.taskService.createBookmark(user, taskId);
     }
     bringDownBookmark(user, bringDownBookmarkDto) { }
     bringUpBookmark(user, bookmarkId) { }
-    updateBookmarkTitle(user, bookmarkId, newTitle) { }
-    deleteBookmark(user, bookmarkId) { }
+    deleteBookmark(user, bookmarkId) {
+        this.logger.verbose(`User ${user.email} trying to delete bookmark with id ${bookmarkId}`);
+        return this.taskService.deleteBookmark(user, bookmarkId);
+    }
     getAllContents(user, taskId) {
         this.logger.verbose(`User ${user.email} trying to get all contents for task with id ${taskId}`);
         return this.taskService.getAllContents(user, taskId);
@@ -844,18 +850,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)("/bookmark"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Query)("q")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "getAllBookmarks", null);
-__decorate([
-    (0, common_1.Get)("/bookmark/folder"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "getAllBookmarkFolders", null);
+    __metadata("design:returntype", Promise)
+], TaskController.prototype, "getAllBookmarks", null);
 __decorate([
     (0, common_1.Post)("/create/bookmark"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
@@ -880,15 +878,6 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "bringUpBookmark", null);
-__decorate([
-    (0, common_1.Patch)("/update/bookmark/title/:id"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
-    __param(2, (0, common_1.Body)("newTitle", not_empty_string_validation_pipe_1.NotEmptyStringValidationPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "updateBookmarkTitle", null);
 __decorate([
     (0, common_1.Delete)("/delete/bookmark/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),

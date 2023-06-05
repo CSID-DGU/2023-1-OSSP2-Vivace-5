@@ -14,6 +14,9 @@ import { DeleteTaskDto } from "./dto/delete-task.dto";
 import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
 import { TaskContentRepository } from "./content.repository";
 import { TaskContent } from "src/entity/task-content.entity";
+import { UserToTaskRepository } from "./userToTask.repository";
+import { FindManyOptions, FindOneOptions } from "typeorm";
+import { UserToTask } from "src/entity/user-to-task.entity";
 
 @Injectable()
 export class TaskService {
@@ -22,6 +25,7 @@ export class TaskService {
         @InjectRepository(ProjectRepository) private projectRepository: ProjectRepository,
         @InjectRepository(UserRepository) private userRepository: UserRepository,
         @InjectRepository(TaskContentRepository) private contentRepository: TaskContentRepository,
+        @InjectRepository(UserToTaskRepository) private userToTaskRepository: UserToTaskRepository,
     ) {}
 
     async getTaskInfo(user: User, taskId: string): Promise<Task> {
@@ -862,7 +866,11 @@ export class TaskService {
         await this.taskRepository.delete({ id: taskId });
     }
 
-    async createContent(user: User, taskId: string, createContentDto: CreateContentDto): Promise<{
+    async createContent(
+        user: User,
+        taskId: string,
+        createContentDto: CreateContentDto,
+    ): Promise<{
         id: string;
         title: string;
         content: string;
@@ -872,7 +880,11 @@ export class TaskService {
 
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
-        taskQuery.select(["task.id"]).leftJoin("task.project", "project").addSelect(["project.id"]).where("task.id = :taskId", { taskId });
+        taskQuery
+            .select(["task.id"])
+            .leftJoin("task.project", "project")
+            .addSelect(["project.id"])
+            .where("task.id = :taskId", { taskId });
 
         const task: Task = await taskQuery.getOne();
 
@@ -880,7 +892,7 @@ export class TaskService {
             throw new NotFoundException(`The task with id ${taskId} is not found.`);
         }
 
-        if(!title) {
+        if (!title) {
             throw new BadRequestException(`Title is required.`);
         }
 
@@ -895,7 +907,10 @@ export class TaskService {
         return { id: newContent.id, title: newContent.title, content: newContent.content, taskId: newContent.task.id };
     }
 
-    async getAllContents(user: User, taskId: string): Promise<{
+    async getAllContents(
+        user: User,
+        taskId: string,
+    ): Promise<{
         id: string;
         title: string;
         content: string;
@@ -903,7 +918,11 @@ export class TaskService {
     }> {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
-        taskQuery.select(["task.id"]).leftJoin("task.project", "project").addSelect(["project.id"]).where("task.id = :taskId", { taskId });
+        taskQuery
+            .select(["task.id"])
+            .leftJoin("task.project", "project")
+            .addSelect(["project.id"])
+            .where("task.id = :taskId", { taskId });
 
         const task: Task = await taskQuery.getOne();
 
@@ -913,7 +932,11 @@ export class TaskService {
 
         const contentQuery = this.contentRepository.createQueryBuilder("content");
 
-        contentQuery.select(["content.id", "content.title", "content.content"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("task.id = :taskId", { taskId });
+        contentQuery
+            .select(["content.id", "content.title", "content.content"])
+            .leftJoin("content.task", "task")
+            .addSelect(["task.id"])
+            .where("task.id = :taskId", { taskId });
 
         const content: TaskContent = await contentQuery.getOne();
 
@@ -924,7 +947,11 @@ export class TaskService {
         return { id: content.id, title: content.title, content: content.content, taskId: content.task.id };
     }
 
-    async updateContent(user: User, contentId: string, updateContentDto: UpdateContentDto): Promise<{
+    async updateContent(
+        user: User,
+        contentId: string,
+        updateContentDto: UpdateContentDto,
+    ): Promise<{
         id: string;
         title: string;
         content: string;
@@ -934,7 +961,11 @@ export class TaskService {
 
         const contentQuery = this.contentRepository.createQueryBuilder("content");
 
-        contentQuery.select(["content.id", "content.title", "content.content"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("content.id = :contentId", { contentId });
+        contentQuery
+            .select(["content.id", "content.title", "content.content"])
+            .leftJoin("content.task", "task")
+            .addSelect(["task.id"])
+            .where("content.id = :contentId", { contentId });
 
         const foundContent: TaskContent = await contentQuery.getOne();
 
@@ -952,13 +983,22 @@ export class TaskService {
 
         await this.contentRepository.save(foundContent);
 
-        return { id: foundContent.id, title: foundContent.title, content: foundContent.content, taskId: foundContent.task.id };
+        return {
+            id: foundContent.id,
+            title: foundContent.title,
+            content: foundContent.content,
+            taskId: foundContent.task.id,
+        };
     }
 
     async deleteContent(user: User, contentId: string): Promise<void> {
         const contentQuery = this.contentRepository.createQueryBuilder("content");
 
-        contentQuery.select(["content.id"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("content.id = :contentId", { contentId });
+        contentQuery
+            .select(["content.id"])
+            .leftJoin("content.task", "task")
+            .addSelect(["task.id"])
+            .where("content.id = :contentId", { contentId });
 
         const foundContent: TaskContent = await contentQuery.getOne();
 
@@ -969,4 +1009,55 @@ export class TaskService {
         await this.contentRepository.delete({ id: contentId });
     }
 
+    async createBookmark(
+        user: User,
+        taskId: string,
+    ): Promise<{
+        id: string;
+        taskId: string;
+    }> {
+        const options: FindOneOptions<UserToTask> = {
+            where: { userId: user.id, taskId },
+        };
+    
+        const userToTask = await this.userToTaskRepository.findOne(options);
+    
+        if (!userToTask) {
+            throw new NotFoundException(`The userToTask with userId ${user.id} and taskId ${taskId} is not found.`);
+        }
+    
+        userToTask.bookmark = true;
+    
+        await this.userToTaskRepository.save(userToTask);
+
+        return { id: user.id, taskId: userToTask.task.id };
+    }
+
+    async deleteBookmark( user: User, taskId: string ): Promise<void> {
+        const options: FindOneOptions<UserToTask> = {
+            where: { userId: user.id, taskId },
+        };
+    
+        const userToTask = await this.userToTaskRepository.findOne(options);
+    
+        if (!userToTask) {
+            throw new NotFoundException(`The userToTask with userId ${user.id} and taskId ${taskId} is not found.`);
+        }
+    
+        userToTask.bookmark = false;
+    
+        await this.userToTaskRepository.save(userToTask);
+    }
+
+    async getAllBookmarks(user: User): Promise<Task[]> {
+        const options: FindManyOptions<UserToTask> = {
+            where: { userId: user.id, bookmark: true },
+        };
+    
+        const userToTasks = await this.userToTaskRepository.find(options);
+    
+        const tasks = userToTasks.map((userToTask) => userToTask.task);
+    
+        return tasks;
+    }
 }

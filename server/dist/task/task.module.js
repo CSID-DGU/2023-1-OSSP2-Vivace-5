@@ -16,11 +16,12 @@ const user_module_1 = require("../user/user.module");
 const project_repository_1 = require("../project/project.repository");
 const user_repository_1 = require("../user/user.repository");
 const content_repository_1 = require("./content.repository");
+const userToTask_repository_1 = require("./userToTask.repository");
 let TaskModule = class TaskModule {
 };
 TaskModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_ex_module_1.TypeOrmExModule.forCustomRepository([task_repository_1.TaskRepository, project_repository_1.ProjectRepository, user_repository_1.UserRepository, content_repository_1.TaskContentRepository]), user_module_1.UserModule],
+        imports: [typeorm_ex_module_1.TypeOrmExModule.forCustomRepository([task_repository_1.TaskRepository, project_repository_1.ProjectRepository, user_repository_1.UserRepository, content_repository_1.TaskContentRepository, userToTask_repository_1.UserToTaskRepository]), user_module_1.UserModule],
         controllers: [task_controller_1.TaskController],
         providers: [task_service_1.TaskService],
         exports: [],

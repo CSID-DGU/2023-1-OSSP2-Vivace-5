@@ -66,13 +66,14 @@ export declare class TaskController {
         notFoundUserIds: string[];
         alreadyNotTaskMemberIds: string[];
     }>;
-    getAllBookmarks(user: User, query: string): void;
-    getAllBookmarkFolders(user: User): void;
-    createBookmark(user: User, taskId: string): void;
+    getAllBookmarks(user: User): Promise<Task[]>;
+    createBookmark(user: User, taskId: string): Promise<{
+        id: string;
+        taskId: string;
+    }>;
     bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;
     bringUpBookmark(user: User, bookmarkId: string): void;
-    updateBookmarkTitle(user: User, bookmarkId: string, newTitle: string): void;
-    deleteBookmark(user: User, bookmarkId: string): void;
+    deleteBookmark(user: User, bookmarkId: string): Promise<void>;
     getAllContents(user: User, taskId: string): Promise<{
         id: string;
         title: string;

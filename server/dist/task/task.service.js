@@ -22,12 +22,14 @@ const user_right_enum_1 = require("../enum/user-right.enum");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_repository_1 = require("../user/user.repository");
 const content_repository_1 = require("./content.repository");
+const userToTask_repository_1 = require("./userToTask.repository");
 let TaskService = class TaskService {
-    constructor(taskRepository, projectRepository, userRepository, contentRepository) {
+    constructor(taskRepository, projectRepository, userRepository, contentRepository, userToTaskRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.contentRepository = contentRepository;
+        this.userToTaskRepository = userToTaskRepository;
     }
     async getTaskInfo(user, taskId) {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
@@ -598,7 +600,11 @@ let TaskService = class TaskService {
     async createContent(user, taskId, createContentDto) {
         const { title, content } = createContentDto;
         const taskQuery = this.taskRepository.createQueryBuilder("task");
-        taskQuery.select(["task.id"]).leftJoin("task.project", "project").addSelect(["project.id"]).where("task.id = :taskId", { taskId });
+        taskQuery
+            .select(["task.id"])
+            .leftJoin("task.project", "project")
+            .addSelect(["project.id"])
+            .where("task.id = :taskId", { taskId });
         const task = await taskQuery.getOne();
         if (!task) {
             throw new common_1.NotFoundException(`The task with id ${taskId} is not found.`);
@@ -616,13 +622,21 @@ let TaskService = class TaskService {
     }
     async getAllContents(user, taskId) {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
-        taskQuery.select(["task.id"]).leftJoin("task.project", "project").addSelect(["project.id"]).where("task.id = :taskId", { taskId });
+        taskQuery
+            .select(["task.id"])
+            .leftJoin("task.project", "project")
+            .addSelect(["project.id"])
+            .where("task.id = :taskId", { taskId });
         const task = await taskQuery.getOne();
         if (!task) {
             throw new common_1.NotFoundException(`The task with id ${taskId} is not found.`);
         }
         const contentQuery = this.contentRepository.createQueryBuilder("content");
-        contentQuery.select(["content.id", "content.title", "content.content"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("task.id = :taskId", { taskId });
+        contentQuery
+            .select(["content.id", "content.title", "content.content"])
+            .leftJoin("content.task", "task")
+            .addSelect(["task.id"])
+            .where("task.id = :taskId", { taskId });
         const content = await contentQuery.getOne();
         if (!content) {
             throw new common_1.NotFoundException(`The content of task with id ${taskId} is not found.`);
@@ -632,7 +646,11 @@ let TaskService = class TaskService {
     async updateContent(user, contentId, updateContentDto) {
         const { title, content } = updateContentDto;
         const contentQuery = this.contentRepository.createQueryBuilder("content");
-        contentQuery.select(["content.id", "content.title", "content.content"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("content.id = :contentId", { contentId });
+        contentQuery
+            .select(["content.id", "content.title", "content.content"])
+            .leftJoin("content.task", "task")
+            .addSelect(["task.id"])
+            .where("content.id = :contentId", { contentId });
         const foundContent = await contentQuery.getOne();
         if (!foundContent) {
             throw new common_1.NotFoundException(`The content with id ${contentId} is not found.`);
@@ -644,16 +662,56 @@ let TaskService = class TaskService {
             foundContent.content = content;
         }
         await this.contentRepository.save(foundContent);
-        return { id: foundContent.id, title: foundContent.title, content: foundContent.content, taskId: foundContent.task.id };
+        return {
+            id: foundContent.id,
+            title: foundContent.title,
+            content: foundContent.content,
+            taskId: foundContent.task.id,
+        };
     }
     async deleteContent(user, contentId) {
         const contentQuery = this.contentRepository.createQueryBuilder("content");
-        contentQuery.select(["content.id"]).leftJoin("content.task", "task").addSelect(["task.id"]).where("content.id = :contentId", { contentId });
+        contentQuery
+            .select(["content.id"])
+            .leftJoin("content.task", "task")
+            .addSelect(["task.id"])
+            .where("content.id = :contentId", { contentId });
         const foundContent = await contentQuery.getOne();
         if (!foundContent) {
             throw new common_1.NotFoundException(`The content with id ${contentId} is not found.`);
         }
         await this.contentRepository.delete({ id: contentId });
+    }
+    async createBookmark(user, taskId) {
+        const options = {
+            where: { userId: user.id, taskId },
+        };
+        const userToTask = await this.userToTaskRepository.findOne(options);
+        if (!userToTask) {
+            throw new common_1.NotFoundException(`The userToTask with userId ${user.id} and taskId ${taskId} is not found.`);
+        }
+        userToTask.bookmark = true;
+        await this.userToTaskRepository.save(userToTask);
+        return { id: user.id, taskId: userToTask.task.id };
+    }
+    async deleteBookmark(user, taskId) {
+        const options = {
+            where: { userId: user.id, taskId },
+        };
+        const userToTask = await this.userToTaskRepository.findOne(options);
+        if (!userToTask) {
+            throw new common_1.NotFoundException(`The userToTask with userId ${user.id} and taskId ${taskId} is not found.`);
+        }
+        userToTask.bookmark = false;
+        await this.userToTaskRepository.save(userToTask);
+    }
+    async getAllBookmarks(user) {
+        const options = {
+            where: { userId: user.id, bookmark: true },
+        };
+        const userToTasks = await this.userToTaskRepository.find(options);
+        const tasks = userToTasks.map((userToTask) => userToTask.task);
+        return tasks;
     }
 };
 TaskService = __decorate([
@@ -662,10 +720,12 @@ TaskService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(project_repository_1.ProjectRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(user_repository_1.UserRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(content_repository_1.TaskContentRepository)),
+    __param(4, (0, typeorm_1.InjectRepository)(userToTask_repository_1.UserToTaskRepository)),
     __metadata("design:paramtypes", [task_repository_1.TaskRepository,
         project_repository_1.ProjectRepository,
         user_repository_1.UserRepository,
-        content_repository_1.TaskContentRepository])
+        content_repository_1.TaskContentRepository,
+        userToTask_repository_1.UserToTaskRepository])
 ], TaskService);
 exports.TaskService = TaskService;
 //# sourceMappingURL=task.service.js.map

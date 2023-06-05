@@ -10,12 +10,14 @@ import { UserRepository } from "src/user/user.repository";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
 import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
 import { TaskContentRepository } from "./content.repository";
+import { UserToTaskRepository } from "./userToTask.repository";
 export declare class TaskService {
     private taskRepository;
     private projectRepository;
     private userRepository;
     private contentRepository;
-    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository, contentRepository: TaskContentRepository);
+    private userToTaskRepository;
+    constructor(taskRepository: TaskRepository, projectRepository: ProjectRepository, userRepository: UserRepository, contentRepository: TaskContentRepository, userToTaskRepository: UserToTaskRepository);
     getTaskInfo(user: User, taskId: string): Promise<Task>;
     createTask(user: User, createTaskDto: CreateTaskDto): Promise<{
         id: string;
@@ -82,4 +84,10 @@ export declare class TaskService {
         taskId: string;
     }>;
     deleteContent(user: User, contentId: string): Promise<void>;
+    createBookmark(user: User, taskId: string): Promise<{
+        id: string;
+        taskId: string;
+    }>;
+    deleteBookmark(user: User, taskId: string): Promise<void>;
+    getAllBookmarks(user: User): Promise<Task[]>;
 }
