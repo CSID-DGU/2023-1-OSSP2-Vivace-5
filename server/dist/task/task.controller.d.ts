@@ -10,6 +10,7 @@ import { Task } from "src/entity/task.entity";
 import { SubTask } from "src/enum/sub-task.enum";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
 import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
+import { TaskContent } from "src/entity/task-content.entity";
 export declare class TaskController {
     private taskService;
     private logger;
@@ -74,12 +75,7 @@ export declare class TaskController {
     bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;
     bringUpBookmark(user: User, bookmarkId: string): void;
     deleteBookmark(user: User, bookmarkId: string): Promise<void>;
-    getAllContents(user: User, taskId: string): Promise<{
-        id: string;
-        title: string;
-        content: string;
-        taskId: string;
-    }>;
+    getAllContents(user: User, taskId: string): Promise<TaskContent[]>;
     createContent(user: User, taskId: string, createContentDto: CreateContentDto): Promise<{
         id: string;
         title: string;

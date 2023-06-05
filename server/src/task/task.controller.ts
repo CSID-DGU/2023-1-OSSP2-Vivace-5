@@ -44,6 +44,7 @@ import {
 } from "@nestjs/swagger";
 import { UserRight } from "src/enum/user-right.enum";
 import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
+import { TaskContent } from "src/entity/task-content.entity";
 
 @Controller("task")
 @UseGuards(AuthGuard())
@@ -813,7 +814,7 @@ export class TaskController {
     }
 
     @Get("/content/:id")
-    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {
+    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string): Promise<TaskContent[]> {
         this.logger.verbose(`User ${user.email} trying to get all contents for task with id ${taskId}`);
         return this.taskService.getAllContents(user, taskId);
     }

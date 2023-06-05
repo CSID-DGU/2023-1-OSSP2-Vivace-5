@@ -892,7 +892,7 @@ __decorate([
     __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getAllContents", null);
 __decorate([
     (0, common_1.Post)("/create/content/:id"),

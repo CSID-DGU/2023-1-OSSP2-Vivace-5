@@ -910,12 +910,7 @@ export class TaskService {
     async getAllContents(
         user: User,
         taskId: string,
-    ): Promise<{
-        id: string;
-        title: string;
-        content: string;
-        taskId: string;
-    }> {
+    ): Promise<TaskContent[]>{
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
         taskQuery
@@ -938,13 +933,9 @@ export class TaskService {
             .addSelect(["task.id"])
             .where("task.id = :taskId", { taskId });
 
-        const content: TaskContent = await contentQuery.getOne();
+        const contents: TaskContent[] = await contentQuery.getMany();
 
-        if (!content) {
-            throw new NotFoundException(`The content of task with id ${taskId} is not found.`);
-        }
-
-        return { id: content.id, title: content.title, content: content.content, taskId: content.task.id };
+        return contents;
     }
 
     async updateContent(

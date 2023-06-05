@@ -637,11 +637,8 @@ let TaskService = class TaskService {
             .leftJoin("content.task", "task")
             .addSelect(["task.id"])
             .where("task.id = :taskId", { taskId });
-        const content = await contentQuery.getOne();
-        if (!content) {
-            throw new common_1.NotFoundException(`The content of task with id ${taskId} is not found.`);
-        }
-        return { id: content.id, title: content.title, content: content.content, taskId: content.task.id };
+        const contents = await contentQuery.getMany();
+        return contents;
     }
     async updateContent(user, contentId, updateContentDto) {
         const { title, content } = updateContentDto;

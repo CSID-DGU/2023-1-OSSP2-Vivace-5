@@ -10,6 +10,7 @@ import { UserRepository } from "src/user/user.repository";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
 import { CreateContentDto, UpdateContentDto } from "./dto/create-content.dto";
 import { TaskContentRepository } from "./content.repository";
+import { TaskContent } from "src/entity/task-content.entity";
 import { UserToTaskRepository } from "./userToTask.repository";
 export declare class TaskService {
     private taskRepository;
@@ -71,12 +72,7 @@ export declare class TaskService {
         content: string;
         taskId: string;
     }>;
-    getAllContents(user: User, taskId: string): Promise<{
-        id: string;
-        title: string;
-        content: string;
-        taskId: string;
-    }>;
+    getAllContents(user: User, taskId: string): Promise<TaskContent[]>;
     updateContent(user: User, contentId: string, updateContentDto: UpdateContentDto): Promise<{
         id: string;
         title: string;
