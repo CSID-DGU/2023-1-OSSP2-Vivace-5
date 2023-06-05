@@ -19,6 +19,7 @@ const task_content_entity_1 = require("./task-content.entity");
 const user_entity_1 = require("./user.entity");
 const bookmark_entity_1 = require("./bookmark.entity");
 const task_comment_entity_1 = require("./task-comment.entity");
+const user_to_task_entity_1 = require("./user-to-task.entity");
 let Task = Task_1 = class Task extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -117,6 +118,10 @@ __decorate([
     (0, typeorm_1.OneToMany)((type) => task_comment_entity_1.TaskComment, (comments) => comments.task, { eager: false }),
     __metadata("design:type", Array)
 ], Task.prototype, "comments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => user_to_task_entity_1.UserToTask, (userToTask) => userToTask.task, { eager: false }),
+    __metadata("design:type", Array)
+], Task.prototype, "userToTasks", void 0);
 Task = Task_1 = __decorate([
     (0, typeorm_1.Entity)(),
     (0, typeorm_1.Tree)("closure-table")

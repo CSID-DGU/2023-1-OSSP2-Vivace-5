@@ -6,6 +6,7 @@ import { TaskContent } from "./task-content.entity";
 import { User } from "./user.entity";
 import { Bookmark } from "./bookmark.entity";
 import { TaskComment } from "./task-comment.entity";
+import { UserToTask } from "./user-to-task.entity";
 export declare class Task extends BaseEntity {
     id: string;
     title: string;
@@ -30,4 +31,5 @@ export declare class Task extends BaseEntity {
     contents: TaskContent[];
     bookmarks: Bookmark[];
     comments: TaskComment[];
+    userToTasks: UserToTask[];
 }

@@ -19,6 +19,7 @@ import { TaskContent } from "./task-content.entity";
 import { User } from "./user.entity";
 import { Bookmark } from "./bookmark.entity";
 import { TaskComment } from "./task-comment.entity";
+import { UserToTask } from "./user-to-task.entity";
 
 @Entity()
 @Tree("closure-table")
@@ -95,4 +96,7 @@ export class Task extends BaseEntity {
 
     @OneToMany((type) => TaskComment, (comments) => comments.task, { eager: false })
     comments: TaskComment[];
+
+    @OneToMany((type) => UserToTask, (userToTask) => userToTask.task, { eager: false })
+    userToTasks: UserToTask[];
 }
