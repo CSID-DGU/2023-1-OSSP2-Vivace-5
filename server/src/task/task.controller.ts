@@ -789,7 +789,7 @@ export class TaskController {
         return this.taskService.dismiss(user, taskId, memberIds);
     }
 
-    @Get("/bookmark")
+    @Get("/all/bookmarks")
     getAllBookmarks(@GetUser() user: User): Promise<Task[]> {
         this.logger.verbose(`User ${user.email} trying to get all bookmarks`);
         return this.taskService.getAllBookmarks(user);
@@ -797,20 +797,14 @@ export class TaskController {
 
     @Post("/create/bookmark/:taskId")
     createBookmark(@GetUser() user: User, @Param("taskId", ParseUUIDPipe) taskId: string) {
-        this.logger.verbose(`User ${user.email} trying to create bookmark for task with id ${taskId}`);
+        this.logger.verbose(`User ${user.email} trying to create bookmark for task with taskId ${taskId}`);
         return this.taskService.createBookmark(user, taskId);
     }
 
-    @Patch("/bring/down/bookmark")
-    bringDownBookmark(@GetUser() user: User, @Body() bringDownBookmarkDto: BringDownBookmarkDto) {}
-
-    @Patch("/bring/up/bookmark")
-    bringUpBookmark(@GetUser() user: User, @Body("bookmarkId", ParseUUIDPipe) bookmarkId: string) {}
-
     @Delete("/delete/bookmark/:id")
-    deleteBookmark(@GetUser() user: User, @Param("id", ParseUUIDPipe) bookmarkId: string) {
-        this.logger.verbose(`User ${user.email} trying to delete bookmark with id ${bookmarkId}`);
-        return this.taskService.deleteBookmark(user, bookmarkId);
+    deleteBookmark(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {
+        this.logger.verbose(`User ${user.email} trying to delete bookmark with id ${taskId}`);
+        return this.taskService.deleteBookmark(user, taskId);
     }
 
     @Get("/content/:taskId")

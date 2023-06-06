@@ -4,8 +4,8 @@ import { Task } from "./task.entity";
 export declare class UserToTask extends BaseEntity {
     id: string;
     bookmark: boolean;
-    userId: string;
     taskId: string;
     task: Task;
+    userId: string;
     user: User;
 }

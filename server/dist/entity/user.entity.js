@@ -16,6 +16,7 @@ const project_comment_entity_1 = require("./project-comment.entity");
 const task_entity_1 = require("./task.entity");
 const bookmark_entity_1 = require("./bookmark.entity");
 const task_comment_entity_1 = require("./task-comment.entity");
+const user_to_task_entity_1 = require("./user-to-task.entity");
 let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -90,6 +91,10 @@ __decorate([
     (0, typeorm_1.OneToMany)((type) => bookmark_entity_1.Bookmark, (bookmarks) => bookmarks.user, { eager: false }),
     __metadata("design:type", Array)
 ], User.prototype, "bookmarks", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => user_to_task_entity_1.UserToTask, (userToTask) => userToTask.task, { eager: false }),
+    __metadata("design:type", Array)
+], User.prototype, "userToTasks", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)(),
     (0, typeorm_1.Unique)(["email"])

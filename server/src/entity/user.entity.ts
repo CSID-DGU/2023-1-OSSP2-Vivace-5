@@ -4,6 +4,7 @@ import { ProjectComment } from "./project-comment.entity";
 import { Task } from "./task.entity";
 import { Bookmark } from "./bookmark.entity";
 import { TaskComment } from "./task-comment.entity";
+import { UserToTask } from "./user-to-task.entity";
 
 @Entity()
 @Unique(["email"])
@@ -61,4 +62,7 @@ export class User extends BaseEntity {
 
     @OneToMany((type) => Bookmark, (bookmarks) => bookmarks.user, { eager: false })
     bookmarks: Bookmark[];
+
+    @OneToMany((type) => UserToTask, (userToTask) => userToTask.task, { eager: false })
+    userToTasks: UserToTask[];
 }

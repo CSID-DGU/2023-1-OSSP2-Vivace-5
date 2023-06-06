@@ -12,17 +12,17 @@ export class UserToTask extends BaseEntity {
     @Column()
     bookmark: boolean;
 
-    @Column({ name: "userId" })
-    userId: string;
-
-    @Column({ name: "taskId" })
+    @Column({name: "taskId"})
     taskId: string;
 
     @ManyToOne((type) => Task, (task) => task.userToTasks, { eager: false, onDelete: "CASCADE" })
     @JoinColumn({ name: "taskId" })
     task: Task;
 
-    @ManyToOne((type) => User, (user) => user.userToProjects, { eager: false })
+    @Column({name: "userId"})
+    userId: string;
+
+    @ManyToOne((type) => User, (user) => user.userToTasks, { eager: false })
     @JoinColumn({ name: "userId" })
     user: User;
 }

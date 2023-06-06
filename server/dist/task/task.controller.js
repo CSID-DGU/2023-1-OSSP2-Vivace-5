@@ -25,7 +25,6 @@ const not_empty_string_validation_pipe_1 = require("../pipe/not-empty-string-val
 const time_format_validation_pipe_1 = require("../pipe/time-format.validation.pipe");
 const append_column_dto_1 = require("./dto/append-column.dto");
 const move_task_between_columns_dto_1 = require("./dto/move-task-between-columns.dto");
-const bring_down_bookmark_dto_1 = require("./dto/bring-down-bookmark.dto");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const boolean_pipe_1 = require("../pipe/boolean.pipe");
 const delete_task_dto_1 = require("./dto/delete-task.dto");
@@ -104,14 +103,12 @@ let TaskController = class TaskController {
         return this.taskService.getAllBookmarks(user);
     }
     createBookmark(user, taskId) {
-        this.logger.verbose(`User ${user.email} trying to create bookmark for task with id ${taskId}`);
+        this.logger.verbose(`User ${user.email} trying to create bookmark for task with taskId ${taskId}`);
         return this.taskService.createBookmark(user, taskId);
     }
-    bringDownBookmark(user, bringDownBookmarkDto) { }
-    bringUpBookmark(user, bookmarkId) { }
-    deleteBookmark(user, bookmarkId) {
-        this.logger.verbose(`User ${user.email} trying to delete bookmark with id ${bookmarkId}`);
-        return this.taskService.deleteBookmark(user, bookmarkId);
+    deleteBookmark(user, taskId) {
+        this.logger.verbose(`User ${user.email} trying to delete bookmark with id ${taskId}`);
+        return this.taskService.deleteBookmark(user, taskId);
     }
     getAllContents(user, taskId) {
         this.logger.verbose(`User ${user.email} trying to get all contents for task with id ${taskId}`);
@@ -848,7 +845,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "dismiss", null);
 __decorate([
-    (0, common_1.Get)("/bookmark"),
+    (0, common_1.Get)("/all/bookmarks"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
@@ -862,22 +859,6 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "createBookmark", null);
-__decorate([
-    (0, common_1.Patch)("/bring/down/bookmark"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, bring_down_bookmark_dto_1.BringDownBookmarkDto]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "bringDownBookmark", null);
-__decorate([
-    (0, common_1.Patch)("/bring/up/bookmark"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)("bookmarkId", common_1.ParseUUIDPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "bringUpBookmark", null);
 __decorate([
     (0, common_1.Delete)("/delete/bookmark/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),

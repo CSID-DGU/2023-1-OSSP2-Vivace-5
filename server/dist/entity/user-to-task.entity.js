@@ -24,10 +24,6 @@ __decorate([
     __metadata("design:type", Boolean)
 ], UserToTask.prototype, "bookmark", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: "userId" }),
-    __metadata("design:type", String)
-], UserToTask.prototype, "userId", void 0);
-__decorate([
     (0, typeorm_1.Column)({ name: "taskId" }),
     __metadata("design:type", String)
 ], UserToTask.prototype, "taskId", void 0);
@@ -37,7 +33,11 @@ __decorate([
     __metadata("design:type", task_entity_1.Task)
 ], UserToTask.prototype, "task", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => user_entity_1.User, (user) => user.userToProjects, { eager: false }),
+    (0, typeorm_1.Column)({ name: "userId" }),
+    __metadata("design:type", String)
+], UserToTask.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)((type) => user_entity_1.User, (user) => user.userToTasks, { eager: false }),
     (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_entity_1.User)
 ], UserToTask.prototype, "user", void 0);

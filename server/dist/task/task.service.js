@@ -689,22 +689,28 @@ let TaskService = class TaskService {
         };
     }
     async deleteBookmark(user, taskId) {
-        const options = {
-            where: { userId: user.id, taskId },
-        };
-        const userToTask = await this.userToTaskRepository.findOne(options);
+        const userToTaskQuery = this.userToTaskRepository.createQueryBuilder("userToTask");
+        userToTaskQuery
+            .select(["userToTask.id"])
+            .leftJoin("userToTask.user", "user")
+            .addSelect(["user.id"])
+            .leftJoin("userToTask.task", "task")
+            .addSelect(["task.id"])
+            .where("userToTask.task.id = :taskId", { taskId });
+        const userToTask = await userToTaskQuery.getOne();
         if (!userToTask) {
-            throw new common_1.NotFoundException(`The userToTask with userId ${user.id} and taskId ${taskId} is not found.`);
+            throw new common_1.NotFoundException(`The bookmark with id ${taskId} is not found.`);
         }
-        userToTask.bookmark = false;
-        await this.userToTaskRepository.save(userToTask);
+        await this.userToTaskRepository.delete({ id: userToTask.id });
     }
     async getAllBookmarks(user) {
-        const options = {
-            where: { userId: user.id, bookmark: true },
-        };
-        const userToTasks = await this.userToTaskRepository.find(options);
-        const tasks = userToTasks.map((userToTask) => userToTask.task);
+        const userToTaskQuery = this.userToTaskRepository.createQueryBuilder("userToTask");
+        userToTaskQuery.leftJoinAndSelect("userToTask.task", "task").where("userToTask.user.id = :userId", { userId: user.id });
+        const userToTasks = await userToTaskQuery.getMany();
+        const tasks = [];
+        for (const userToTask of userToTasks) {
+            tasks.push(userToTask.task);
+        }
         return tasks;
     }
 };

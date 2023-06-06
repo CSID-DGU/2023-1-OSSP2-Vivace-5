@@ -5,7 +5,6 @@ import { AppendTaskDto } from "./dto/append-task.dto";
 import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { AppendColumnDto } from "./dto/append-column.dto";
 import { MoveTaskBetweenColumnsDto } from "./dto/move-task-between-columns.dto";
-import { BringDownBookmarkDto } from "./dto/bring-down-bookmark.dto";
 import { Task } from "src/entity/task.entity";
 import { SubTask } from "src/enum/sub-task.enum";
 import { DeleteTaskDto } from "./dto/delete-task.dto";
@@ -72,9 +71,7 @@ export declare class TaskController {
         id: string;
         taskId: string;
     }>;
-    bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;
-    bringUpBookmark(user: User, bookmarkId: string): void;
-    deleteBookmark(user: User, bookmarkId: string): Promise<void>;
+    deleteBookmark(user: User, taskId: string): Promise<void>;
     getAllContents(user: User, taskId: string): Promise<TaskContent[]>;
     createContent(user: User, taskId: string, createContentDto: CreateContentDto): Promise<{
         id: string;
