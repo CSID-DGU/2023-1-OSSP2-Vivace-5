@@ -649,6 +649,7 @@ let TaskService = class TaskService {
         if (content) {
             taskContent.content = content;
         }
+        taskContent.modifiedAt = new Date();
         await this.contentRepository.save(taskContent);
         return {
             id: taskContent.id,

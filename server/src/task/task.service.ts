@@ -960,6 +960,7 @@ export class TaskService {
             taskContent.content = content;
         }
 
+        taskContent.modifiedAt = new Date();
         await this.contentRepository.save(taskContent);
 
         return {
