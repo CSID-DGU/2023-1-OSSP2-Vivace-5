@@ -795,8 +795,8 @@ export class TaskController {
         return this.taskService.getAllBookmarks(user);
     }
 
-    @Post("/create/bookmark")
-    createBookmark(@GetUser() user: User, @Body() taskId: string) {
+    @Post("/create/bookmark/:taskId")
+    createBookmark(@GetUser() user: User, @Param("taskId", ParseUUIDPipe) taskId: string) {
         this.logger.verbose(`User ${user.email} trying to create bookmark for task with id ${taskId}`);
         return this.taskService.createBookmark(user, taskId);
     }
@@ -813,22 +813,22 @@ export class TaskController {
         return this.taskService.deleteBookmark(user, bookmarkId);
     }
 
-    @Get("/content/:id")
-    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string): Promise<TaskContent[]> {
+    @Get("/content/:taskId")
+    getAllContents(@GetUser() user: User, @Param("taskId", ParseUUIDPipe) taskId: string): Promise<TaskContent[]> {
         this.logger.verbose(`User ${user.email} trying to get all contents for task with id ${taskId}`);
         return this.taskService.getAllContents(user, taskId);
     }
 
-    @Post("/create/content/:id")
-    createContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string, createContentDto: CreateContentDto) {
+    @Post("/create/content/:taskId")
+    createContent(@GetUser() user: User, @Param("taskId", ParseUUIDPipe) taskId: string, @Body() createContentDto: CreateContentDto) {
         this.logger.verbose(`User ${user.email} trying to create content for task with id ${taskId}`);
         return this.taskService.createContent(user, taskId, createContentDto);
     }
 
-    @Put("/update/content/:id")
+    @Put("/update/content/:contentId")
     updateContent(
         @GetUser() user: User,
-        @Param("id", ParseUUIDPipe) contentId: string,
+        @Param("contentId", ParseUUIDPipe) contentId: string,
         @Body() updateContentDto: UpdateContentDto,
     ) {
         this.logger.verbose(`User ${user.email} trying to update content with id ${contentId}`);

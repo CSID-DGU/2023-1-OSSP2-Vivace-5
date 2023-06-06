@@ -2,7 +2,7 @@ import { BaseEntity } from "typeorm";
 import { User } from "src/entity/user.entity";
 import { Task } from "./task.entity";
 export declare class UserToTask extends BaseEntity {
-    id: number;
+    id: string;
     bookmark: boolean;
     userId: string;
     taskId: string;

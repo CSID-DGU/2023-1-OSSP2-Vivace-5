@@ -7,7 +7,7 @@ import { Task } from "./task.entity";
 @Entity()
 export class UserToTask extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
-    id: number;
+    id: string;
 
     @Column()
     bookmark: boolean;

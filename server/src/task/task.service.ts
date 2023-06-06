@@ -90,7 +90,7 @@ export class TaskService {
                 .leftJoinAndSelect("project.columns", "columns", "columns.id = :parentId", { parentId })
                 .leftJoinAndSelect("columns.parent", "parent");
         } else {
-            projectQuery.leftJoinAndSelect("project.asks", "tasks", "tasks.id = :parentId", { parentId });
+            projectQuery.leftJoinAndSelect("project.tasks", "tasks", "tasks.id = :parentId", { parentId });
         }
 
         projectQuery.where("project.id = :projectId", { projectId });
@@ -878,13 +878,13 @@ export class TaskService {
     }> {
         const { title, content } = createContentDto;
 
+        if(!taskId || !title){
+            throw new BadRequestException("Task id and title are required.");
+        }
+
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
-        taskQuery
-            .select(["task.id"])
-            .leftJoin("task.project", "project")
-            .addSelect(["project.id"])
-            .where("task.id = :taskId", { taskId });
+        taskQuery.where("task.id = :taskId", { taskId });
 
         const task: Task = await taskQuery.getOne();
 
@@ -892,39 +892,31 @@ export class TaskService {
             throw new NotFoundException(`The task with id ${taskId} is not found.`);
         }
 
-        if (!title) {
-            throw new BadRequestException(`Title is required.`);
-        }
+        const now = new Date();
+        const newContent = new TaskContent();
 
-        const newContent = this.contentRepository.create({
-            title,
-            content,
-            task,
-        });
+        newContent.title = title;
+        newContent.content = content;
+        newContent.task = task;
+        newContent.createdAt = now;
+        newContent.modifiedAt = now;
 
         await this.contentRepository.save(newContent);
 
-        return { id: newContent.id, title: newContent.title, content: newContent.content, taskId: newContent.task.id };
+        return {
+            id: newContent.id,
+            title: newContent.title,
+            content: newContent.content,
+            taskId: newContent.task.id,
+        };
     }
+
+
 
     async getAllContents(
         user: User,
         taskId: string,
     ): Promise<TaskContent[]>{
-        const taskQuery = this.taskRepository.createQueryBuilder("task");
-
-        taskQuery
-            .select(["task.id"])
-            .leftJoin("task.project", "project")
-            .addSelect(["project.id"])
-            .where("task.id = :taskId", { taskId });
-
-        const task: Task = await taskQuery.getOne();
-
-        if (!task) {
-            throw new NotFoundException(`The task with id ${taskId} is not found.`);
-        }
-
         const contentQuery = this.contentRepository.createQueryBuilder("content");
 
         contentQuery
@@ -946,39 +938,35 @@ export class TaskService {
         id: string;
         title: string;
         content: string;
-        taskId: string;
+        contentId: string;
     }> {
         const { title, content } = updateContentDto;
 
         const contentQuery = this.contentRepository.createQueryBuilder("content");
 
-        contentQuery
-            .select(["content.id", "content.title", "content.content"])
-            .leftJoin("content.task", "task")
-            .addSelect(["task.id"])
-            .where("content.id = :contentId", { contentId });
+        contentQuery.where("content.id = :contentId", { contentId });
 
-        const foundContent: TaskContent = await contentQuery.getOne();
+        const taskContent: TaskContent = await contentQuery.getOne();
 
-        if (!foundContent) {
-            throw new NotFoundException(`The content with id ${contentId} is not found.`);
+        if (!taskContent) {
+            throw new NotFoundException(`The task with id ${contentId} is not found.`);
         }
 
         if (title) {
-            foundContent.title = title;
+            taskContent.title = title;
         }
 
         if (content) {
-            foundContent.content = content;
+            taskContent.content = content;
         }
 
-        await this.contentRepository.save(foundContent);
+        await this.contentRepository.save(taskContent);
 
         return {
-            id: foundContent.id,
-            title: foundContent.title,
-            content: foundContent.content,
-            taskId: foundContent.task.id,
+            id: taskContent.id,
+            title: taskContent.title,
+            content: taskContent.content,
+            contentId: taskContent.id,
         };
     }
 
@@ -1007,21 +995,28 @@ export class TaskService {
         id: string;
         taskId: string;
     }> {
-        const options: FindOneOptions<UserToTask> = {
-            where: { userId: user.id, taskId },
-        };
-    
-        const userToTask = await this.userToTaskRepository.findOne(options);
-    
-        if (!userToTask) {
-            throw new NotFoundException(`The userToTask with userId ${user.id} and taskId ${taskId} is not found.`);
+        const taskQuery = this.taskRepository.createQueryBuilder("task");
+
+        taskQuery.where("task.id = :taskId", { taskId });
+
+        const task: Task = await taskQuery.getOne();
+
+        if (!task) {
+            throw new NotFoundException(`The task with id ${taskId} is not found.`);
         }
-    
+
+        const userToTask = new UserToTask();
+
+        userToTask.user = user;
+        userToTask.task = task;
         userToTask.bookmark = true;
-    
+
         await this.userToTaskRepository.save(userToTask);
 
-        return { id: user.id, taskId: userToTask.task.id };
+        return {
+            id: userToTask.id,
+            taskId: userToTask.task.id,
+        };
     }
 
     async deleteBookmark( user: User, taskId: string ): Promise<void> {

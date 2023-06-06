@@ -77,7 +77,7 @@ export declare class TaskService {
         id: string;
         title: string;
         content: string;
-        taskId: string;
+        contentId: string;
     }>;
     deleteContent(user: User, contentId: string): Promise<void>;
     createBookmark(user: User, taskId: string): Promise<{

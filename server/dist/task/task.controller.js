@@ -855,9 +855,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getAllBookmarks", null);
 __decorate([
-    (0, common_1.Post)("/create/bookmark"),
+    (0, common_1.Post)("/create/bookmark/:taskId"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Param)("taskId", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", void 0)
@@ -887,25 +887,26 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "deleteBookmark", null);
 __decorate([
-    (0, common_1.Get)("/content/:id"),
+    (0, common_1.Get)("/content/:taskId"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.Param)("taskId", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getAllContents", null);
 __decorate([
-    (0, common_1.Post)("/create/content/:id"),
+    (0, common_1.Post)("/create/content/:taskId"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.Param)("taskId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, create_content_dto_1.CreateContentDto]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "createContent", null);
 __decorate([
-    (0, common_1.Put)("/update/content/:id"),
+    (0, common_1.Put)("/update/content/:contentId"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.Param)("contentId", common_1.ParseUUIDPipe)),
     __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, create_content_dto_1.UpdateContentDto]),

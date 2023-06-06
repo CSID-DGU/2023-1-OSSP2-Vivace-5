@@ -86,7 +86,7 @@ export declare class TaskController {
         id: string;
         title: string;
         content: string;
-        taskId: string;
+        contentId: string;
     }>;
     deleteContent(user: User, contentId: string): Promise<void>;
     getAllComments(user: User, taskId: string, query: string): void;
