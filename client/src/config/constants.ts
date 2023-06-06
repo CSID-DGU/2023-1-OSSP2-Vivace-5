@@ -1,4 +1,4 @@
-export const API_HOST = process.env.REACT_APP_API_HOST;
+export const API_HOST = "http://localhost:4000";
 export const SIGN_IN_PATH = "/signin";
 export const SIGN_UP_PATH = "/signup";
 export const UPDATE_PASSWORD_PATH = "/update/password";

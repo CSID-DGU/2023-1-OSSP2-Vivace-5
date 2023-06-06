@@ -8,6 +8,9 @@ class EncodedImgValidationPipe {
     }
     transform(value) {
         const encodedImg = value.encodedImg;
+        if (!encodedImg) {
+            return value;
+        }
         const base64ImgRegex = /^data:image\/(png|jpeg|gif);base64,(.*)$/;
         const result = encodedImg.match(base64ImgRegex);
         if (!result) {

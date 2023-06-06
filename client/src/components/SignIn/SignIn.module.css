@@ -38,6 +38,12 @@
     align-items: center;
     flex-direction: column;
     text-align: center;
+    height: 85%;
+   
+}
+
+.inputTitle h2 {
+    margin-bottom: 15px;
 }
 
 .boxStyle {
@@ -47,7 +53,7 @@
 
 .hr {
     border: 1px solid black;
-    width: 700px;
+    width: 100%;
 }
 
 .navsection {
@@ -62,6 +68,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    margin-top: 20px;
 }
 
 .elSpan {

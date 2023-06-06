@@ -7,7 +7,7 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "nest build",
-        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+        "format": "prettier --write \"src/**/*.ts\" \"test/**/*ts\"",
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
@@ -41,6 +41,7 @@
         "dotenv": "^16.0.3",
         "ejs": "^3.1.9",
         "fastify-swagger": "^5.2.0",
+        "http-proxy-middleware": "^2.0.6",
         "nodemailer": "^6.9.1",
         "passport": "^0.6.0",
         "passport-jwt": "^4.0.1",

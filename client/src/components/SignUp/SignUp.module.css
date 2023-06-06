@@ -1,3 +1,11 @@
+hr {
+    margin: 0;
+}
+
+*{
+    /* border: 1px solid brown; */
+}
+
 .header {
     background-color: #A6C0EE;
     font-size: 30px;
@@ -10,33 +18,40 @@
     font-weight: bold;
     font-size: 60px;
     width: 100%;
-    height: 10px;
-    margin-top: 30px;
-    margin-bottom: 8%;
+    /* height: 10px; */
+    margin: 0;
+    /* margin-top: 30px;
+    margin-bottom: 8%; */
     text-align: center;    
-}
-
-.mainScreem {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    width: 100%;    
 }
 
 .mainScreenComponent {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
-    justify-content: center;    
+    justify-content: space-evenly;
+    width: 100%;   
+    padding-left: 60px; 
 }
 
+.profileImg{
+    width: 80px;
+    height: 80px;
+    /* padding-right: 20px; */
+    margin-right: 10px;
+}
 .inputsection {
     display: flex;
     float: left;
     /* width: 40%; */
+}
+
+.leftInput{
+    margin: 25px 0px;
+    padding-bottom: 3px;
+    /* margin-bottom: 28px; */
+    text-align: center;
 }
 
 .vLine {
@@ -45,26 +60,54 @@
     border-width: 0;
     color: #000;
     background-color: #000;
-    margin: 0 100px;
+    /* margin: 0 50px; */
+    padding-right: 0px;
 }
 
 .rightDiv {
     display: flex;
     flex-direction: column;
     margin-left: 0px;
+    padding-right: 100px;
+    padding-left: 0px;
     width: 40%;
     float: left;
 }
 
 .textDiv {
     width: 300PX;
-    float: left;
-    margin-bottom: 30px;
+    /* float: left; */
+    /* margin-bottom: 30px; */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 3    0px;
+    text-align: center;
 }
 
 .text {
-    margin-top: 30px;
-    margin-bottom: 0px;
+    font-weight: 300;
+}
+
+.birthInputBox {
+    /* margin-bottom: 30px; */
+    padding-bottom: -10px;
+}
+
+.imgSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 15px;
+}
+
+.imgSection img {
+    border: 1px solid black;
+    border-radius: 50%;
+}
+
+.imgSection input input {
+    
 }
 
 .boxStyle {
@@ -99,7 +142,7 @@
 
 .hrStyle {
     border: 1px solid black;
-    width: 1400px;
+    width: 100%;
     margin-top: 30px;
 }
 
@@ -109,4 +152,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;    
+    margin-top: 20px;
+}
+
+.nameInputBox {
+    background-color: red;
+    color: red;
 }
