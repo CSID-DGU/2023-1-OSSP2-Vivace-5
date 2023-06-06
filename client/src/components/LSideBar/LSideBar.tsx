@@ -4,6 +4,7 @@ import styles from "./LSideBar.module.css";
 import { API_HOST } from "../../config/constants";
 import axios, { AxiosResponse } from "axios";
 import { Avatar } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Project {
     id: string;
@@ -41,11 +42,18 @@ const LSidebar: React.FC<MainPageProps> = ({ onProjectClick }) => {
         getProjects();
     }, []);
 
+    console.log(userInfo);
+    console.log(projects);
+
     async function getUserData(): Promise<void> {
         try {
-            const res: AxiosResponse = await axios.get(`${API_HOST}user/info`, {
+            console.log("getUserData() 실행");
+            console.log(localStorage.getItem("access-token"));
+            const res: AxiosResponse = await axios.get(`${API_HOST}/user/info`, {
                 headers: { Authorization: localStorage.getItem("access-token") },
             });
+
+            console.log("res.status: ", res.status);
 
             if (res.status === 200) {
                 const { firstName, lastName, email, encodedImg } = res.data;
@@ -68,7 +76,7 @@ const LSidebar: React.FC<MainPageProps> = ({ onProjectClick }) => {
 
     async function getProjects(): Promise<void> {
         try {
-            const res: AxiosResponse = await axios.get(`${API_HOST}project`, {
+            const res: AxiosResponse = await axios.get(`${API_HOST}/project`, {
                 headers: { Authorization: localStorage.getItem("access-token") },
             });
 
@@ -117,12 +125,21 @@ const LSidebar: React.FC<MainPageProps> = ({ onProjectClick }) => {
                 />
                 <ul className={styles.projectList}>
                     {filteredProjects.map((project) => (
-                        <li key={project.id} onClick={() => onProjectClick(project.id)}>
+                        <div
+                            className={styles.liProject}
+                            key={project.id}
+                            onClick={() => {
+                                onProjectClick(project.id);
+                                console.log(project.id);
+                            }}
+                        >
                             {project.title}
-                        </li>
+                        </div>
                     ))}
                 </ul>
-                <button className={styles.addProjectButton}>Add Project</button>
+                <Link to="/create/project">
+                    <button className={styles.addProjectButton}>Add Project</button>
+                </Link>
             </div>
         </div>
     );

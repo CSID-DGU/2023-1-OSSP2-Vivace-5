@@ -78,3 +78,8 @@ input[type="text"] {
 .addProjectButton:hover {
     background-color: #e0e0e0;
 }
+
+.liProject {
+    background-color: aqua;
+    cursor: pointer;
+}

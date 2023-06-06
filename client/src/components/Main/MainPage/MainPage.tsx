@@ -24,7 +24,35 @@ interface Project {
             encodedImg: string;
         };
     }[];
-    tasks: any[]; //Task에 맞춰서 추후 정의
+    tasks: {
+        id: string;
+        title: string;
+        description: string;
+        type: string;
+        status: string;
+        priority: string;
+        startDate: string;
+        endDate: string;
+        createdAt: string;
+        modifiedAt: string;
+        userToTasks: {
+            right: string;
+            user: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                encodedImg: string;
+            };
+        }[];
+        comments: {
+            id: string;
+            createdAt: string;
+            modifiedAt: string;
+            content: string;
+            pinned: boolean;
+            projectId: string;
+        }[];
+    }[];
     comments: {
         id: string;
         createdAt: string;
@@ -38,7 +66,7 @@ interface Project {
 const MainPage: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-    const [currentTask, setCurrentTask] = useState<any>(null); // Task에 맞춰서 추후 정의
+    const [currentTask, setCurrentTask] = useState<any>(); // Task에 맞춰서 추후 정의
 
     const handleToggleSidebar = () => {
         setSidebarOpen((prevState) => !prevState);
@@ -46,9 +74,13 @@ const MainPage: React.FC = () => {
 
     const handleProjectClick = async (projectId: string) => {
         try {
-            const res: AxiosResponse = await axios.get(`${API_HOST}project/${projectId}`, {
+            console.log("handleProjectClick");
+            const res: AxiosResponse = await axios.get(`${API_HOST}/project/${projectId}`, {
                 headers: { Authorization: localStorage.getItem("access-token") },
             });
+
+            console.log("handleProjectClick");
+            console.log("res:", res.status);
 
             if (res.status === 200) {
                 const projectData: Project = res.data;
@@ -76,9 +108,16 @@ const MainPage: React.FC = () => {
             </button>
 
             <div className={styles.mainSection}>
-                <MainSection currentTask={currentTask} onUpdateCurrentTask={handleUpdateCurrentTask} />
+                <MainSection
+                    currentTask={currentTask}
+                    onUpdateCurrentTask={handleUpdateCurrentTask}
+                    selectedProject={selectedProject}
+                    onTaskPathClick={function (taskId: string): void {
+                        throw new Error("Function not implemented.");
+                    }}
+                />
             </div>
-            <RSideBar />
+            {/* <RSideBar /> */}
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import "./Network.css";
+import styles from "./Network.module.css";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban"; //for childType=kanban
 import DescriptionIcon from "@mui/icons-material/Description"; //for childType=MarkDown
 import AccountTreeIcon from "@mui/icons-material/AccountTree"; //for childtype=Network
@@ -78,7 +78,7 @@ const NetworkGraph = () => {
             .attr("fill", "#999");
 
         const link = svg
-            .selectAll(".link")
+            .selectAll(`.${styles.link}`)
             .data(links)
             .enter()
             .append("line")
@@ -86,7 +86,7 @@ const NetworkGraph = () => {
             .attr("marker-end", "url(#arrowhead)"); // 화살표로 된 링크 표시
 
         const node = svg
-            .selectAll<SVGGElement, NodeData>(".node")
+            .selectAll<SVGGElement, NodeData>(`.${styles.node}`)
             .data(nodes)
             .enter()
             .append("g")

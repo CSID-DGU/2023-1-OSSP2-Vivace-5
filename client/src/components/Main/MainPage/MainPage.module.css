@@ -43,6 +43,7 @@
 }
 
 .MainSection {
+    width: 80%;
     scrollbar-width: 5; /* Firefox 용 스크롤바 숨김 */
     padding-left: 20px;
 }

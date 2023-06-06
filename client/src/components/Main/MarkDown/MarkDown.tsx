@@ -17,11 +17,11 @@ function MarkDown() {
     };
 
     return (
-        <div className="edit_wrap" style={{ marginTop: "20px" }}>
+        <div className="edit_wrap" style={{ marginTop: "90px" }}>
             <Editor
                 initialValue="hello react editor world!"
                 previewStyle="vertical"
-                height="600px"
+                height="500px"
                 initialEditType="wysiwyg"
                 useCommandShortcut={false}
                 language="ko-KR"

@@ -1,16 +1,13 @@
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import axios, { AxiosResponse } from "axios";
 import { API_HOST, MAIN_PATH } from "../../config/constants";
-<<<<<<< HEAD
 import locale from "antd/es/date-picker/locale/en_US";
-import styles from './SignIn.module.css';
-import { ReloadOutlined } from '@ant-design/icons';
-=======
->>>>>>> main
+import styles from "./SignIn.module.css";
+import { ReloadOutlined } from "@ant-design/icons";
 
 function SignIn() {
     const navigate = useNavigate();
@@ -28,6 +25,8 @@ function SignIn() {
         password: "",
     });
 
+    const [loading, setLoading] = useState<boolean>(false);
+
     const { name, password } = form;
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +41,7 @@ function SignIn() {
     // }
 
     //E-mail과 Password 사이 span에 글자를 넣기 위한 quertSelector
-    const el:HTMLElement = document.querySelector(".elSpan") as unknown as HTMLFormElement;
+    const el: HTMLElement = document.querySelector(".elSpan") as unknown as HTMLFormElement;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -56,7 +55,7 @@ function SignIn() {
         if (!emailRegex.test(name)) {
             isEmail = false;
             console.log(el);
-            el.innerHTML= ("It is not an email format.");
+            el.innerHTML = "It is not an email format.";
             // 페이지 전체 새로고침하는 코드
             // window.location.reload();
         }
@@ -85,7 +84,7 @@ function SignIn() {
         }
 
         try {
-            const res: AxiosResponse = await axios.post(`${API_HOST}user/signin`, {
+            const res: AxiosResponse = await axios.post(`${API_HOST}/user/signin`, {
                 email: name,
                 password: password,
             });
@@ -97,9 +96,7 @@ function SignIn() {
                 console.log("login failed!");
             }
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.log(error);
-            }
+            console.log(error);
         }
     };
 
@@ -126,7 +123,7 @@ function SignIn() {
                             onChange={onChange}
                         />
                         <br />
-                        
+
                         <div>
                             <span className={styles.elSpan}></span>
                         </div>

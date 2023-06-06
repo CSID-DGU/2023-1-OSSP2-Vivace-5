@@ -7,53 +7,21 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import styles from "./SignUp.module.css";
 
-
-type SignUpProps = {
-    onSubmit: (form: {
-        email: string;
-        name: string;
-        password: string;
-        passwordCk: string;
-        company: string;
-        region: string;
-        birth: number;
-    }) => void;
-};
-
-interface User {
-    onSubmit: (form: {
-        email: string;
-        password: string;
-        passwordCk?: string;
-        name: string;
-        // birthY?: number;
-        // birthM?: number;
-        // birthD?: number;
-        birth: number;
-        company?: string;
-        region?: string;
-    }) => void;
-}
-
-interface Birth {
-    year: number;
-    month: number;
-    day: number;
-}
-
 function onSubmit(User: {
     firstName: string;
-        lastName: string;
-        email: string;
-        year: number;
-        month: number;
-        date: number;
-        password: string;
-        belong: string;
-        country: string;
-        region: string;
-        encodedImg:string;
+    lastName: string;
+    email: string;
+    year: number;
+    month: number;
+    date: number;
+    password: string;
+    belong: string;
+    country: string;
+    region: string;
+    encodedImg: string;
 }) {}
+
+let imgUrlEx: string;
 
 function SignUp() {
     const navigate = useNavigate();
@@ -65,8 +33,8 @@ function SignUp() {
         marginLeft: "25px",
         marginBottom: "25px",
     };
-// 20230603 [18:25] POST component 맞추기 작업 중.
-// 바로 밑 form은 components의 종류/숫자가 맞지 않아서 잠시 주석처리
+    // 20230603 [18:25] POST component 맞추기 작업 중.
+    // 바로 밑 form은 components의 종류/숫자가 맞지 않아서 잠시 주석처리
     // const [form, setForm] = useState({
     //     email: "",
     //     password: "",
@@ -88,11 +56,11 @@ function SignUp() {
         belong: "",
         country: "",
         region: "",
-        encodedImg:"",
+        encodedImg: "",
     });
 
     // const { email, password, passwordCk, name, birth, company, region } = form;
-    const { firstName,lastName,email,year,month,date,password,belong,country,region,encodedImg } = form;
+    const { firstName, lastName, email, year, month, date, password, belong, country, region, encodedImg } = form;
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.name == "yearValue") {
@@ -109,14 +77,43 @@ function SignUp() {
         });
     };
 
+    //이미지 base64 만들기
+    const [imgUrl, setimgUrl] = useState<string | undefined>(undefined);
+
+    const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+
+            //   이미지 jpg, jpeg로만 받을지 생각중
+            //   if (file.name.split('.').pop()?.toLowerCase() !== 'jpg' || file.name.split('.').pop()?.toLowerCase() !== 'jpeg') {
+            //     alert('에러가 발생하였습니다.');
+            //     return;
+            //   }
+
+            const fileReader = new FileReader();
+            fileReader.onload = () => {
+                if (typeof fileReader.result === "string") {
+                    setimgUrl(fileReader.result);
+                }
+            };
+            console.log("test 1");
+            console.log(imgUrl);
+            console.log(file);
+            fileReader.readAsDataURL(file);
+            console.log("test 2");
+            console.log(imgUrl);
+            console.log(file);
+            console.log("test 3");
+            console.log(form);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         onSubmit(form);
-        console.log("출력테스트");
 
         // 20230603 [18:28] 현재 API에는 passwordCk 칸이 없어서 잠시 주석처리 함.
-
 
         // 비밀번호 틀리면 아래 form이 제출되지 않도록 함.
         // if (form.password !== form.passwordCk) {
@@ -126,27 +123,10 @@ function SignUp() {
 
         // 현재까지 year에 값 넣은 채로 회원가입 버튼 누르면 그 값 나타내기는 가능.
         //그러나 form안에 그 값이 들어가지 않음. 수정 필요. (2023-05-18 01:43 AM)
-        console.log(selectedOption);
-        console.log("출력테스트1");
-        let birthM = selectedOption;
-        console.log("bitthM:" + birthM);
+        // console.log(selectedOption);
+        // let birthM = selectedOption;
         console.log(form);
 
-        setForm({
-            firstName: "",
-            lastName: "",
-            email: "",
-            year: 0,
-            month: 0,
-            date: 0,
-            password: "",
-            belong: "",
-            country: "",
-            region: "",
-            encodedImg:"",
-        }); // 초기화
-    
-    
         let isEmail = true;
         let isProperLength = true;
         let isAlphaNumeric = true;
@@ -194,49 +174,55 @@ function SignUp() {
             //     birth: birth,
             // });
 
-            const res: AxiosResponse = await axios.post(`${API_HOST}user/signup`, {
+            const userData = {
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
-                year: year,
-                month: month,
-                date: date,
+                year: Number(year),
+                month: Number(month),
+                date: Number(date),
                 password: password,
                 belong: belong,
                 country: country,
                 region: region,
                 encodedImg: encodedImg,
-            });
+            };
+
+            console.log(userData);
+
+            const res: AxiosResponse = await axios.post(`${API_HOST}/user/signup`, userData);
             console.log(res);
 
             if (res.status === 201) {
                 localStorage.setItem("access-token", "Bearer " + res.data.accessToken);
                 navigate(MAIN_PATH);
             } else if (res.status === 401) {
-                console.log("login failed!");
+                alert("login failed!");
+            } else if (res.status === 200) {
+                alert("User successfully sign up in this service");
+            } else if (res.status === 409) {
+                alert("If entered email is already existing");
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                console.log(error);
+                alert(error);
             }
         }
+
+        // setForm({
+        //     firstName: "",
+        //     lastName: "",
+        //     email: "",
+        //     year: 0,
+        //     month: 0,
+        //     date: 0,
+        //     password: "",
+        //     belong: "",
+        //     country: "",
+        //     region: "",
+        //     encodedImg:"",
+        // }); // 초기화
     };
-
-    // PC에서 이미지 가져오는 코드
-    const [imageSrc, setImageSrc]: any = useState(null);
-
-    const onUpload = (e: any) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        return new Promise<void>((resolve) => { 
-            reader.onload = () => {	
-                setImageSrc(reader.result || null); // 파일의 컨텐츠
-                resolve();
-            };
-        });
-    }
 
     //Select Box 값 바꿨을 때 console.log에 선택값이 들어오지 않음. 현재 이 값을 받기 위한 작업중.(2023-05-16 12:26 PM)
 
@@ -327,16 +313,14 @@ function SignUp() {
                             <div>
                                 <section>
                                     <i className={`${styles.far} ${styles["fa-user-circle"]} ${styles.userIcon}`}></i>
-                                    <input 
+                                    {/* <input 
                                         accept="image/*" 
                                         multiple type="file"
-                                        onChange={e => onUpload(e)}
-                                    />
-                                    <img 
-                                        width={'70px'}
-                                        height={'70px'} 
-                                        src={imageSrc} 
-                                    />
+                                        onChange={onUpload}
+                                        name="encodedImg"
+                                        value={encodedImg}
+                                    />  */}
+                                    <img width={"70px"} height={"70px"} src={imgUrl} />
                                     <button className={styles.boxStyle} type="submit">
                                         내PC에서 찾기
                                     </button>
