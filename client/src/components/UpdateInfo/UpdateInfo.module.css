@@ -1,7 +1,3 @@
-*{
-    /* border: 1px solid brown; */
-}
-
 .form {
     margin: 0;
     width: 100%;
@@ -124,7 +120,7 @@
 }
 
 .profileImg{
-    width: 80px;
+    width: 100px;
     height: 80px;
     /* padding-right: 20px; */
     margin-right: 10px;

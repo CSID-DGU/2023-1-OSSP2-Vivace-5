@@ -131,7 +131,7 @@ function UpdateInfo() {
 
     return (
         <form onSubmit={handleSubmit} className={styles.form}>
-            <header className={styles.header}>Tempo_UpdateInfo</header>
+            <header className={styles.header}></header>
 
             <section className={styles.mainScreen}>
                 <h1 className={styles.h1}>TEMPO</h1>
