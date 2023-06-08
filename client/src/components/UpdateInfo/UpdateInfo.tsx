@@ -8,17 +8,17 @@ import styles from "./UpdateInfo.module.css";
 import { style } from "d3";
 
 type InfoChangeProps = {
-    onSubmit: (form: { name: string; birth: number; company: string; region: string }) => void;
+    onSubmit: (form: { name: string; birth: number; company: string; region: string; encodedImg:string }) => void;
 };
 
 // { onSubmit }: InfoChangeProps
 
 interface InfoChange {
-    onSubmit: (form: { name: string; birth: number; company: string; region: string }) => void;
+    onSubmit: (form: { name: string; birth: number; company: string; region: string; encodedImg:string }) => void;
 }
 
 function UpdateInfo() {
-    function onSubmit(form: { name: string; birth: number; company: string; region: string }) {
+    function onSubmit(form: { name: string; birth: number; company: string; region: string; encodedImg:string }) {
         return form;
     }
 
@@ -63,9 +63,50 @@ function UpdateInfo() {
         birth: 0,
         company: "",
         region: "",
+        encodedImg: "",
     });
+    const { name, birth, company, region, encodedImg } = form;
 
-    const { name, birth, company, region } = form;
+    //이미지 base64 만들기
+    const [imgUrl, setimgUrl] = useState<string | undefined>(
+        undefined
+      );
+
+    const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+
+        //   이미지 jpg, jpeg로만 받을지 생각중
+        //   if (file.name.split('.').pop()?.toLowerCase() !== 'jpg' || file.name.split('.').pop()?.toLowerCase() !== 'jpeg') {
+        //     alert('에러가 발생하였습니다.');
+        //     return;
+        //   }
+
+          const fileReader = new FileReader();
+          fileReader.onload = () => {
+            if (typeof fileReader.result === 'string') {
+              setimgUrl(fileReader.result);
+            }
+          };
+          
+          console.log("test 1");
+          console.log(imgUrl);
+          console.log(file);
+
+          fileReader.readAsDataURL(file);
+
+          console.log("test 2");
+          console.log(imgUrl);
+          console.log(file);
+          console.log("test 3");
+          console.log(form);
+
+          form.encodedImg = String(form);
+          console.log(form.encodedImg);
+        }
+    };
+
+
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -84,6 +125,7 @@ function UpdateInfo() {
             birth: 0,
             company: "",
             region: "",
+            encodedImg: "",
         }); // 초기화
     };
 
@@ -111,9 +153,9 @@ function UpdateInfo() {
                                     <input 
                                         accept="image/*" 
                                         multiple type="file"
-                                        // onChange={onUpload}
+                                        onChange={onUpload}
                                         name="encodedImg"
-                                        // value={encodedImg}
+                                        value={encodedImg}
                                         className={styles.inputsection}
                                     /> 
                                 </section>
@@ -166,6 +208,9 @@ function UpdateInfo() {
             </section>
             <section className={styles.navsection}>
                 <div className={styles.navBtnStyle}>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                     <Link to="/">
                         <Button variant="outlined" className={styles.boxStyle}>
                             변경
@@ -176,6 +221,9 @@ function UpdateInfo() {
                             취소
                         </Button>
                     </Link>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                 </div>
             </section>
             <div className={styles.comfirmBtn}>

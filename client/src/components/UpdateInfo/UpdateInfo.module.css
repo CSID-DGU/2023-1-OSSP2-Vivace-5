@@ -1,3 +1,7 @@
+*{
+    /* border: 1px solid brown; */
+}
+
 .form {
     margin: 0;
     width: 100%;
@@ -24,7 +28,7 @@
     font-weight: bold;
     font-size: 60px;
     text-align: center;
-    /* margin: 30px;     */
+    margin: 10px;    
 }
 
 .inputsection {
@@ -38,7 +42,7 @@
 
 .texts {
     margin: 25px;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
     margin-top: 30px;
     padding-left: 70px;
     margin-right: -35px;    
@@ -52,8 +56,8 @@
 .boxStyle {
     height: 40px;
     width: 8rem;
-    margin: 10px;
-    border-radius: 10px;    
+    margin: 0 0px;
+    border-radius: 10px; 
 }
 
 .boxStyle2 {
@@ -77,9 +81,13 @@
 */
 
 .navsection {
-    display: block;
-    justify-content: space-between;
-    margin-left: 0px;
+    border-bottom: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 50%;
+    height: 70px;
 }
 
 .navBtnStyle {
@@ -88,7 +96,8 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    /* margin: 0 50px; */
 }
 
 .userIcon {
@@ -106,9 +115,17 @@
     align-items: center;
     flex-direction: row;
     margin-bottom: 15px;
+    margin-left: 25px;
 }
 
 .imgSection img {
     border: 1px solid black;
     border-radius: 50%;
+}
+
+.profileImg{
+    width: 80px;
+    height: 80px;
+    /* padding-right: 20px; */
+    margin-right: 10px;
 }
