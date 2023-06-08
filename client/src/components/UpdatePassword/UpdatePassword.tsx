@@ -123,11 +123,11 @@ function UpdatePassword() {
                             {/* <input style={inputBoxStyle} type="text" name="password" value={password} onChange={onChange} /> */}
                         </div>
                         <div className={styles.comfirmBtn}>
-                            <Stack spacing={5} direction="column">
-                                <Button variant="contained" type="submit" className={styles.boxStyle}>
+                            <Stack spacing={4} direction="column">
+                                <Button variant="contained" type="submit" className={styles.boxStyle1}>
                                     확인
                                 </Button>
-                                <Button variant="contained" type="submit" className={styles.boxStyle}>
+                                <Button variant="contained" type="submit" className={styles.boxStyle1}>
                                     확인
                                 </Button>
                             </Stack>
@@ -139,10 +139,10 @@ function UpdatePassword() {
                 <div className={styles.navBtnStyle}>
                     <div></div>
                     <Link to="/">
-                        <Button variant="outlined" className={styles.boxStyle}>변경</Button>
+                        <Button variant="outlined" className={styles.boxStyle2}>변경</Button>
                     </Link>
                     <Link to="/">
-                        <Button variant="outlined" className={styles.boxStyle}>취소</Button>
+                        <Button variant="outlined" className={styles.boxStyle2}>취소</Button>
                     </Link>
                     <div></div>
                 </div>

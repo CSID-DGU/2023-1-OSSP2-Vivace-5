@@ -25,6 +25,12 @@ let pwCheck:string;
 let imgUrlEx:string;
 
 function SignUp() {
+
+
+
+
+
+
     const navigate = useNavigate();
 
     //입력 박스 스타일

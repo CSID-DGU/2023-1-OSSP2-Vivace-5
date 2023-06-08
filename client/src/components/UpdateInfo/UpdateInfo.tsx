@@ -103,12 +103,20 @@ function UpdateInfo() {
                     </div>
                     <div className={styles.mainRightDiv}>
                         <div style={inputBoxStyle}>
-                            <section>
-                                <i className={`${styles.fas} ${"fa-user-edit"} ${styles.userIcon}`}></i>
-                                <button className={styles.boxStyle} type="submit">
-                                    내PC에서 찾기
-                                </button>
-                            </section>
+                                <section className={styles.imgSection}>
+                                    <img 
+                                        className={styles.profileImg}
+                                        src={""} 
+                                    />
+                                    <input 
+                                        accept="image/*" 
+                                        multiple type="file"
+                                        // onChange={onUpload}
+                                        name="encodedImg"
+                                        // value={encodedImg}
+                                        className={styles.inputsection}
+                                    /> 
+                                </section>
                             <TextField
                                 id="outlined-basic"
                                 label="name"
@@ -156,7 +164,6 @@ function UpdateInfo() {
                     </div>
                 </div>
             </section>
-            <hr className={styles.hrStyle}></hr>
             <section className={styles.navsection}>
                 <div className={styles.navBtnStyle}>
                     <Link to="/">

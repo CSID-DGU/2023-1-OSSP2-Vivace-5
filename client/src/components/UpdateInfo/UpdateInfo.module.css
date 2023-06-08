@@ -68,12 +68,13 @@
     display: flex;
     justify-content: center;    
 }
-
+/*
 .hrStyle {
     border: 1px solid black;
     width: 700px;
     margin-top: 3
 }
+*/
 
 .navsection {
     display: block;
@@ -97,4 +98,17 @@
     margin-left: 50px;
     margin-right: 20px;
     margin-bottom: 20px;
+}
+
+.imgSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 15px;
+}
+
+.imgSection img {
+    border: 1px solid black;
+    border-radius: 50%;
 }
