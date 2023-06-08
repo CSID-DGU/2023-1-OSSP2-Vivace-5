@@ -33,59 +33,65 @@ function UpdateProject() {
     };
 
     return (
-        <form className={styles.form}>
-
-            <div className={styles.upperPage}>
-                {/*  프로젝트 정보를 나타내는 테이블*/}
-                <table className={styles.mainTable}>
-                    <tbody>
-                        <tr className={styles.trStyle}>
-                            <th scope="row">프로젝트 이름</th>
-                            <td className={styles.tdStyle}>
-                                VIVACE-OSSP
-                                <button className={styles.corrBtnStyle}>
-                                    <i className={`${styles.far} ${"fa-edit"}`}></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr className={styles.trStyle}>
-                            <th scope="row">프로젝트 설명</th>
-                            <td className={styles.tdStyle}>
-                                직관적이고 사용하기 쉬운 GRAPH 기반의 프로젝트 관리도구
-                                <button className={styles.corrBtnStyle}>
-                                    <i className={`${styles.far} ${"fa-edit"}`}></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr className={styles.trStyle}>
-                            <th scope="row">프로젝트 생성 일자</th>
-                            <td className={styles.tdStyle}>
-                                2023.05.11
-                                <button className={styles.corrBtnStyle}>
-                                    <i className={`${styles.far} ${"fa-edit"}`}></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr className={styles.trStyle}>
-                            <th scope="row">프로젝트 멤버</th>
-                            <td className={styles.tdStyle}>
-{/* <<<<<<< Updated upstream:client/src/components/UpdateProject/UpdateProject.tsx */}
-                                props.name1 props.name2 props.name3 props.name4 props.name5
-=======
-                                {/* props.name1
-                                props.name2
-                                props.name3
-                                props.name4
-                                props.name5 */}
-{/* >>>>>>> Stashed changes:client/src/pages/NewCopyProjectCorr.tsx */}
-                                <button className={styles.corrBtnStyle}>
-                                    <i className={`${styles.far} ${"fa-edit"}`}></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <form className={styles.formStyle} onSubmit={handleSubmit}>
+            <header className={styles.header}></header>
+            <section className={styles.mainSection}>
+                <div className={styles.upperPage}>
+                    <table className={styles.mainTable}>
+                        <tbody className={styles.tbody}>
+                            <tr className={styles.trStyle}>
+                                <th scope="row">프로젝트 이름</th>
+                                <td className={styles.tdStyle}>
+                                    <input
+                                        className={styles.inputBoxStyle}
+                                        // className="idBox"
+                                        type="text"
+                                        name="Pname"
+                                        // value={Pname}
+                                        onChange={onChange}
+                                        placeholder="이름 입력"
+                                    />
+                                </td>
+                            </tr>
+                            <tr className={styles.trStyle}>
+                                <th scope="row" className={styles.th}>프로젝트 설명</th>
+                                <td className={styles.tdStyle}>
+                                    <input
+                                        className={styles.inputBoxStyle }
+                                        // className="idBox"
+                                        type="text"
+                                        name="Pdescription"
+                                        // value={Pdescription}
+                                        onChange={onChange}
+                                        placeholder="설명 입력"
+                                    />
+                                </td>
+                            </tr>
+                            <tr className={styles.trStyle}>
+                                <th scope="row">프로젝트 생성 일자</th>
+                                <td className={styles.tdStyle}>
+                                    <input
+                                        className={styles.inputBoxStyle}
+                                        // className="idBox"
+                                        type="text"
+                                        name="PcreDate"
+                                        // value={PcreDate}
+                                        onChange={onChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr className={styles.trStyle}>
+                                <th scope="row">프로젝트 멤버</th>
+                                <td className={styles.tdStyle}>
+                                    <button className={styles.corrBtnStyle} type="button">
+                                        <i className={`${styles.fas} ${styles["fa-plus-square"]} $[styles.plusBtn]`}></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             {/* 프로젝트 나가기&삭제 버튼 들어있는 div */}
             <div className={styles.lowerPage}>

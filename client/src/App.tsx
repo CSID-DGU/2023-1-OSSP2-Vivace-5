@@ -28,8 +28,8 @@ const App: React.FC = () => {
                     <Route path={SIGN_UP_PATH} Component={SignUp} />
                     <Route path={UPDATE_PASSWORD_PATH} Component={UpdatePassword} />
                     <Route path={UPDATE_INFO_PATH} Component={UpdateInfo} />
-                    <Route path="/" Component={CreateProject} />
-                    <Route path={UPDATE_PROJECT_PATH} Component={UpdateProject} />
+                    <Route path={CREATE_PROJECT_PATH} Component={CreateProject} />
+                    <Route path="/" Component={UpdateProject} />
                     <Route path={MAIN_PATH} Component={MainPage} />
                 </Routes>
             </div>

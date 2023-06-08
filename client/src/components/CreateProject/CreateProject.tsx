@@ -126,6 +126,8 @@ function CreateProject() {
                     </table>
                 </div>
             </section>
+
+            
             <div className={styles.lowerPage}>
                 <div>
                     <button className={styles.buttonStyle} type="submit" onClick={handleClick}>
