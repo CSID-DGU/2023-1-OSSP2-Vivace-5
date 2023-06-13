@@ -2,23 +2,14 @@ import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import styles from "./TaskList.module.css";
+import { Project, Task } from "../Data";
 
-interface Task {
-    id: string;
-    title: string;
-    description: string;
+interface TaskListProps {
+    currentTask: Task;
 }
 
-interface TaskListProps {}
-
-const TaskList: React.FC<TaskListProps> = () => {
-    const [taskList, setTaskList] = useState<Task[]>([
-        { id: "task1", title: "Task 1", description: "Description for Task 1" },
-        { id: "task2", title: "Task 2", description: "Description for Task 2" },
-        { id: "task3", title: "Task 3", description: "Description for Task 3" },
-        { id: "task4", title: "Task 4", description: "Description for Task 4" },
-        { id: "task5", title: "Task 5", description: "Description for Task 5" },
-    ]);
+const TaskList: React.FC<TaskListProps> = ({ currentTask }) => {
+    const [taskList, setTaskList] = useState<Task[]>([]);
 
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return;

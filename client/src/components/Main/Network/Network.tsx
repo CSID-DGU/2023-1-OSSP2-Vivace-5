@@ -1,13 +1,16 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import styles from "./Network.module.css";
-import ViewKanbanIcon from "@mui/icons-material/ViewKanban"; //for childType=kanban
-import DescriptionIcon from "@mui/icons-material/Description"; //for childType=MarkDown
-import AccountTreeIcon from "@mui/icons-material/AccountTree"; //for childtype=Network
-import ListIcon from "@mui/icons-material/List"; //for childType=List
+import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
+import DescriptionIcon from "@mui/icons-material/Description";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import ListIcon from "@mui/icons-material/List";
 import ReactDOMServer from "react-dom/server";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import { Project, Task } from "../Data";
+import { API_HOST } from "../../../config/constants";
+import axios, { AxiosResponse } from "axios";
 
 interface NodeData extends d3.SimulationNodeDatum {
     id: string;
@@ -15,7 +18,7 @@ interface NodeData extends d3.SimulationNodeDatum {
     x?: number;
     y?: number;
     childType: string;
-    rate: number;
+    // rate?: number 진행도에 따라 back-ground 투명도 바꾸려고 넣어놨던 rate
 }
 
 interface LinkData {
@@ -23,14 +26,264 @@ interface LinkData {
     target: NodeData;
 }
 
-const NetworkGraph = () => {
+interface NetworkProps {
+    currentTask: Task;
+}
+
+const Network: React.FC<NetworkProps> = ({ currentTask }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteSubTasks, setDeleteSubTasks] = useState(false);
 
     const handleNodeButtonClick = (node: NodeData, buttonId: string) => {
-        //버튼 클릭 시 노드 id랑 button id 전송 -> 북마크, 마일스톤, 노드 ID
         console.log(`Button ${buttonId} clicked for node: ${node.id}`);
         setSelectedNodeId(node.id);
+    };
+
+    const handleContextMenu = (event: React.MouseEvent<SVGGElement, MouseEvent>, node: NodeData) => {
+        event.preventDefault();
+        const contextMenu = document.getElementById("context-menu");
+        if (contextMenu) {
+            contextMenu.style.left = `${event.clientX}px`;
+            contextMenu.style.top = `${event.clientY}px`;
+            contextMenu.style.display = "block";
+            setSelectedNodeId(node.id);
+            setShowDeleteConfirmation(false);
+            document.addEventListener("click", handleDocumentClick); //메뉴바 외의 영역 클릭시 메뉴바 닫기
+        }
+    };
+
+    const handleDocumentClick = (event: MouseEvent) => {
+        const contextMenu = document.getElementById("context-menu");
+        if (contextMenu && !contextMenu.contains(event.target as Node)) {
+            contextMenu.style.display = "none";
+            setSelectedNodeId(null);
+            document.removeEventListener("click", handleDocumentClick);
+        }
+    };
+
+    const handleDeleteNode = () => {
+        if (selectedNodeId) {
+            setShowDeleteConfirmation(true);
+        }
+    };
+
+    const handleDeleteConfirmation = async () => {
+        if (selectedNodeId) {
+            const payload = {
+                taskId: selectedNodeId,
+                cascading: deleteSubTasks,
+            };
+            try {
+                let res: AxiosResponse = await axios.delete(`${API_HOST}/task/delete`, {
+                    //res 다른 곳에서도 쓰이니까 let으로
+                    headers: {
+                        Authorization: localStorage.getItem("access-token"),
+                    },
+                    data: payload,
+                });
+                if (res.status === 200) {
+                    console.log("Node and subtasks deleted successfully");
+                } else {
+                    console.error("Error deleting node and subtasks:", res.status);
+                }
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error("Error deleting node and subtasks:", error.message);
+                } else {
+                    console.error("Error deleting node and subtasks:", error);
+                }
+            }
+        }
+        setShowDeleteConfirmation(false);
+    };
+
+    const handleDeleteSubTasksToggle = () => {
+        setDeleteSubTasks(!deleteSubTasks);
+    };
+
+    const handleModifyNodeInfo = async () => {
+        if (selectedNodeId) {
+            console.log("Showing modal for node modification");
+
+            const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+
+            if (selectedNode) {
+                const newTitle = prompt("Enter the new title:", selectedNode.label);
+                const newDescription = prompt("Enter the new description:", "");
+                const newStart = prompt("Enter the new start date:", "");
+                const newDeadline = prompt("Enter the new deadline:", "");
+
+                if (newTitle || newDescription || newStart || newDeadline) {
+                    const updatedFields: any = {};
+
+                    if (newTitle) {
+                        updatedFields.newTitle = newTitle;
+
+                        try {
+                            const res = await axios.patch(
+                                `${API_HOST}/task/update/title/${selectedNodeId}`,
+                                { newTitle: updatedFields.newTitle },
+                                {
+                                    headers: {
+                                        Authorization: localStorage.getItem("access-token"),
+                                    },
+                                },
+                            );
+
+                            console.log("Node title updated successfully");
+                        } catch (error) {
+                            if (axios.isAxiosError(error)) {
+                                console.error("Error updating node title:", error.message);
+                            } else {
+                                console.error("Error updating node title:", error);
+                            }
+                        }
+                    }
+                    if (newDescription) {
+                        updatedFields.newDescription = newDescription;
+
+                        try {
+                            const res = await axios.patch(
+                                `${API_HOST}/task/update/description/${selectedNodeId}`,
+                                { newDescription: updatedFields.newDescription },
+                                {
+                                    headers: {
+                                        Authorization: localStorage.getItem("access-token"),
+                                    },
+                                },
+                            );
+
+                            console.log("Node description updated successfully");
+                        } catch (error) {
+                            if (axios.isAxiosError(error)) {
+                                console.error("Error updating node description:", error.message);
+                            } else {
+                                console.error("Error updating node description:", error);
+                            }
+                        }
+                    }
+                    if (newStart) {
+                        updatedFields.newStart = newStart;
+
+                        try {
+                            const res = await axios.patch(
+                                `${API_HOST}/task/update/start/${selectedNodeId}`,
+                                { newStart: updatedFields.newStart },
+                                {
+                                    headers: {
+                                        Authorization: localStorage.getItem("access-token"),
+                                    },
+                                },
+                            );
+
+                            console.log("Node start date updated successfully");
+                        } catch (error) {
+                            if (axios.isAxiosError(error)) {
+                                console.error("Error updating node start date:", error.message);
+                            } else {
+                                console.error("Error updating node start date:", error);
+                            }
+                        }
+                    }
+                    if (newDeadline) {
+                        updatedFields.newDeadline = newDeadline;
+
+                        try {
+                            const res = await axios.patch(
+                                `${API_HOST}/task/update/deadline/${selectedNodeId}`,
+                                { newDeadline: updatedFields.newDeadline },
+                                {
+                                    headers: {
+                                        Authorization: localStorage.getItem("access-token"),
+                                    },
+                                },
+                            );
+
+                            console.log("Node deadline updated successfully");
+                        } catch (error) {
+                            if (axios.isAxiosError(error)) {
+                                console.error("Error updating node deadline:", error.message);
+                            } else {
+                                console.error("Error updating node deadline:", error);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const handleAddLink = async () => {
+        if (selectedNodeId) {
+            console.log("Showing UI to select target node for link creation");
+
+            const handleTargetNodeClick = async (targetNode: NodeData) => {
+                console.log(`Target node ${targetNode.id} selected for link creation`);
+
+                const payload = {
+                    source: selectedNodeId,
+                    target: targetNode.id,
+                };
+
+                try {
+                    const response = await axios.post(`${API_HOST}/link/create`, payload, {
+                        headers: {
+                            Authorization: localStorage.getItem("access-token"),
+                        },
+                    });
+                    console.log("Link created successfully");
+                } catch (error) {
+                    if (axios.isAxiosError(error)) {
+                        console.error("Error creating link:", error.message);
+                    } else {
+                        console.error("Error creating link:", error);
+                    }
+                }
+
+                document.removeEventListener("click", handleDocumentClick);
+            };
+
+            const handleDocumentClick = (event: MouseEvent) => {
+                const targetNode = nodes.find((node) => node.id === (event.target as HTMLElement).dataset.nodeId);
+                if (targetNode) {
+                    handleTargetNodeClick(targetNode);
+                }
+            };
+
+            document.addEventListener("click", handleDocumentClick);
+        }
+    };
+
+    const handleDeleteLink = () => {
+        if (selectedNodeId) {
+            console.log("Deleting link");
+        }
+    };
+
+    const handleBringUp = async () => {
+        if (selectedNodeId) {
+            try {
+                const payload = {
+                    taskId: selectedNodeId,
+                };
+
+                const response = await axios.post(`${API_HOST}/bringUp`, payload, {
+                    headers: {
+                        Authorization: localStorage.getItem("access-token"),
+                    },
+                });
+
+                console.log("Bring up request successful");
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error("Error sending bring up request:", error.message);
+                } else {
+                    console.error("Error sending bring up request:", error);
+                }
+            }
+        }
     };
 
     useEffect(() => {
@@ -38,18 +291,35 @@ const NetworkGraph = () => {
         const width = +svg.attr("width");
         const height = +svg.attr("height");
 
-        const nodes: NodeData[] = [
-            { id: "node1", label: "Node 1", childType: "Network", rate: 15 / 15 },
-            { id: "node2", label: "Node 2", childType: "Kanban", rate: 5 / 10 },
-            { id: "node3", label: "Node 3", childType: "List", rate: 2 / 4 },
-            // ...
-        ];
+        const convertTaskToNodeData = (task: Task): NodeData => {
+            //Node data is the data for each node
+            const { id, title, type } = task;
+            const childType = type;
+            return { id, label: title, childType };
+        };
 
-        const links: LinkData[] = [
-            { source: nodes.find((node) => node.id === "node1")!, target: nodes.find((node) => node.id === "node2")! },
-            { source: nodes.find((node) => node.id === "node1")!, target: nodes.find((node) => node.id === "node3")! },
-            // Add more links here...
-        ];
+        const convertTaskToLinkData = (task: Task): LinkData[] => {
+            //Link data is the data for each link
+            const { id, children } = task;
+            if (children) {
+                return children.flatMap((child) => {
+                    //현재 task의 child에서 successor를 target으로 하는 link
+                    if (child.successors) {
+                        return child.successors.map((successor) => {
+                            const source = convertTaskToNodeData(child);
+                            const target = convertTaskToNodeData(successor);
+                            return { source, target };
+                        });
+                    }
+                    return [];
+                });
+            }
+            return [];
+        };
+
+        const nodes: NodeData[] = currentTask.children ? currentTask.children.map(convertTaskToNodeData) : [];
+
+        const links: LinkData[] = currentTask.children ? currentTask.children.flatMap(convertTaskToLinkData) : [];
 
         const simulation = d3
             .forceSimulation<NodeData, LinkData>(nodes)
@@ -67,14 +337,14 @@ const NetworkGraph = () => {
             .append("marker")
             .attr("id", "arrowhead")
             .attr("viewBox", "-0 -5 10 10")
-            .attr("refX", 8) // 화살표 위치 조정
+            .attr("refX", 8)
             .attr("refY", 0)
             .attr("orient", "auto")
             .attr("markerWidth", 10)
             .attr("markerHeight", 10)
             .attr("xoverflow", "visible")
             .append("svg:path")
-            .attr("d", "M 0,-5 L 10 ,0 L 0,5") // 화살표 모양 지정
+            .attr("d", "M 0,-5 L 10 ,0 L 0,5")
             .attr("fill", "#999");
 
         const link = svg
@@ -83,7 +353,7 @@ const NetworkGraph = () => {
             .enter()
             .append("line")
             .attr("class", "link")
-            .attr("marker-end", "url(#arrowhead)"); // 화살표로 된 링크 표시
+            .attr("marker-end", "url(#arrowhead)");
 
         const node = svg
             .selectAll<SVGGElement, NodeData>(`.${styles.node}`)
@@ -91,15 +361,19 @@ const NetworkGraph = () => {
             .enter()
             .append("g")
             .attr("class", "node")
-            .call(d3.drag<SVGGElement, NodeData>().on("start", dragStart).on("drag", drag).on("end", dragEnd));
+            .call(d3.drag<SVGGElement, NodeData>().on("start", dragStart).on("drag", drag).on("end", dragEnd))
+            .on("contextmenu", (event, d) => {
+                handleContextMenu(event, d);
+            });
 
+        // Node elements
         node.append("rect")
             .attr("class", "node-background")
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", 100)
             .attr("height", 60)
-            .style("fill", (d) => `rgba(216, 228, 252, ${d.rate * 0.7 + 0.3})`); // 투명도 조절
+            .style("fill", (d) => `rgba(216, 228, 252)`);
 
         node.append("text")
             .attr("class", "label")
@@ -152,6 +426,7 @@ const NetworkGraph = () => {
                 return icon ? ReactDOMServer.renderToString(icon) : null;
             });
 
+        // Simulation tick function
         simulation.on("tick", () => {
             link.attr("x1", (d) => d.source.x! + 100)
                 .attr("y1", (d) => d.source.y! + 30)
@@ -161,6 +436,7 @@ const NetworkGraph = () => {
             node.attr("transform", (d) => `translate(${d.x},${d.y})`);
         });
 
+        // Drag functions
         function drag(event: d3.D3DragEvent<SVGGElement, NodeData, NodeData | undefined>, d: NodeData) {
             d.fx = event.x;
             d.fy = event.y;
@@ -184,10 +460,29 @@ const NetworkGraph = () => {
 
     return (
         <div>
-            <svg ref={svgRef} width={1280} height={1024}></svg>
-            <div>Selected Node ID: {selectedNodeId}</div>
+            <svg ref={svgRef} width={1280} height={1024} onContextMenu={(e) => e.preventDefault()}></svg>
+
+            <div id="context-menu" style={{ position: "absolute", display: "none" }}>
+                <ul>
+                    <li onClick={handleDeleteNode}>Delete Node</li>
+                    <li onClick={handleModifyNodeInfo}>Modify Node Info</li>
+                    <li onClick={handleAddLink}>Add Link</li>
+                    <li onClick={handleDeleteLink}>Delete Link</li>
+                    <li onClick={handleBringUp}>Bring Up</li>
+                </ul>
+            </div>
+
+            {showDeleteConfirmation && (
+                <div>
+                    <p>Do you want to delete all subtasks as well?</p>
+                    <input type="checkbox" checked={deleteSubTasks} onChange={handleDeleteSubTasksToggle} />
+                    <label>Delete Subtasks</label>
+                    <button onClick={handleDeleteConfirmation}>Delete</button>
+                    <button onClick={() => setShowDeleteConfirmation(false)}>Cancel</button>
+                </div>
+            )}
         </div>
     );
 };
 
-export default NetworkGraph;
+export default Network;

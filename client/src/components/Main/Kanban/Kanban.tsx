@@ -3,23 +3,39 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import AddIcon from "@mui/icons-material/Add";
 import styles from "./Kanban.module.css";
+import { Task } from "../Data";
+import { API_HOST } from "../../../config/constants";
+import axios, { AxiosResponse } from "axios";
 
 const initialColumns = [
     { id: "column-1", title: "column 1", tasks: ["task-1", "task-2", "task-3"] },
     { id: "column-2", title: "column 2", tasks: ["task-4", "task-5"] },
 ];
 
-const initialTasks: { [key: string]: { id: string; content: string } } = {
-    "task-1": { id: "task-1", content: "작업 1" },
-    "task-2": { id: "task-2", content: "작업 2" },
-    "task-3": { id: "task-3", content: "작업 3" },
-    "task-4": { id: "task-4", content: "작업 4" },
-    "task-5": { id: "task-5", content: "작업 5" },
+const initialTasks: { [key: string]: { id: string; title: string } } = {
+    "task-1": { id: "task-1", title: "작업 1" },
+    "task-2": { id: "task-2", title: "작업 2" },
+    "task-3": { id: "task-3", title: "작업 3" },
+    "task-4": { id: "task-4", title: "작업 4" },
+    "task-5": { id: "task-5", title: "작업 5" },
 };
 
-const Kanban: React.FC = () => {
+interface KanbanProps {
+    currentTask: Task;
+    projectId: string;
+}
+
+const Kanban: React.FC<KanbanProps> = ({ currentTask, projectId }) => {
     const [columns, setColumns] = useState(initialColumns);
     const [tasks, setTasks] = useState(initialTasks);
+    const [showModal, setShowModal] = useState(false);
+    const [newTaskData, setNewTaskData] = useState({
+        title: "",
+        description: "",
+        type: "LIST",
+        start: "",
+        deadline: "",
+    });
 
     const handleDragEnd = (result: DropResult) => {
         const { source, destination, type } = result;
@@ -96,85 +112,167 @@ const Kanban: React.FC = () => {
         setColumns(updatedColumns);
     };
 
+    const handleAddTask = () => {
+        setShowModal(true);
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = event.target;
+        setNewTaskData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = event.target;
+        setNewTaskData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleFormSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post(
+                `${API_HOST}/task/create`,
+                {
+                    projectId: projectId,
+                    parentId: currentTask.id,
+                    isKanban: false,
+                    title: newTaskData.title,
+                    description: newTaskData.description,
+                    type: newTaskData.type,
+                    start: newTaskData.start,
+                    deadline: newTaskData.deadline,
+                },
+                {
+                    headers: {
+                        Authorization: localStorage.getItem("access-token"),
+                    },
+                },
+            );
+
+            // Handle successful response
+            console.log("New task created:", response.data);
+
+            // Reset form data and close modal
+            setNewTaskData({
+                title: "",
+                description: "",
+                type: "LIST",
+                start: "",
+                deadline: "",
+            });
+            setShowModal(false);
+        } catch (error) {
+            // Handle error
+            console.error("Error creating task:", error);
+        }
+    };
+
     return (
         <div className={styles.kanban}>
             <DragDropContext onDragEnd={handleDragEnd}>
-                <div className={styles.columnContainer}>
-                    <Droppable droppableId="all-columns" direction="horizontal" type="column">
-                        {(provided) => (
-                            <div
-                                className={styles.columnContainer}
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
-                                {columns.map((column, columnIndex) => (
-                                    <Draggable draggableId={column.id} index={columnIndex} key={column.id}>
-                                        {(provided) => (
-                                            <div
-                                                className={styles.column}
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                            >
-                                                <div className={styles.columnHeader}>
-                                                    <h2 className={styles.columnTitle}>{column.title}</h2>
-                                                    <button
-                                                        className={styles.columnTitleButton}
-                                                        onClick={() => {
-                                                            const newTitle = prompt("Enter the new column title:");
-                                                            if (newTitle) {
-                                                                updateColumnTitle(column.id, newTitle);
-                                                            }
-                                                        }}
+                {columns.map((column) => (
+                    <div key={column.id} className={styles.column}>
+                        <h2 className={styles.columnTitle}>
+                            {column.title}
+                            <BorderColorIcon />
+                        </h2>
+                        <Droppable droppableId={column.id}>
+                            {(provided) => (
+                                <div ref={provided.innerRef} {...provided.droppableProps} className={styles.taskList}>
+                                    {column.tasks.map((taskId, index) => {
+                                        const task = tasks[taskId];
+                                        return (
+                                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                                                {(provided) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                        className={styles.taskItem}
                                                     >
-                                                        <BorderColorIcon className={styles.reName} />
-                                                    </button>
-                                                    <span className={styles.taskCount}>{column.tasks.length}</span>
-                                                </div>
-                                                <Droppable droppableId={column.id} type="task">
-                                                    {(provided) => (
-                                                        <div
-                                                            className={styles.taskList}
-                                                            ref={provided.innerRef}
-                                                            {...provided.droppableProps}
-                                                        >
-                                                            {column.tasks.map((taskId, index) => (
-                                                                <Draggable
-                                                                    draggableId={taskId}
-                                                                    index={index}
-                                                                    key={taskId}
-                                                                >
-                                                                    {(provided) => (
-                                                                        <div
-                                                                            className={styles.task}
-                                                                            ref={provided.innerRef}
-                                                                            {...provided.draggableProps}
-                                                                            {...provided.dragHandleProps}
-                                                                        >
-                                                                            <p>{tasks[taskId].content}</p>
-                                                                        </div>
-                                                                    )}
-                                                                </Draggable>
-                                                            ))}
-                                                            {provided.placeholder}
-                                                        </div>
-                                                    )}
-                                                </Droppable>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                                <div className={styles.addColumnButtonContainer}>
-                                    <button className={styles.addColumnButton} onClick={addColumn}>
-                                        <AddIcon />
-                                    </button>
+                                                        {task.title}
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        );
+                                    })}
+                                    {provided.placeholder}
                                 </div>
-                            </div>
-                        )}
-                    </Droppable>
-                </div>
+                            )}
+                        </Droppable>
+                    </div>
+                ))}
             </DragDropContext>
+
+            <button className={styles.addTaskButton} onClick={handleAddTask}>
+                <AddIcon />
+                Add Task
+            </button>
+
+            {showModal && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Add Task</h2>
+                        <form onSubmit={handleFormSubmit}>
+                            <label>
+                                Title:
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={newTaskData.title}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <label>
+                                Description:
+                                <textarea
+                                    name="description"
+                                    value={newTaskData.description}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <label>
+                                Type:
+                                <select name="type" value={newTaskData.type} onChange={handleSelectChange}>
+                                    <option value="LIST">List</option>
+                                    <option value="KANBAN">Kanban</option>
+                                    <option value="GRAPH">Graph</option>
+                                    <option value="TERMINAL">Terminal</option>
+                                </select>
+                            </label>
+                            <label>
+                                Start (UTC):
+                                <input
+                                    type="datetime-local"
+                                    name="start"
+                                    value={newTaskData.start}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <label>
+                                Deadline (UTC):
+                                <input
+                                    type="datetime-local"
+                                    name="deadline"
+                                    value={newTaskData.deadline}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <button type="submit">Create Task</button>
+                        </form>
+                        <button onClick={handleModalClose}>Cancel</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

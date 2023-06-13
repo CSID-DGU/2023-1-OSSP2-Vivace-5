@@ -7,66 +7,12 @@ import styles from "./MainPage.module.css";
 import LSideBar from "../../LSideBar/LSideBar";
 import RSideBar from "../../RSideBar/RSideBar";
 import MainSection from "../MainSect/MainSect";
-
-interface Project {
-    id: string;
-    title: string;
-    description: string;
-    type: string;
-    encodedImg: string;
-    createdAt: string;
-    userToProjects: {
-        right: string;
-        user: {
-            id: string;
-            firstName: string;
-            lastName: string;
-            encodedImg: string;
-        };
-    }[];
-    tasks: {
-        id: string;
-        title: string;
-        description: string;
-        type: string;
-        status: string;
-        priority: string;
-        startDate: string;
-        endDate: string;
-        createdAt: string;
-        modifiedAt: string;
-        userToTasks: {
-            right: string;
-            user: {
-                id: string;
-                firstName: string;
-                lastName: string;
-                encodedImg: string;
-            };
-        }[];
-        comments: {
-            id: string;
-            createdAt: string;
-            modifiedAt: string;
-            content: string;
-            pinned: boolean;
-            projectId: string;
-        }[];
-    }[];
-    comments: {
-        id: string;
-        createdAt: string;
-        modifiedAt: string;
-        content: string;
-        pinned: boolean;
-        projectId: string;
-    }[];
-}
+import { Task, Project } from "../Data";
 
 const MainPage: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-    const [currentTask, setCurrentTask] = useState<any>(); // Task에 맞춰서 추후 정의
+    const [currentTask, setCurrentTask] = useState<Task | null>(null); // Task에 맞춰서 추후 정의
 
     const handleToggleSidebar = () => {
         setSidebarOpen((prevState) => !prevState);
@@ -85,7 +31,7 @@ const MainPage: React.FC = () => {
             if (res.status === 200) {
                 const projectData: Project = res.data;
                 setSelectedProject(projectData);
-                setCurrentTask(projectData.tasks[0]); // Set initial currentTask
+                setCurrentTask({ ...projectData.tasks[0], project: projectData });
             } else {
                 console.log("error");
             }

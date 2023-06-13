@@ -7,23 +7,11 @@ import AddIcon from "@mui/icons-material/Add";
 import styles from "./MainSect.module.css";
 import axios from "axios";
 import { API_HOST } from "../../../config/constants";
-
-interface Project {
-    id: string;
-    title: string;
-    description: string;
-    encodedImg: string;
-    parentTasks?: Task[];
-}
-
-interface Task {
-    id: string;
-    title: string;
-}
+import { Project, Task } from "../Data";
 
 interface MainSectionProps {
-    currentTask: any; // Task에 맞춰서 추후 정의
-    onUpdateCurrentTask: (task: any) => void; // Task에 맞춰서 추후 정의
+    currentTask?: Task | null;
+    onUpdateCurrentTask: (task: Task) => void;
     selectedProject: Project | null;
     onTaskPathClick: (taskId: string) => void;
 }
@@ -97,8 +85,8 @@ const MainSection: React.FC<MainSectionProps> = ({
 
     return (
         <div className={styles.mainSection}>
-            <div className={styles.projectInfoContainer}>
-                {selectedProject && (
+            {selectedProject && (
+                <div className={styles.projectInfoContainer}>
                     <React.Fragment>
                         <img
                             src={`data:image/png;base64,${selectedProject.encodedImg}`}
@@ -110,8 +98,7 @@ const MainSection: React.FC<MainSectionProps> = ({
                             <p>{selectedProject.description}</p>
                             <div className={styles.pathContainer}>
                                 Render the path here
-                                {/* Example: */}
-                                {selectedProject.parentTasks?.map((task) => (
+                                {/* {selectedProject.parentTasks?.map((task) => (
                                     <p
                                         key={task.id}
                                         onClick={() => handleTaskPathClick(task.id)}
@@ -119,102 +106,29 @@ const MainSection: React.FC<MainSectionProps> = ({
                                     >
                                         {task.title}
                                     </p>
-                                ))}
+                                ))} */}
                                 <button className={styles.toggleMarkdownButton} onClick={toggleMarkdownVisibility}>
                                     {showMarkdown ? "-" : "+"}
                                 </button>
                             </div>
                         </div>
                     </React.Fragment>
-                )}
-            </div>
-            <div className={styles.taskContainer}>
-                {showMarkdown && <MarkDown />} {/* Render MarkDown component only when showMarkdown is true */}
-                {currentTask && (
-                    <div>
-                        {currentTask.type === "network" && <Network />}
-                        {currentTask.type === "kanban" && <Kanban />}
-                        {currentTask.type === "tasklist" && <TaskList />}
-                    </div>
-                )}
-            </div>
-            <div
-                className={styles.addTaskButton}
-                style={{
-                    position: "fixed",
-                    bottom: "10px",
-                    right: "25%",
-                    zIndex: "999",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "40px",
-                    height: "40px",
-                    backgroundColor: "#f2f2f2",
-                    border: "1px solid #ccc",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                }}
-                onClick={handleAddTask}
-            >
-                <AddIcon />
-            </div>
-
-            {showModal && (
-                <div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <h2>Add Task</h2>
-                        <form onSubmit={handleFormSubmit}>
-                            <label>
-                                Title:
-                                <input
-                                    type="text"
-                                    name="title"
-                                    value={newTaskData.title}
-                                    onChange={handleInputChange}
-                                />
-                            </label>
-                            <label>
-                                Description:
-                                <textarea
-                                    name="description"
-                                    value={newTaskData.description}
-                                    onChange={handleInputChange}
-                                />
-                            </label>
-                            <label>
-                                Type:
-                                <select name="type" value={newTaskData.type} onChange={handleSelectChange}>
-                                    <option value="LIST">List</option>
-                                    <option value="KANBAN">Kanban</option>
-                                    <option value="GRAPH">Graph</option>
-                                    <option value="TERMINAL">Terminal</option>
-                                </select>
-                            </label>
-                            <label>
-                                Start (UTC):
-                                <input
-                                    type="datetime-local"
-                                    name="start"
-                                    value={newTaskData.start}
-                                    onChange={handleInputChange}
-                                />
-                            </label>
-                            <label>
-                                Deadline (UTC):
-                                <input
-                                    type="datetime-local"
-                                    name="deadline"
-                                    value={newTaskData.deadline}
-                                    onChange={handleInputChange}
-                                />
-                            </label>
-                            <button type="submit">Create Task</button>
-                        </form>
-                        <button onClick={handleModalClose}>Cancel</button>
-                    </div>
                 </div>
             )}
+            <div className={styles.taskContainer}>
+                {showMarkdown && currentTask && <MarkDown currentTask={currentTask} />}{" "}
+                {/* Render MarkDown component only when showMarkdown is true and currentTask exists */}
+                {currentTask && (
+                    <div>
+                        {currentTask.type === "network" && <Network currentTask={currentTask} />}
+                        {currentTask.type === "kanban" && (
+                            <Kanban currentTask={currentTask} projectId={selectedProject?.id || ""} />
+                        )}
+                        {currentTask.type === "tasklist" && <TaskList currentTask={currentTask} />}
+                    </div>
+                )}
+            </div>
+            {/* ... */}
         </div>
     );
 };
