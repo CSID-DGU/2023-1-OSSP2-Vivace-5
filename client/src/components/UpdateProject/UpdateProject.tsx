@@ -1,4 +1,6 @@
+import axios, { AxiosResponse } from "axios";
 import React, { CSSProperties, useState } from "react";
+import { API_HOST } from "../../config/constants";
 import styles from "./UpdateProject.module.css";
 
 type ProjectCorrProps = {
@@ -7,7 +9,7 @@ type ProjectCorrProps = {
 
 function onSubmit(ProjectCorrProps: { name: string; password: string }) {}
 
-function UpdateProject() {
+async function UpdateProject() {
     const [form, setForm] = useState({
         name: "",
         password: "",
@@ -31,6 +33,19 @@ function UpdateProject() {
             password: "",
         }); // 초기화
     };
+
+    try {
+        //put통해서 사용자 정보 전부 바꾸기
+        const res: AxiosResponse = await axios.put(`${API_HOST}/user/signin`, users);
+            
+        if(res.status == 201) {
+            console.log("Infomation Update Success!");    
+        }
+        } catch (error)  {
+            console.log(error);
+    }
+
+
 
     return (
         <form className={styles.formStyle} onSubmit={handleSubmit}>

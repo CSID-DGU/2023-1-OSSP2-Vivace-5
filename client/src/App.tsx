@@ -26,10 +26,10 @@ const App: React.FC = () => {
                     {/* <Route path="/" Component={MainPage} /> */}
                     <Route path={SIGN_IN_PATH} Component={SignIn} />
                     <Route path="/" Component={SignUp} />
-                    <Route path={UPDATE_PASSWORD_PATH} Component={UpdatePassword} />
-                    <Route path={UPDATE_INFO_PATH} Component={UpdateInfo} />
+                    <Route path={UPDATE_PASSWORD_PATH} element="UpdatePassword" />
+                    <Route path={UPDATE_INFO_PATH} element="UpdateInfo" />
                     <Route path={CREATE_PROJECT_PATH} Component={CreateProject} />
-                    <Route path={UPDATE_PROJECT_PATH} Component={UpdateProject} />
+                    <Route path={UPDATE_PROJECT_PATH} element="UpdateProject" />
                     <Route path={MAIN_PATH} Component={MainPage} />
                 </Routes>
             </div>
