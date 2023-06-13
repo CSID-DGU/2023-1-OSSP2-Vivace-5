@@ -107,7 +107,8 @@ let token = localStorage.getItem('Bearer access-token');
     try {
         //put통해서 사용자 정보 전부 바꾸기
         const res: AxiosResponse = await axios.patch(`${API_HOST}/user/signin`, {
-            password: newPw1
+            "before": currentPassword,
+            "after": newPw1
         });
             
         if(res.status == 200) {
@@ -118,16 +119,6 @@ let token = localStorage.getItem('Bearer access-token');
         } catch (error)  {
             console.log(error);
         }    
-
-
-
-
-
-
-
-
-
-
 
     return (
         <form className={styles.form}>

@@ -96,8 +96,6 @@ async function UpdateInfo() {
         }
     };
 
-
-
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm({
@@ -105,6 +103,12 @@ async function UpdateInfo() {
             [name]: value,
         });
     };
+
+//계정삭제 버튼 누르면 입력칸이 나오고, 입력칸에 비밀번호를 입력해야 함.
+//쉽게 바꾸려면 "계정을 삭제합니다."라는 문구 그대로 치면 삭제되게 해도 됨.
+    const onDeleteClick = (e:React.MouseEvent<HTMLButtonElement>) => {
+        
+    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -350,7 +354,7 @@ async function UpdateInfo() {
                     <Button variant="outlined" type="submit" className={styles.boxStyle2}>
                         확인
                     </Button>
-                    <Button variant="outlined" color="error" className={styles.boxStyle2}>
+                    <Button variant="outlined" color="error" className={styles.boxStyle2} onClick={onDeleteClick}>
                         계정 삭제
                     </Button>
                 </Stack>

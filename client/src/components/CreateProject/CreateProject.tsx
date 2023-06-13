@@ -62,6 +62,8 @@ function CreateProject() {
     }
 
 
+//**************************************************
+
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         pSubmit(form);
@@ -147,7 +149,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             })
         }, []);
 
-//여기선 dongguk이 아니라, 사용자의 belong을 받아와야 함.
+//여기선 dongguk이 아니라, 각 사용자의 belong을 받아와야 함(수정 필요!).
     let sameBelongUser: [string];
 
         for(let i=0; i<users.length; i++) {
@@ -157,12 +159,12 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             }
         }
 
-
         const res1: AxiosResponse = await axios.post(`${API_HOST}/project/create`, projectData);
         console.log(res1);
 
 //token가져오는게 이게 맞는지 확인 필요.
         let token = localStorage.getItem('Bearer access-token');
+        
         if(res1.status === 200) {
             console.log("Successfully created project!");
             console.log("your token: " + token);

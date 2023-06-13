@@ -4,18 +4,30 @@ import { API_HOST } from "../../config/constants";
 import styles from "./UpdateProject.module.css";
 
 type ProjectCorrProps = {
-    onSubmit: (form: { name: string; password: string }) => void;
+    onSubmit: (form: { title: string; description: string; type: string; encodedImg:string; members:string[] }) => void;
 };
 
-function onSubmit(ProjectCorrProps: { name: string; password: string }) {}
+function onSubmit(ProjectCorrProps: { title: string; description: string; type: string; encodedImg:string; members: { name:string ; right:string}}) {}
+
+
+
+
+//*******************************************
 
 async function UpdateProject() {
     const [form, setForm] = useState({
-        name: "",
-        password: "",
+        title:"",
+        description: "",
+        type: "",
+        encodedImg: "",
+        members: {
+            name: "",
+            right: "",
+        }
     });
 
-    const { name, password } = form;
+
+    const { title, description, type, encodedImg, members } = form;
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -29,14 +41,24 @@ async function UpdateProject() {
         e.preventDefault();
         onSubmit(form);
         setForm({
-            name: "",
-            password: "",
+            title:form.title,
+            description: form.description,
+            type: form.type,
+            encodedImg: form.encodedImg,
+            members: {
+                name: form.members.name,
+                right: form.members.right,
+            }
         }); // 초기화
     };
 
+
     try {
         //put통해서 사용자 정보 전부 바꾸기
-        const res: AxiosResponse = await axios.put(`${API_HOST}/user/signin`, users);
+        const res: AxiosResponse = await axios.put(`${API_HOST}/user/signin`, form);
+        
+        console.log("res.data출력");
+        console.log(res.data);
             
         if(res.status == 201) {
             console.log("Infomation Update Success!");    
@@ -45,8 +67,7 @@ async function UpdateProject() {
             console.log(error);
     }
 
-
-
+    
     return (
         <form className={styles.formStyle} onSubmit={handleSubmit}>
             <header className={styles.header}></header>
@@ -61,8 +82,8 @@ async function UpdateProject() {
                                         className={styles.inputBoxStyle}
                                         // className="idBox"
                                         type="text"
-                                        name="Pname"
-                                        // value={Pname}
+                                        name="title"
+                                        value={title}
                                         onChange={onChange}
                                         placeholder="이름 입력"
                                     />
@@ -75,8 +96,8 @@ async function UpdateProject() {
                                         className={styles.inputBoxStyle }
                                         // className="idBox"
                                         type="text"
-                                        name="Pdescription"
-                                        // value={Pdescription}
+                                        name="description"
+                                        value={description}
                                         onChange={onChange}
                                         placeholder="설명 입력"
                                     />
@@ -89,8 +110,35 @@ async function UpdateProject() {
                                         className={styles.inputBoxStyle}
                                         // className="idBox"
                                         type="text"
-                                        name="PcreDate"
-                                        // value={PcreDate}
+                                        name="type"
+                                        value={type}
+                                        onChange={onChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr className={styles.trStyle}>
+                                <th scope="row">base64 URL들어갈 자리</th>
+                                <td className={styles.tdStyle}>
+                                    <input
+                                        className={styles.inputBoxStyle}
+                                        // className="idBox"
+                                        type="text"
+                                        name="encodedImg"
+                                        value={encodedImg}
+                                        onChange={onChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr className={styles.trStyle}>
+                                <th scope="row">프로젝트 생성 일자</th>
+                                <td className={styles.tdStyle}>
+                                    <input
+                                        className={styles.inputBoxStyle}
+                                        // className="idBox"
+                                        type="text"
+                                        name="members"
+                                        // value={{form.members.name},
+                                        // {form.members.right}}
                                         onChange={onChange}
                                     />
                                 </td>
