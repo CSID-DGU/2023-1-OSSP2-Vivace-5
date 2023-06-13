@@ -25,11 +25,11 @@ const App: React.FC = () => {
                 <Routes>
                     {/* <Route path="/" Component={MainPage} /> */}
                     <Route path={SIGN_IN_PATH} Component={SignIn} />
-                    <Route path={SIGN_UP_PATH} Component={SignUp} />
+                    <Route path="/" Component={SignUp} />
                     <Route path={UPDATE_PASSWORD_PATH} Component={UpdatePassword} />
                     <Route path={UPDATE_INFO_PATH} Component={UpdateInfo} />
                     <Route path={CREATE_PROJECT_PATH} Component={CreateProject} />
-                    <Route path="/" Component={UpdateProject} />
+                    <Route path={UPDATE_PROJECT_PATH} Component={UpdateProject} />
                     <Route path={MAIN_PATH} Component={MainPage} />
                 </Routes>
             </div>

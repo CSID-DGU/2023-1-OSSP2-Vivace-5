@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import Stack from "@mui/material/Stack";
@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import styles from "./UpdateInfo.module.css";
 import { style } from "d3";
+import axios, { AxiosResponse } from "axios";
+import { API_HOST } from "../../config/constants";
 
 type InfoChangeProps = {
     onSubmit: (form: { name: string; birth: number; company: string; region: string; encodedImg:string }) => void;
@@ -17,7 +19,7 @@ interface InfoChange {
     onSubmit: (form: { name: string; birth: number; company: string; region: string; encodedImg:string }) => void;
 }
 
-function UpdateInfo() {
+async function UpdateInfo() {
     function onSubmit(form: { name: string; birth: number; company: string; region: string; encodedImg:string }) {
         return form;
     }
@@ -50,13 +52,13 @@ function UpdateInfo() {
     function handleChange() {}
 
     //입력 박스 스타일
-    const inputBoxStyle: CSSProperties = {
-        width: "300px",
-        height: "40px",
-        marginLeft: "25px",
-        marginBottom: "30px",
-        marginTop: "-2px",
-    };
+    // const inputBoxStyle: CSSProperties = {
+    //     width: "300px",
+    //     height: "40px",
+    //     marginLeft: "25px",
+    //     marginBottom: "30px",
+    //     marginTop: "-2px",
+    // };
 
     const [form, setForm] = useState({
         name: "",
@@ -88,19 +90,7 @@ function UpdateInfo() {
               setimgUrl(fileReader.result);
             }
           };
-          
-          console.log("test 1");
-          console.log(imgUrl);
-          console.log(file);
-
           fileReader.readAsDataURL(file);
-
-          console.log("test 2");
-          console.log(imgUrl);
-          console.log(file);
-          console.log("test 3");
-          console.log(form);
-
           form.encodedImg = String(form);
           console.log(form.encodedImg);
         }
@@ -129,6 +119,88 @@ function UpdateInfo() {
         }); // 초기화
     };
 
+    //PUT 테스트 필요함
+    // function axiosPut() {
+    //     const name = document.getElementById("name");
+    //     const email = document.getElementById("email");
+    //     const updateDate = document.getElementById("update_date");
+       
+    //     const updateDataObj = { "first_name": "White", "last_name": "Rabbit" , "email": "alice@elice.io" };
+       
+    //     axios.put(`${API_HOST}/user/signup`, updateDataObj)
+    //       .then(response => {
+    //           firstName = `${response.data.firstname};
+    //           lastName = ${response.data.last_name}`;
+    //           email = response.data.email;
+    //           updateDate.innerHTML = new Date()
+    //       })
+    //   }
+
+
+
+
+
+
+//********************************
+
+//form UI와 상관없이 모든 요소를 입력받는다고 가정하고 작성함.   
+    const [users, setUsers] = useState({
+        "id": "",
+        "firstName": "",
+        "lastName": "",
+        "email": "",
+        "year": 0,
+        "month": 0,
+        "date": 0,
+        "belong": "",
+        "country": "",
+        "region": "",
+        "encodedImg": "",
+        "createdAt": ""
+    });
+
+//사용자 baerer 토큰 빼오기 (확인 필요)
+    let token = localStorage.getItem('Bearer access-token');
+
+//토큰 통해서 사용자 정보에 접근
+    useEffect(() => {
+        axios.get(`${API_HOST}/user/info/${token}`)
+          .then(response => response.data)
+          .then(response => {
+              setUsers(response.results)
+          })
+      }, []);
+
+    let currentId:string = users.id;
+    let currentFirstName:string = users.firstName;
+    let currentLastName:string = users.lastName;
+    let currentEmail:string = users.email;
+    let currentYear:number = users.year;
+    let currentMonth:number = users.month;
+    let currentDate:number = users.date;
+    let currentBelong:string = users.belong;
+    let currentCountry:string = users.country;
+    let currentRegion:string = users.region;
+    let currentEncodedImg:string = users.encodedImg;
+    let currentCreatedAt:string = users.createdAt;
+
+    // 새 UI에 각자 값들 placeholder로 넣어주는 과정 필요
+    // `<input class="Example" placeholder=`${currentId}`/>`;
+
+// [IF] 데이터가 제대로 들어가지 않는다면 버튼 하나 만들어서 useState로 값들 다시 받고
+//할당하는 것도 생각해보아야 함.
+    try {
+//put통해서 사용자 정보 전부 바꾸기
+    const res: AxiosResponse = await axios.put(`${API_HOST}/user/signin`, users);
+    
+    if(res.status == 201) {
+        console.log("Infomation Update Success!");    
+    }
+    } catch (error)  {
+        console.log(error);
+    }
+    
+
     return (
         <form onSubmit={handleSubmit} className={styles.form}>
             <header className={styles.header}></header>
@@ -144,8 +216,8 @@ function UpdateInfo() {
                         <h2 className={styles.texts}>거주지</h2>
                     </div>
                     <div className={styles.mainRightDiv}>
-                        <div style={inputBoxStyle}>
-                                <section className={styles.imgSection}>
+                        <div className={styles.inputBoxStyle}>
+                            <section className={styles.imgSection}>
                                     <img 
                                         className={styles.profileImg}
                                         src={""} 
@@ -158,50 +230,97 @@ function UpdateInfo() {
                                         value={encodedImg}
                                         className={styles.inputsection}
                                     /> 
-                                </section>
-                            <TextField
-                                id="outlined-basic"
-                                label="name"
-                                variant="outlined"
-                                style={inputBoxStyle}
-                                type="text"
-                                name="name"
-                                value={name}
-                                onChange={onChange}
-                            />
+                            </section>
+                            <div className={styles.name}>
+                                <TextField
+                                    id="outlined-basic"
+                                    // className={styles.name1}
+                                    label="first name"
+                                    variant="outlined"
+                                    className={styles.inputBoxStyle}
+                                    type="text"
+                                    name="name"
+                                    value={name}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-basic"
+                                    className={styles.inputBoxStyle}
+                                    label="last name"
+                                    variant="outlined"
+                                    type="text"
+                                    name="name"
+                                    value={name}
+                                    onChange={onChange}
+                                />
+                            </div>
                             <br />
-                            <TextField
-                                id="outlined-basic"
-                                label="birth(ex.19991127)"
-                                variant="outlined"
-                                style={inputBoxStyle}
-                                type="text"
-                                name="birth"
-                                value={birth}
-                                onChange={onChange}
-                            />
+                            <div className={styles.birth}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Year"
+                                    variant="outlined"
+                                    
+                                    type="text"
+                                    name="birth"
+                                    value={birth}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Month"
+                                    variant="outlined"
+                                    className={styles.inputBoxStyle}
+                                    type="text"
+                                    name="birth"
+                                    value={birth}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Date"
+                                    variant="outlined"
+                                    className={styles.inputBoxStyle}
+                                    type="text"
+                                    name="birth"
+                                    value={birth}
+                                    onChange={onChange}
+                                />
+                            </div>
                             <br />
                             <TextField
                                 id="outlined-basic"
                                 label="company"
                                 variant="outlined"
-                                style={inputBoxStyle}
+                                className={styles.inputBoxStyle}
                                 type="text"
                                 name="company"
                                 value={company}
                                 onChange={onChange}
                             />
                             <br />
-                            <TextField
-                                id="outlined-basic"
-                                label="region"
-                                variant="outlined"
-                                style={inputBoxStyle}
-                                type="text"
-                                name="region"
-                                value={region}
-                                onChange={onChange}
-                            />
+                            <div className={styles.region}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="country"
+                                    variant="outlined"
+                                    className={styles.inputBoxStyle}
+                                    type="text"
+                                    name="region"
+                                    value={region}
+                                    onChange={onChange}
+                                />
+                                <TextField
+                                    id="outlined-basic"
+                                    label="region"
+                                    variant="outlined"
+                                    className={styles.inputBoxStyle}
+                                    type="text"
+                                    name="region"
+                                    value={region}
+                                    onChange={onChange}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

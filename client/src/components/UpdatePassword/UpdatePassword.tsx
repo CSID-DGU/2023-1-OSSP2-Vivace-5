@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -18,7 +18,7 @@ interface UserPw {
     onSubmit: (form: { pastPw: string; newPw1: string; newPw2: string }) => void;
 }
 
-function UpdatePassword() {
+async function UpdatePassword() {
     function onSubmit(form: { pastPw: string; newPw1: string; newPw2: string }) {
         return form;
     }
@@ -73,6 +73,61 @@ function UpdatePassword() {
             newPw2: "",
         });
     };
+
+
+
+
+
+
+//****************************************************
+
+const [currentPassword, setCurrentPassword] =useState();
+
+//사용자 baerer 토큰 빼오기 (확인 필요)
+let token = localStorage.getItem('Bearer access-token');
+
+//토큰 통해서 사용자 정보에 접근
+    useEffect(() => {
+        axios.get(`${API_HOST}/user/info/${token}`)
+          .then(response => response.data)
+          .then(response => {
+            setCurrentPassword(response.results.password);
+          })
+      }, []);
+
+    if(pastPw !== currentPassword) { 
+        alert("현재 비밀번호가 틀립니다.");
+        const currentPW = document.getElementById("outlined-basic") as HTMLElement;
+        //비밀번호 틀릴 시 빈 칸으로 만들기
+        currentPW.innerText="";
+        // document.querySelector("#outlined-basic");
+        return;
+    }
+
+    try {
+        //put통해서 사용자 정보 전부 바꾸기
+        const res: AxiosResponse = await axios.patch(`${API_HOST}/user/signin`, {
+            password: newPw1
+        });
+            
+        if(res.status == 200) {
+            console.log("Password Update Success!");    
+        } else if(res.status ==406){
+            console.log("Before and After Password are same!");
+        }
+        } catch (error)  {
+            console.log(error);
+        }    
+
+
+
+
+
+
+
+
+
+
 
     return (
         <form className={styles.form}>
@@ -152,3 +207,4 @@ function UpdatePassword() {
 }
 
 export default UpdatePassword;
+

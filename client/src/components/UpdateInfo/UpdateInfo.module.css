@@ -1,3 +1,7 @@
+*{
+    margin: 0;
+}
+
 .form {
     margin: 0;
     width: 100%;
@@ -29,7 +33,7 @@
 
 .inputsection {
     display: flex;
-    float: left;    
+    float: left;
 }
 
 .textDiv {
@@ -124,4 +128,35 @@
     height: 80px;
     /* padding-right: 20px; */
     margin-right: 10px;
+}
+
+.inputBoxStyle {
+    width: 300px;
+    height: 40px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+    margin-top: -2px;
+};
+
+.name{ 
+    display: flex;
+    justify-content: center;
+    /* width: 100px; */
+}
+
+.name:nth-child(1) {
+    width: 30px;
+    background-color: blue;
+}
+.name:nth-child(2) {
+    width: 60px;
+    background-color: red;
+}
+
+.birth {
+    display: flex;
+}
+
+.region {
+    display: flex;
 }

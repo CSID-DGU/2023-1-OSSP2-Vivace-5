@@ -5,6 +5,13 @@ import { API_HOST, MAIN_PATH } from "../../config/constants";
 
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+
 import styles from "./SignUp.module.css";
 
 
@@ -21,15 +28,11 @@ function onSubmit(User: {
         region: string;
         encodedImg:string;
 }) {}
+
 let pwCheck:string;
 let imgUrlEx:string;
 
 function SignUp() {
-
-
-
-
-
 
     const navigate = useNavigate();
 
@@ -71,15 +74,12 @@ function SignUp() {
         date: 0,
         password: "",
         belong: "",
-        country: "",
+        country: "Korea",
         region: "",
         encodedImg:"",
     });
 
-    const [pwCheck, setpwCheck] = useState({
-        password: "",
-        pwCheck: "",
-    })
+
 
     const { firstName,lastName,email,year,month,date,password,belong,country,region,encodedImg } = form;
 
@@ -91,10 +91,6 @@ function SignUp() {
         const { name, value } = e.target;
         // console.log("name: " +name);
         // console.log(e.target.name);
-        setpwCheck({
-            ...pwCheck,
-            [name]: value
-        });
 
         setForm({
             // [birthY]: document.getElementById('yearValue'),
@@ -103,42 +99,56 @@ function SignUp() {
         });
     };
 
-    //이미지 base64 만들기
+    //비밀번호 확인(pwCheck)
+    const [passwordConfirm, setPasswordConfirm] = useState<string>('')
+
+    const onChangePasswordCk = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const passwordConfirmCurrent = e.target.value;
+        setPasswordConfirm(passwordConfirmCurrent)
+
+        if(password == passwordConfirm) {
+            alert("비밀번호가 맞습니다!");
+        }else {
+            alert("비밀번호가 틀립니다.");
+            window.location.reload();
+        }
+    }
+
+
+// option select만들기 (20230609 17:00 수정중)
+    // const [acountry, setcountry] = useState({
+    //     country: ""
+    // })
+
+    // const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     setcountry(e.target.value);
+    // };
+
+
+    // imgUrl에 base64 넣기
     const [imgUrl, setimgUrl] = useState<string | undefined>(
         undefined
-      );
+    );
     
-      const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
           const file = e.target.files[0];
 
-        //   이미지 jpg, jpeg로만 받을지 생각중
+          //jpg, jpeg로만 받을지 생각중
         //   if (file.name.split('.').pop()?.toLowerCase() !== 'jpg' || file.name.split('.').pop()?.toLowerCase() !== 'jpeg') {
-        //     alert('에러가 발생하였습니다.');
+        //     alert('파일형식자 jpg, jpeg를 선택하십시오.');
         //     return;
         //   }
 
-          const fileReader = new FileReader();
-          fileReader.onload = () => {
+        const fileReader = new FileReader();
+
+        fileReader.onload = () => {
             if (typeof fileReader.result === 'string') {
               setimgUrl(fileReader.result);
             }
-          };
-          
-          console.log("test 1");
-          console.log(imgUrl);
-          console.log(file);
-
+        };
           fileReader.readAsDataURL(file);
-
-          console.log("test 2");
-          console.log(imgUrl);
-          console.log(file);
-          console.log("test 3");
-          console.log(form);
-
           form.encodedImg = String(form);
-          console.log(form.encodedImg);
         }
     };
 
@@ -164,48 +174,60 @@ function SignUp() {
         let isProperLength = true;
         let isAlphaNumeric = true;
         let isEachCharAtLeastOne = true;
+        let isPasswordConfirm = true;
 
-        // const emailRegex: RegExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
-        // // if (!emailRegex.test(name)) {
-        // //     alert("Please enter a valid email address");
-        // //     // window.location.reload();
-        // // }
+        const emailRegex: RegExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address");
+            // window.location.reload();
+        }
 
-        // if (8 > password.length || password.length > 24) {
-        //     isProperLength = false;
-        //     alert("The length of password must be at least 8 characters and not more than 24 characters.");
-        // }
+        if (8 > password.length || password.length > 24) {
+            isProperLength = false;
+            alert("The length of password must be at least 8 characters and not more than 24 characters.");
+        }
 
-        // const passwordAlphaNumericRegex: RegExp = /^[A-Za-z0-9`~!@#\$%\^&\*\(\)_=\+-]*$/;
-        // if (!passwordAlphaNumericRegex.test(password)) {
-        //     isAlphaNumeric = false;
-        //     alert("password only accepts alphanumeric and some special character.(`~!@#$%^&*()-_=+)");
-        // }
+        const passwordAlphaNumericRegex: RegExp = /^[A-Za-z0-9`~!@#\$%\^&\*\(\)_=\+-]*$/;
+        if (!passwordAlphaNumericRegex.test(password)) {
+            isAlphaNumeric = false;
+            alert("password only accepts alphanumeric and some special character.(`~!@#$%^&*()-_=+)");
+        }
 
-        // const eachCharAtLeastOneRegex: RegExp = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`~!@#\$%\^&\*\(\)_=\+-]).*/;
-        // if (!eachCharAtLeastOneRegex.test(password)) {
-        //     isEachCharAtLeastOne = false;
-        //     alert(
-        //         "password should include at least one Upper case, one lower case, one numerical character, and one special character.(`~!@#$%^&*()_=+-)",
-        //     );
-        // }
+        const eachCharAtLeastOneRegex: RegExp = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`~!@#\$%\^&\*\(\)_=\+-]).*/;
+        if (!eachCharAtLeastOneRegex.test(password)) {
+            isEachCharAtLeastOne = false;
+            alert(
+                "password should include at least one Upper case, one lower case, one numerical character, and one special character.(`~!@#$%^&*()_=+-)",
+            );
+        }
+ 
 
-        if (!isEmail || !isProperLength || !isAlphaNumeric || !isEachCharAtLeastOne) {
+
+
+//비밀번호 체크 로직 짜는 중. 아직 수정 중(20230612 19:54)
+        const pwConfirm = document.getElementById("passwordConfirm") as HTMLElement;
+
+        const passwordConfirmation = () => {
+            if(password !== passwordConfirm) {
+                isPasswordConfirm=false;
+                console.log("passwordConfirm 틀림");
+                console.log("password: " + password);
+                console.log("passwordConfirm: " + pwConfirm);
+                console.log("test1");
+                // console.log(pwConfirm.attachShadow({mode:'open'}).innerHTML);
+                console.log(pwConfirm.shadowRoot?.innerHTML);
+            }
+        }
+        passwordConfirmation();
+
+
+        if (!isEmail || !isProperLength || !isAlphaNumeric || !isEachCharAtLeastOne || !isPasswordConfirm) {
             return;
         }
 
         try {
             console.log(password);
             console.log(email);
-            // const res: AxiosResponse = await axios.post(`${API_HOST}user/signup`, {
-            //     email: email,
-            //     password: password,
-            //     passwordCk: passwordCk,
-            //     name: name,
-            //     company: company,
-            //     region: region,
-            //     birth: birth,
-            // });
 
             const  userData = {
                 firstName: firstName,
@@ -218,11 +240,21 @@ function SignUp() {
                 belong: belong,
                 country: country,
                 region: region,
-                encodedImg: encodedImg,
+                encodedImg: imgUrl,
             } 
-
-
+            
             console.log(userData);
+
+            if(passwordConfirm == password) {
+                alert("비밀번호가 맞습니다!");
+                console.log("비밀번호가 맞습니다.");
+            }else {
+                alert("비밀번호가 틀려용!");
+                console.log("비밀번호가 틀려용!");
+                console.log(passwordConfirm);
+                setPasswordConfirm("");
+                // return;
+            }
 
             const res: AxiosResponse = await axios.post(`${API_HOST}/user/signup`, userData);
             console.log(res);
@@ -257,12 +289,6 @@ function SignUp() {
         //     encodedImg:"",
         // }); // 초기화
     };
-
-
-
-
-
-
 
     //Select Box 값 바꿨을 때 console.log에 선택값이 들어오지 않음. 현재 이 값을 받기 위한 작업중.(2023-05-16 12:26 PM)
 
@@ -327,14 +353,14 @@ function SignUp() {
                             />
                             <br />
                             <TextField
-                                id="outlined-password"
+                                id="passwordConfirm"
                                 label="pwCheck"
                                 variant="outlined"
                                 style={inputBoxStyle}
                                 type="text"
                                 name="pwCheck"
                                 value={pwCheck}
-                                onChange={onChange}
+                                onSubmit={onChangePasswordCk}
                             />
                         </div>
                     </div>
@@ -367,12 +393,7 @@ function SignUp() {
                                         // value={encodedImg}
                                         className={styles.inputsection}
                                     /> 
-                                    {/* <button className={styles.boxStyle} type="submit">
-                                        내PC에서 찾기
-                                    </button>
-                                    <button className={styles.boxStyle} type="submit">
-                                        취소
-                                    </button> */}
+                                    
                                 </section>
                                 {/* 이름: 성, 이름 들어갈 div */}
                                 <div>
@@ -444,6 +465,7 @@ function SignUp() {
                                 />
                                 <br />
                                 <div>
+                                    {/*                                     
                                     <TextField
                                         id="outlined-region"
                                         label="country"
@@ -453,7 +475,25 @@ function SignUp() {
                                         name="country"
                                         value={country}
                                         onChange={onChange}
-                                    />
+                                    /> */}
+                                    
+
+                                    <Box sx={{ minWidth: 120 }}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="demo-simple-select-label">country</InputLabel>
+                                            <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={country}
+                                            label="country"
+                                            // onChange={handleChange}
+                                            >
+                                                <MenuItem value={"korea"}>kor</MenuItem>
+                                                <MenuItem value={"US"}>us</MenuItem>
+                                                <MenuItem value={"Chima"}>china</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
                                     <TextField
                                         id="outlined-region"
                                         label="region"

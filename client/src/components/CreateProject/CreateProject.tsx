@@ -1,39 +1,48 @@
-import React, { CSSProperties, useState } from "react";
+import axios, { AxiosResponse } from "axios";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
+import { API_HOST } from "../../config/constants";
 import styles from "./CreateProject.module.css";
+import TextField from "@mui/material/TextField";
 
 type ProjectAddProps = {
     pSubmit: (form: {
-        Pname: string;
-        Pdescription: string;
-        PcreDate: string;
-        Pmember: {
-            name: string;
-        };
+        title: string;
+        description: string;
+        type: string;
+        encodedImg: string;
+        members: {
+            name: string,
+            right: string
+        }
     }) => void;
 };
 
 function pSubmit(ProjectAddProps: {
-    Pname: string;
-    Pdescription: string;
-    PcreDate: string;
-    Pmember: {
-        name: string;
-    };
+    title: string;
+    description: string;
+    type: string;
+    encodedImg: string;
+    members: {
+        name: string,
+        right: string,
+    }
 }) {}
 
 function CreateProject() {
     
     const [form, setForm] = useState({
-        Pname: "",
-        Pdescription: "",
-        PcreDate: "",
-        Pmember: {
+        title:"",
+        description: "",
+        type: "",
+        encodedImg: "",
+        members: {
             name: "",
+            right: "",
         },
     });
 
-    const { Pname, Pdescription, PcreDate, Pmember } = form;
+    const { title, description, type, encodedImg, members:stringArray} = form;
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -43,20 +52,6 @@ function CreateProject() {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        // 여기도 모르니까 any 로 하겠습니다.
-        e.preventDefault();
-        pSubmit(form);
-        console.log(form);
-        setForm({
-            Pname: "",
-            Pdescription: "",
-            PcreDate: "",
-            Pmember: {
-                name: "",
-            },
-        }); // 초기화
-    };
 
     function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         console.log(pSubmit(form));
@@ -65,6 +60,122 @@ function CreateProject() {
     function alertBtn(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         alert("같은 소속 내 사람들의 이름이 optional list로 들어갈 예정입니다.");
     }
+
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        pSubmit(form);
+
+        console.log(form);
+        setForm({
+            title:"",
+            description: "",
+            type: "",
+            encodedImg: "",
+            members: {
+                name: "",
+                right: "",
+            },
+        });
+
+    try {
+        const  projectData = {
+            "title": title,
+            "description": description,
+            "type": type,
+            "encodedImg": encodedImg,
+            "members": [
+            {
+                "name": form.members.name,
+                "right": form.members.right
+            }
+            ]
+        }    
+        console.log(form);
+        console.log(projectData);
+
+        interface users {
+            "id": string;
+            "firstName": string,
+            "lastName": string,
+            "email": "string",
+            "year": number,
+            "month": number,
+            "date": number,
+            "belong": string,
+            "country": string,
+            "region": string,
+            "encodedImg": string,
+            "createdAt": string
+        }
+
+        const [users, setUsers] = useState([{
+            "id": "",
+            "firstName": "",
+            "lastName": "",
+            "email": "",
+            "year": 0,
+            "month": 0,
+            "date": 0,
+            "belong": "",
+            "country": "",
+            "region": "",
+            "encodedImg": "",
+            "createdAt": ""
+        }]);
+
+        const [sameBelongusers, setSameBelongUsers] = useState([{
+            "id": "",
+            "firstName": "",
+            "lastName": "",
+            "email": "",
+            "year": 0,
+            "month": 0,
+            "date": 0,
+            "belong": "",
+            "country": "",
+            "region": "",
+            "encodedImg": "",
+            "createdAt": ""
+        }]);
+//로그인한 user정보 받아오기
+        useEffect(() => {
+          axios.get(`${API_HOST}/user/info/`)
+            .then(response => response.data)
+            .then(response => {
+                setUsers(response.results)
+            })
+        }, []);
+
+//여기선 dongguk이 아니라, 사용자의 belong을 받아와야 함.
+    let sameBelongUser: [string];
+
+        for(let i=0; i<users.length; i++) {
+            if(users[i].belong == 'dongguk') {
+                setSameBelongUsers(users)
+                console.log(sameBelongusers[i].belong);
+            }
+        }
+
+
+        const res1: AxiosResponse = await axios.post(`${API_HOST}/project/create`, projectData);
+        console.log(res1);
+
+//token가져오는게 이게 맞는지 확인 필요.
+        let token = localStorage.getItem('Bearer access-token');
+        if(res1.status === 200) {
+            console.log("Successfully created project!");
+            console.log("your token: " + token);
+        }
+
+    }catch (error) {
+                if (axios.isAxiosError(error)) {
+                    alert(error);
+                }
+    }
+
+};
+
 
     return (
         <form className={styles.formStyle} onSubmit={handleSubmit}>
@@ -81,8 +192,8 @@ function CreateProject() {
                                         // className="idBox"
                                         type="text"
                                         name="Pname"
-                                        value={Pname}
-                                        onChange={onChange}
+                                        // value={title}
+                                        // onChange={title}
                                         placeholder="이름 입력"
                                     />
                                 </td>
@@ -91,14 +202,103 @@ function CreateProject() {
                                 <th scope="row" className={styles.th}>프로젝트 설명</th>
                                 <td className={styles.tdStyle}>
                                     <input
-                                        className={styles.inputBoxStyle }
+                                        className={styles.inputBoxStyle}
                                         // className="idBox"
                                         type="text"
-                                        name="Pdescription"
-                                        value={Pdescription}
-                                        onChange={onChange}
+                                        name="description"
+                                        // value={description}
+                                        // onChange={onChange}
                                         placeholder="설명 입력"
                                     />
+
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="title"
+                                        value={title}
+                                        onChange={onChange}
+                                    />
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="description"
+                                        value={description}
+                                        onChange={onChange}
+                                    />
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="type"
+                                        value={type}
+                                        onChange={onChange}
+                                    />
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="encodedImg"
+                                        value={encodedImg}
+                                        onChange={onChange}
+                                    />
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="name"
+                                        value={form.members.name}
+                                        onChange={onChange}
+                                    />
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="right"
+                                        value={form.members.right}
+                                        onChange={onChange}
+                                    />
+                                    {/* <input onChange={onChange} value={members.right} /> */}
+
+
+                                    <TextField
+                                        id="outlined-email"
+                                        label="이메일"
+                                        variant="outlined"
+                                        className={styles.inputBoxStyle}
+                                        type="text"
+                                        name="title"
+                                        value={title}
+                                        onChange={onChange}
+                                    />
+
+
+
                                 </td>
                             </tr>
                             <tr className={styles.trStyle}>
@@ -108,9 +308,9 @@ function CreateProject() {
                                         className={styles.inputBoxStyle}
                                         // className="idBox"
                                         type="text"
-                                        name="PcreDate"
-                                        value={PcreDate}
-                                        onChange={onChange}
+                                        name="type"
+                                        // value={type}
+                                        // onChange={onChange}
                                     />
                                 </td>
                             </tr>
