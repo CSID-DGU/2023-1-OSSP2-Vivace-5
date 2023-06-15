@@ -16,10 +16,15 @@ import { SubTask } from "src/enum/sub-task.enum";
 import { AppendTaskDto } from "./dto/append-task.dto";
 import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { UserRepository } from "src/user/user.repository";
-import { DeleteTaskDto } from "./dto/delete-task.dto";
 import { BookmarkRepository } from "./bookmark.repository";
 import { KanbanColumnRepository } from "./kanban-column.repository";
 import { KanbanColumn } from "src/entity/kanban-column.entity";
+import { CreateBookmarkDto } from "./dto/create-bookmark.dto";
+import { Project } from "src/entity/project.entity";
+import { Bookmark } from "src/entity/bookmark.entity";
+import { IsNull } from "typeorm";
+import { TaskContentRepository } from "./task-content.repository";
+import { TaskContent } from "src/entity/task-content.entity";
 
 @Injectable()
 export class TaskService {
@@ -29,9 +34,10 @@ export class TaskService {
         @InjectRepository(UserRepository) private userRepository: UserRepository,
         @InjectRepository(BookmarkRepository) private bookmarkRepository: BookmarkRepository,
         @InjectRepository(KanbanColumnRepository) private kanbanColumnRepository: KanbanColumnRepository,
+        @InjectRepository(TaskContentRepository) private taskContentRepository: TaskContentRepository,
     ) {}
 
-    async getTaskInfo(user: User, taskId: string): Promise<Task> {
+    async getTaskInfo(user: User, taskId: string): Promise<Record<string, any>> {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
         taskQuery
@@ -41,27 +47,35 @@ export class TaskService {
             .leftJoinAndSelect("task.parentColumn", "parentColumn")
             .leftJoinAndSelect("task.parent", "parent")
             .leftJoinAndSelect("task.children", "children")
+            .leftJoinAndSelect("children.bookmarks", "cb", "cb.userId = :userId", { userId: user.id })
             .leftJoinAndSelect("children.predecessors", "predecessors")
             .leftJoinAndSelect("children.successors", "successors")
             .leftJoin("task.members", "members")
+            .leftJoinAndSelect("members.userToProjects", "mu")
             .leftJoinAndSelect("task.contents", "contents")
             .leftJoinAndSelect("task.comments", "comments")
-            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
-                userId: user.id,
-            })
+            .leftJoinAndSelect("project.userToProjects", "userToProjects")
             .leftJoinAndSelect("task.bookmarks", "bookmarks", "bookmarks.userId = :userId", { userId: user.id })
             .where("task.id = :taskId", { taskId });
 
-        const found: Task = await taskQuery.getOne();
+        const found: Record<string, any> = await taskQuery.getOne();
 
         if (!found) {
             throw new NotFoundException(`The task with id ${taskId} is not found.`);
         }
 
-        if (!found.project.userToProjects[0]) {
-            throw new UnauthorizedException(
-                `The user ${user.email} is not member of this project with id ${found.project.id}`,
-            );
+        for (const task of found.children) {
+            let descendants: Task[] = await this.taskRepository.findDescendants(task);
+
+            let nowGoal: number = 0;
+
+            for (const descendant of descendants) {
+                if (descendant.isFinished) {
+                    ++nowGoal;
+                }
+            }
+
+            task.rate = nowGoal / descendants.length;
         }
 
         return found;
@@ -155,14 +169,24 @@ export class TaskService {
                 }
 
                 if (project.tasks[0].type === SubTask.LIST) {
+                    const taskCountQuery = this.taskRepository.createQueryBuilder("task");
+
+                    taskCountQuery.where("task.parentId = :parentId", { parentId });
+
                     const lastTaskQuery = this.taskRepository.createQueryBuilder("task");
 
                     lastTaskQuery
-                        .leftJoin("task.successors", "successors")
-                        .where("task.parentId = :parentId", { parentId })
-                        .having("COUNT(successors) = :count", { count: 0 });
+                        .leftJoinAndSelect("task.successors", "successors")
+                        .where("task.parentId = :parentId", { parentId });
 
-                    last = await lastTaskQuery.getOne();
+                    const children: Task[] = await lastTaskQuery.getMany();
+
+                    for (const child of children) {
+                        if (child.successors.length === 0) {
+                            last = child;
+                            break;
+                        }
+                    }
                 }
             }
         } else {
@@ -194,7 +218,7 @@ export class TaskService {
 
         if (!isKanban && parentId) {
             newTask.parent = project.tasks[0];
-            if (project.tasks[0].type === SubTask.LIST) {
+            if (project.tasks[0].type === SubTask.LIST && last) {
                 newTask.predecessors = [last];
             }
         }
@@ -265,6 +289,37 @@ export class TaskService {
         return { milestone };
     }
 
+    async updateDescendantFinishedStatus(
+        user: User,
+        taskId: string,
+        isFinished: boolean,
+    ): Promise<{ isFinished: boolean }> {
+        const taskQuery = this.taskRepository.createQueryBuilder("task");
+
+        taskQuery
+            .leftJoinAndSelect("task.members", "members", "members.id = :userId", { userId: user.id })
+            .where("task.id = :taskId", { taskId });
+
+        const found: Task = await taskQuery.getOne();
+
+        if (!found) {
+            throw new NotFoundException(`The task with id ${taskId} is not found.`);
+        }
+
+        if (!found.members[0]) {
+            throw new UnauthorizedException(`The user ${user.email} is not member of task ${taskId}`);
+        }
+
+        const descendants: Task[] = await this.taskRepository.findDescendants(found);
+
+        for (const descendant of descendants) {
+            descendant.isFinished = isFinished;
+            await this.taskRepository.save(descendant);
+        }
+
+        return { isFinished };
+    }
+
     async updateFinishedStatus(user: User, taskId: string, isFinished: boolean): Promise<{ isFinished: boolean }> {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
@@ -282,9 +337,7 @@ export class TaskService {
             throw new UnauthorizedException(`The user ${user.email} is not member of task ${taskId}`);
         }
 
-        found.isFinished = isFinished;
-
-        await this.taskRepository.save(found);
+        await this.taskRepository.update({ id: taskId }, { isFinished });
 
         return { isFinished };
     }
@@ -549,6 +602,20 @@ export class TaskService {
         return { taskId, appendedTaskIds, notFoundTaskIds, differentParentTaskIds, alreadyPredecessorIds };
     }
 
+    async disconnect(user: User, appendTaskDto: AppendTaskDto) {
+        const { taskId, taskIdsToAppend } = appendTaskDto;
+
+        const task: Task = await this.taskRepository
+            .createQueryBuilder("task")
+            .leftJoinAndSelect("task.predecessors", "predecessors")
+            .where("task.id = :taskId", { taskId })
+            .getOne();
+
+        task.predecessors = task.predecessors.filter((predecessor) => predecessor.id !== taskIdsToAppend[0]);
+
+        await this.taskRepository.save(task);
+    }
+
     async bringDownTask(user: User, bringDownDto: BringDownTaskDto): Promise<void> {
         const { taskId, taskIdToParent } = bringDownDto;
 
@@ -687,7 +754,7 @@ export class TaskService {
         taskQuery
             .leftJoinAndSelect("task.parent", "parent")
             .leftJoinAndSelect("parent.parent", "grandparent")
-            .leftJoin("task.project", "project")
+            .leftJoinAndSelect("task.project", "project")
             .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
                 userId: user.id,
             })
@@ -977,16 +1044,150 @@ export class TaskService {
         return { memberIds, deletedMemberIds, notFoundUserIds, alreadyNotTaskMemberIds };
     }
 
-    async deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<void> {
-        const { taskId, cascading } = deleteTaskDto;
+    async getAllContents(user: User, taskId: string): Promise<TaskContent[]> {
+        const contents: TaskContent[] = await this.taskContentRepository.findBy({ taskId });
 
+        return contents;
+    }
+
+    async createContent(user: User, taskId: string): Promise<void> {
+        const content = new TaskContent();
+        content.title = "New Document";
+
+        const now = new Date();
+        content.createdAt = new Date(
+            Date.UTC(
+                now.getUTCFullYear(),
+                now.getUTCMonth(),
+                now.getUTCDate(),
+                now.getUTCHours(),
+                now.getUTCMinutes(),
+                now.getUTCSeconds(),
+            ),
+        );
+        content.modifiedAt = new Date(
+            Date.UTC(
+                now.getUTCFullYear(),
+                now.getUTCMonth(),
+                now.getUTCDate(),
+                now.getUTCHours(),
+                now.getUTCMinutes(),
+                now.getUTCSeconds(),
+            ),
+        );
+        content.content = "";
+        content.task = await this.taskRepository.findOneBy({ id: taskId });
+
+        await this.taskContentRepository.save(content);
+    }
+
+    async getAllBookmarks(user: User, projectId: string): Promise<Bookmark[]> {
+        const roots: Bookmark[] = await this.bookmarkRepository.find({
+            where: { userId: user.id, parent: IsNull(), projectId },
+        });
+
+        for (let i = 0; i < roots.length; ++i) {
+            roots[i] = await this.bookmarkRepository.findDescendantsTree(roots[i]);
+        }
+
+        return roots;
+    }
+
+    async updateBookmarkTitle(user: User, bookmarkId: string, newTitle: string) {
+        await this.bookmarkRepository.update({ id: bookmarkId }, { title: newTitle });
+    }
+
+    async createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): Promise<void> {
+        const { title, projectId, taskId, parentId } = createBookmarkDto;
+
+        const projectQuery = this.projectRepository.createQueryBuilder("project");
+
+        projectQuery.leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        });
+
+        if (taskId) {
+            projectQuery.leftJoinAndSelect("project.tasks", "tasks", "tasks.id = :taskId", {
+                taskId,
+            });
+        }
+
+        if (parentId) {
+            projectQuery.leftJoinAndSelect(
+                "project.bookmarks",
+                "bookmarks",
+                "(bookmarks.id = :bookmarkId) AND (bookmarks.taskId IS NULL)",
+                {
+                    bookmarkId: parentId,
+                },
+            );
+        }
+
+        projectQuery.where("project.id = :projectId", { projectId });
+
+        const project: Project = await projectQuery.getOne();
+
+        if (!project) {
+            throw new NotFoundException(`Project ${projectId} is not found.`);
+        }
+
+        if (project.userToProjects.length <= 0) {
+            throw new UnauthorizedException(`User ${user.email} is not member of the project ${projectId}`);
+        }
+
+        if (taskId && project.tasks.length <= 0) {
+            throw new NotFoundException(`Task ${taskId} is not found.`);
+        }
+
+        if (parentId && project.bookmarks.length <= 0) {
+            throw new NotFoundException(`Bookmark folder ${parentId} is not found.`);
+        }
+
+        const newBookmark = new Bookmark();
+        newBookmark.title = title;
+        newBookmark.user = user;
+        newBookmark.project = project;
+
+        if (taskId) {
+            newBookmark.task = project.tasks[0];
+        }
+
+        if (parentId) {
+            newBookmark.parent = project.bookmarks[0];
+        }
+
+        await this.bookmarkRepository.save(newBookmark);
+    }
+
+    async deleteBookmark(user: User, bookmarkId: string, cascading: boolean) {
+        const target = await this.bookmarkRepository.findOne({
+            where: { id: bookmarkId },
+            relations: { children: true, parent: true },
+        });
+
+        if (!cascading) {
+            for (const child of target.children) {
+                child.parent = target.parent;
+                await this.bookmarkRepository.save(child);
+            }
+        }
+
+        await this.bookmarkRepository.findDescendants(target);
+        await this.bookmarkRepository.delete({ id: bookmarkId });
+    }
+
+    async deleteBookmarkByTaskID(user: User, projectId: string, taskId: string) {
+        await this.bookmarkRepository.delete({ taskId, projectId, userId: user.id });
+    }
+
+    async deleteTask(user: User, taskId: string, cascading: boolean): Promise<void> {
         const taskQuery = this.taskRepository.createQueryBuilder("task");
 
         taskQuery
-            .leftJoin("task.parent", "parent")
-            .leftJoin("task.project", "project")
-            .addSelect(["project.id", "project.type"])
+            .leftJoinAndSelect("task.project", "project")
             .leftJoinAndSelect("task.children", "children")
+            .leftJoinAndSelect("task.predecessors", "predecessors")
+            .leftJoinAndSelect("task.successors", "successors")
             .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
                 userId: user.id,
             })
@@ -1019,17 +1220,12 @@ export class TaskService {
             }
         }
 
+        task.predecessors = [];
+        task.successors = [];
+
+        await this.taskRepository.save(task);
+
         await this.taskRepository.findDescendants(task);
         await this.taskRepository.delete({ id: taskId });
-    }
-
-    private fixHole(task: Task) {
-        let type: SubTask = SubTask.TERMINAL;
-
-        if (task.parent) {
-            type = task.parent.type;
-        } else {
-            type = task.project.type;
-        }
     }
 }

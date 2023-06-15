@@ -16,6 +16,8 @@ const user_to_project_entity_1 = require("./user-to-project.entity");
 const task_entity_1 = require("./task.entity");
 const project_comment_entity_1 = require("./project-comment.entity");
 const kanban_column_entity_1 = require("./kanban-column.entity");
+const bookmark_entity_1 = require("./bookmark.entity");
+const project_content_entity_1 = require("./project-content.entity");
 let Project = class Project extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -58,6 +60,14 @@ __decorate([
     (0, typeorm_1.OneToMany)((type) => kanban_column_entity_1.KanbanColumn, (column) => column.project, { eager: false }),
     __metadata("design:type", Array)
 ], Project.prototype, "columns", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => bookmark_entity_1.Bookmark, (bookmark) => bookmark.project, { eager: false }),
+    __metadata("design:type", Array)
+], Project.prototype, "bookmarks", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)((type) => project_content_entity_1.ProjectContent, (contents) => contents.project, { eager: false }),
+    __metadata("design:type", Array)
+], Project.prototype, "contents", void 0);
 Project = __decorate([
     (0, typeorm_1.Entity)()
 ], Project);

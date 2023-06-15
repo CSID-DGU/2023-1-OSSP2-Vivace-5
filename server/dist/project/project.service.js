@@ -25,13 +25,16 @@ const project_comment_repository_1 = require("./project-comment.repository");
 const typeorm_2 = require("typeorm");
 const task_repository_1 = require("../task/task.repository");
 const user_repository_1 = require("../user/user.repository");
+const project_content_entity_1 = require("../entity/project-content.entity");
+const project_content_repository_1 = require("./project-content.repository");
 let ProjectService = class ProjectService {
-    constructor(projectRepository, userToProjectRepository, projectCommentRepository, taskRepository, userRepository) {
+    constructor(projectRepository, userToProjectRepository, projectCommentRepository, taskRepository, userRepository, projectContentRepository) {
         this.projectRepository = projectRepository;
         this.userToProjectRepository = userToProjectRepository;
         this.projectCommentRepository = projectCommentRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.projectContentRepository = projectContentRepository;
     }
     async getAllProjects(user, queryString) {
         const query = this.projectRepository.createQueryBuilder("project");
@@ -42,16 +45,52 @@ let ProjectService = class ProjectService {
             "project.description",
             "project.type",
             "userToProjects.right",
+            "userToProjects.isBookmarked",
             "project.encodedImg",
         ])
-            .leftJoin("project.userToProjects", "userToProjects")
-            .where("userToProjects.userId = :userId", { userId: user.id });
+            .innerJoin("project.userToProjects", "userToProjects")
+            .where("userToProjects.userId = :userId", { userId: user.id })
+            .orderBy("project.title", "ASC");
         if (queryString) {
             query.andWhere(new typeorm_2.Brackets((qb) => {
                 qb.where("project.title LIKE :queryString", { queryString: `%${queryString}%` }).orWhere("project.description LIKE :queryString", { queryString: `%${queryString}%` });
             }));
         }
-        return query.getMany();
+        const projects = await query.getMany();
+        for (const project of projects) {
+            const taskQuery = this.taskRepository.createQueryBuilder("task");
+            taskQuery.where("task.projectId = :projectId", { projectId: project.id });
+            const tasks = await taskQuery.getMany();
+            let finishedTaskCount = 0;
+            for (const task of tasks) {
+                if (task.isFinished === true) {
+                    ++finishedTaskCount;
+                }
+            }
+            if (tasks.length !== 0) {
+                project.progress = finishedTaskCount / tasks.length;
+            }
+            else {
+                project.progress = 0;
+            }
+        }
+        return projects;
+    }
+    async getAllBookmarkedProjects(user, queryString) {
+        const query = this.projectRepository.createQueryBuilder("project");
+        query
+            .select(["project.id", "project.title", "project.encodedImg"])
+            .innerJoin("project.userToProjects", "userToProjects")
+            .where("userToProjects.userId = :userId", { userId: user.id })
+            .andWhere("userToProjects.isBookmarked = :isBookmarked", { isBookmarked: true })
+            .orderBy("project.title", "ASC");
+        if (queryString) {
+            query.andWhere(new typeorm_2.Brackets((qb) => {
+                qb.where("project.title LIKE :queryString", { queryString: `%${queryString}%` }).orWhere("project.description LIKE :queryString", { queryString: `%${queryString}%` });
+            }));
+        }
+        const bookmarkedProjects = await query.getMany();
+        return bookmarkedProjects;
     }
     async getProjectInfo(user, projectId) {
         const query = this.projectRepository.createQueryBuilder("project");
@@ -63,20 +102,24 @@ let ProjectService = class ProjectService {
             "project.encodedImg",
             "project.createdAt",
             "userToProjects.right",
+            "userToProjects.isBookmarked",
             "user.id",
             "user.encodedImg",
             "user.firstName",
             "user.lastName",
+            "user.email",
             "task.id",
             "task.title",
             "task.description",
             "task.type",
             "task.milestone",
             "task.isFinished",
+            "bookmark.title",
         ])
             .leftJoin("project.userToProjects", "userToProjects")
             .leftJoin("userToProjects.user", "user")
             .leftJoin("project.tasks", "task", "task.parentId IS NULL")
+            .leftJoin("task.bookmarks", "bookmark", "bookmark.userId = :userId", { userId: user.id })
             .leftJoinAndSelect("task.predecessors", "predecessors")
             .leftJoinAndSelect("task.successors", "successors")
             .leftJoinAndSelect("project.comments", "comments")
@@ -94,6 +137,16 @@ let ProjectService = class ProjectService {
         if (!includeUser) {
             throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to view the information on this project. Join this project for this information.`);
         }
+        for (const task of found.tasks) {
+            let descendants = await this.taskRepository.findDescendants(task);
+            let nowGoal = 0;
+            for (const descendant of descendants) {
+                if (descendant.isFinished) {
+                    ++nowGoal;
+                }
+            }
+            task.rate = nowGoal / descendants.length;
+        }
         return found;
     }
     async createProject(user, projectInfoDto) {
@@ -106,6 +159,7 @@ let ProjectService = class ProjectService {
         project.comments = [];
         project.tasks = [];
         project.userToProjects = [];
+        project.contents = [];
         const now = new Date();
         project.createdAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
         await this.projectRepository.save(project);
@@ -113,19 +167,21 @@ let ProjectService = class ProjectService {
         userToProject.right = user_right_enum_1.UserRight.ADMIN;
         userToProject.project = project;
         userToProject.user = user;
+        userToProject.isBookmarked = false;
         await this.userToProjectRepository.save(userToProject);
         const notFoundUserId = [];
         for (const member of members) {
-            const memberEntity = await this.userRepository.findOneBy({ id: member.id });
+            const memberEntity = await this.userRepository.findOneBy({ id: member.memberId });
             if (memberEntity) {
                 const memberToProject = new user_to_project_entity_1.UserToProject();
                 memberToProject.right = member.right;
                 memberToProject.project = project;
                 memberToProject.user = memberEntity;
+                memberToProject.isBookmarked = false;
                 await this.userToProjectRepository.save(memberToProject);
             }
             else {
-                notFoundUserId.push(member.id);
+                notFoundUserId.push(member.memberId);
             }
         }
         return { notFoundUserId: notFoundUserId };
@@ -164,7 +220,7 @@ let ProjectService = class ProjectService {
         await this.userToProjectRepository.save(userToProject);
         const notFoundUserId = [];
         for (const member of members) {
-            const memberEntity = await this.userRepository.findOneBy({ id: member.id });
+            const memberEntity = await this.userRepository.findOneBy({ id: member.memberId });
             if (memberEntity) {
                 const memberToProject = new user_to_project_entity_1.UserToProject();
                 memberToProject.right = member.right;
@@ -173,10 +229,87 @@ let ProjectService = class ProjectService {
                 await this.userToProjectRepository.save(memberToProject);
             }
             else {
-                notFoundUserId.push(member.id);
+                notFoundUserId.push(member.memberId);
             }
         }
         return { notFoundUserId: notFoundUserId };
+    }
+    async updateTitle(user, projectId, newTitle) {
+        const query = this.projectRepository.createQueryBuilder("project");
+        query
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const found = await query.getOne();
+        if (!found) {
+            throw new common_1.NotFoundException(`Project with id "${projectId}" is not found.`);
+        }
+        if (found.userToProjects.length !== 1) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}`);
+        }
+        const right = found.userToProjects[0].right;
+        if (right !== user_right_enum_1.UserRight.ADMIN) {
+            throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to update the title on this project. Your right in this project is "${right}".`);
+        }
+        await this.projectRepository.update({ id: projectId }, { title: newTitle });
+    }
+    async updateDescription(user, projectId, newDescription) {
+        const query = this.projectRepository.createQueryBuilder("project");
+        query
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const found = await query.getOne();
+        if (!found) {
+            throw new common_1.NotFoundException(`Project with id "${projectId}" is not found.`);
+        }
+        if (found.userToProjects.length !== 1) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}`);
+        }
+        const right = found.userToProjects[0].right;
+        if (right !== user_right_enum_1.UserRight.ADMIN) {
+            throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to update the title on this project. Your right in this project is "${right}".`);
+        }
+        await this.projectRepository.update({ id: projectId }, { description: newDescription });
+    }
+    async updateIcon(user, projectId, newIconBase64) {
+        const query = this.projectRepository.createQueryBuilder("project");
+        query
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const found = await query.getOne();
+        if (!found) {
+            throw new common_1.NotFoundException(`Project with id "${projectId}" is not found.`);
+        }
+        if (found.userToProjects.length !== 1) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}`);
+        }
+        const right = found.userToProjects[0].right;
+        if (right !== user_right_enum_1.UserRight.ADMIN) {
+            throw new common_1.UnauthorizedException(`You "${user.email}" are not authorized to update the title on this project. Your right in this project is "${right}".`);
+        }
+        await this.projectRepository.update({ id: projectId }, { encodedImg: newIconBase64 });
+    }
+    async updateBookmarkStatus(user, projectId, bookmarkStatus) {
+        const query = this.projectRepository.createQueryBuilder("project");
+        query
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const found = await query.getOne();
+        if (!found) {
+            throw new common_1.NotFoundException(`Project with id "${projectId}" is not found.`);
+        }
+        if (found.userToProjects.length !== 1) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}`);
+        }
+        await this.userToProjectRepository.update({ projectId, userId: user.id }, { isBookmarked: bookmarkStatus });
+        return { bookmarkStatus };
     }
     async deleteProject(user, projectId) {
         const query = this.projectRepository.createQueryBuilder("project");
@@ -225,7 +358,7 @@ let ProjectService = class ProjectService {
         const notFoundUserId = [];
         const alreadyMemberUserId = [];
         for (const member of members) {
-            const memberEntity = await this.userRepository.findOneBy({ id: member.id });
+            const memberEntity = await this.userRepository.findOneBy({ id: member.memberId });
             if (memberEntity) {
                 const query = this.userToProjectRepository.createQueryBuilder("userToProject");
                 query
@@ -244,14 +377,15 @@ let ProjectService = class ProjectService {
                     }
                     memberToProject.project = foundProject;
                     memberToProject.user = memberEntity;
+                    memberToProject.isBookmarked = false;
                     await this.userToProjectRepository.save(memberToProject);
                 }
                 else {
-                    alreadyMemberUserId.push(member.id);
+                    alreadyMemberUserId.push(member.memberId);
                 }
             }
             else {
-                notFoundUserId.push(member.id);
+                notFoundUserId.push(member.memberId);
             }
         }
         return { notFoundUserId, alreadyMemberUserId };
@@ -474,6 +608,128 @@ let ProjectService = class ProjectService {
         await this.projectCommentRepository.save(found);
         return { pinnedStatus: pinned };
     }
+    async getAllDocs(user, projectId) {
+        const projectQuery = this.projectRepository.createQueryBuilder("project");
+        projectQuery
+            .leftJoinAndSelect("project.contents", "contents")
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const project = await projectQuery.getOne();
+        if (!project) {
+            throw new common_1.NotFoundException(`Project ${projectId} is not found.`);
+        }
+        if (project.userToProjects.length <= 0) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}.`);
+        }
+        return project.contents;
+    }
+    async createDocument(user, projectId) {
+        const projectQuery = this.projectRepository.createQueryBuilder("project");
+        projectQuery
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const project = await projectQuery.getOne();
+        if (!project) {
+            throw new common_1.NotFoundException(`Project ${projectId} is not found.`);
+        }
+        if (project.userToProjects.length <= 0) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}.`);
+        }
+        if (project.userToProjects[0].right === user_right_enum_1.UserRight.COMPLETION_MOD ||
+            project.userToProjects[0].right === user_right_enum_1.UserRight.MEMBER_MGT) {
+            throw new common_1.UnauthorizedException(`User ${user.email} has insufficient permission for creating project document in this project with id ${projectId}.`);
+        }
+        const newContent = new project_content_entity_1.ProjectContent();
+        newContent.title = "New Document";
+        const now = new Date();
+        newContent.createdAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+        newContent.modifiedAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+        newContent.content = "";
+        newContent.project = project;
+        await this.projectContentRepository.save(newContent);
+    }
+    async updateDocTitle(user, projectId, updateDocTitleDto) {
+        const { docId, newTitle } = updateDocTitleDto;
+        const projectQuery = this.projectRepository.createQueryBuilder("project");
+        projectQuery
+            .leftJoinAndSelect("project.contents", "contents", "contents.id = :docId", { docId })
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const project = await projectQuery.getOne();
+        if (!project) {
+            throw new common_1.NotFoundException(`Project ${projectId} is not found.`);
+        }
+        if (project.userToProjects.length <= 0) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}.`);
+        }
+        if (project.contents.length <= 0) {
+            throw new common_1.NotFoundException(`Document ${docId} is not found in the project ${projectId}.`);
+        }
+        if (project.userToProjects[0].right === user_right_enum_1.UserRight.COMPLETION_MOD ||
+            project.userToProjects[0].right === user_right_enum_1.UserRight.MEMBER_MGT) {
+            throw new common_1.UnauthorizedException(`User ${user.email} has insufficient permission for creating project document in this project with id ${projectId}.`);
+        }
+        await this.projectContentRepository.update({ id: docId }, { title: newTitle });
+    }
+    async updateDocContent(user, projectId, updateDocContentDto) {
+        const { docId, newContent } = updateDocContentDto;
+        const projectQuery = this.projectRepository.createQueryBuilder("project");
+        projectQuery
+            .leftJoinAndSelect("project.contents", "contents", "contents.id = :docId", { docId })
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const project = await projectQuery.getOne();
+        if (!project) {
+            throw new common_1.NotFoundException(`Project ${projectId} is not found.`);
+        }
+        if (project.userToProjects.length <= 0) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}.`);
+        }
+        if (project.contents.length <= 0) {
+            throw new common_1.NotFoundException(`Document ${docId} is not found in the project ${projectId}.`);
+        }
+        if (project.userToProjects[0].right === user_right_enum_1.UserRight.COMPLETION_MOD ||
+            project.userToProjects[0].right === user_right_enum_1.UserRight.MEMBER_MGT) {
+            throw new common_1.UnauthorizedException(`User ${user.email} has insufficient permission for creating project document in this project with id ${projectId}.`);
+        }
+        const now = new Date();
+        await this.projectContentRepository.update({ id: docId }, {
+            content: newContent,
+            modifiedAt: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds())),
+        });
+    }
+    async deleteDocument(user, projectId, docId) {
+        const projectQuery = this.projectRepository.createQueryBuilder("project");
+        projectQuery
+            .leftJoinAndSelect("project.contents", "contents", "contents.id = :docId", { docId })
+            .leftJoinAndSelect("project.userToProjects", "userToProjects", "userToProjects.userId = :userId", {
+            userId: user.id,
+        })
+            .where("project.id = :projectId", { projectId });
+        const project = await projectQuery.getOne();
+        if (!project) {
+            throw new common_1.NotFoundException(`Project ${projectId} is not found.`);
+        }
+        if (project.userToProjects.length <= 0) {
+            throw new common_1.UnauthorizedException(`User ${user.email} is not member of the project ${projectId}.`);
+        }
+        if (project.contents.length <= 0) {
+            throw new common_1.NotFoundException(`Document ${docId} is not found in the project ${projectId}.`);
+        }
+        if (project.userToProjects[0].right === user_right_enum_1.UserRight.COMPLETION_MOD ||
+            project.userToProjects[0].right === user_right_enum_1.UserRight.MEMBER_MGT) {
+            throw new common_1.UnauthorizedException(`User ${user.email} has insufficient permission for creating project document in this project with id ${projectId}.`);
+        }
+        await this.projectContentRepository.delete({ id: docId });
+    }
     async deleteComment(user, commentId) {
         const query = this.projectCommentRepository.createQueryBuilder("projectComment");
         query.leftJoinAndSelect("projectComment.user", "user").where("projectComment.id = :commentId", { commentId });
@@ -498,11 +754,13 @@ ProjectService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(project_comment_repository_1.ProjectCommentRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(task_repository_1.TaskRepository)),
     __param(4, (0, typeorm_1.InjectRepository)(user_repository_1.UserRepository)),
+    __param(5, (0, typeorm_1.InjectRepository)(project_content_repository_1.ProjectContentRepository)),
     __metadata("design:paramtypes", [project_repository_1.ProjectRepository,
         user_to_project_repository_1.UserToProjectRepository,
         project_comment_repository_1.ProjectCommentRepository,
         task_repository_1.TaskRepository,
-        user_repository_1.UserRepository])
+        user_repository_1.UserRepository,
+        project_content_repository_1.ProjectContentRepository])
 ], ProjectService);
 exports.ProjectService = ProjectService;
 //# sourceMappingURL=project.service.js.map

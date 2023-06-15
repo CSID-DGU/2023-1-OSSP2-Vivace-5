@@ -13,8 +13,8 @@ const bcrypt = require("bcryptjs");
 const typeorm_ex_decorator_1 = require("../typeorm/typeorm-ex.decorator");
 const common_1 = require("@nestjs/common");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
-    async createUser(joinMembershipDto) {
-        const { firstName, lastName, email, year, month, date, password, belong, country, region, encodedImg } = joinMembershipDto;
+    async createUser(signUpDto) {
+        const { firstName, lastName, email, year, month, date, password, belong, country, region, encodedImg } = signUpDto;
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
         const user = new user_entity_1.User();

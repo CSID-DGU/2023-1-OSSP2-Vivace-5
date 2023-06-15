@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Task } from "./task.entity";
 
 @Entity()
@@ -18,6 +18,10 @@ export class TaskContent extends BaseEntity {
     @Column()
     content: string;
 
+    @Column({ name: "taskId" })
+    taskId: string;
+
     @ManyToOne((type) => Task, (task) => task.contents, { eager: false, onDelete: "CASCADE" })
+    @JoinColumn({ name: "taskId" })
     task: Task;
 }

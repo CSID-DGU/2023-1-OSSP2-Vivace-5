@@ -44,6 +44,7 @@ import {
     ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { UserRight } from "src/enum/user-right.enum";
+import { Bookmark } from "src/entity/bookmark.entity";
 
 @Controller("task")
 @UseGuards(AuthGuard())
@@ -185,7 +186,7 @@ export class TaskController {
             "If the user who sent the request is not a member of this project including task, the user is not eligible to view the task information. So, returns an unauthorized error.",
     })
     @ApiParam({ name: "id", type: "string", description: "Task UUID" })
-    getTaskInfo(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string): Promise<Task> {
+    getTaskInfo(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string): Promise<Record<string, any>> {
         this.logger.verbose(`User ${user.email} trying to get the task information with id ${taskId}`);
         return this.taskService.getTaskInfo(user, taskId);
     }
@@ -401,7 +402,7 @@ export class TaskController {
         return this.taskService.updateMilestoneStatus(user, taskId, milestone);
     }
 
-    @Patch("/update/finished/:id")
+    @Patch("/update/finished/all/:id")
     @ApiOperation({
         summary: "Update the completion status of task",
         description: "Update the completion status of task specified by task UUId",
@@ -431,10 +432,22 @@ export class TaskController {
             },
         },
     })
-    updateFinishedStatus(
+    updateDescendantFinishedStatus(
         @GetUser() user: User,
         @Param("id", ParseUUIDPipe) taskId: string,
         @Body("isFinished", BooleanPipe) isFinished: boolean,
+    ): Promise<{ isFinished: boolean }> {
+        this.logger.verbose(
+            `User ${user.email} trying to update whether task with id ${taskId} is finished including all descendant`,
+        );
+        return this.taskService.updateDescendantFinishedStatus(user, taskId, isFinished);
+    }
+
+    @Patch("update/finished/:taskId")
+    updateFinishedStatus(
+        @GetUser() user: User,
+        @Param("taskId", ParseUUIDPipe) taskId: string,
+        @Body("isFinished", ParseBoolPipe) isFinished: boolean,
     ): Promise<{ isFinished: boolean }> {
         this.logger.verbose(`User ${user.email} trying to update whether task with id ${taskId} is finished`);
         return this.taskService.updateFinishedStatus(user, taskId, isFinished);
@@ -600,6 +613,11 @@ export class TaskController {
     }> {
         this.logger.verbose(`User ${user.email} trying to append some tasks after task ${appendTaskDto.taskId}`);
         return this.taskService.appendTaskAfter(user, appendTaskDto);
+    }
+
+    @Patch("/disconnect")
+    disconnect(@GetUser() user: User, @Body() appendTaskDto: AppendTaskDto) {
+        return this.taskService.disconnect(user, appendTaskDto);
     }
 
     @Patch("/bring/down/task")
@@ -795,36 +813,54 @@ export class TaskController {
         return this.taskService.dismiss(user, taskId, memberIds);
     }
 
-    @Get("/bookmark")
-    getAllBookmarks(@GetUser() user: User, @Query("q") query: string) {}
-
-    @Get("/bookmark/folder")
-    getAllBookmarkFolders(@GetUser() user: User) {}
+    @Get("/all/bookmarks/:projectId")
+    getAllBookmarks(@GetUser() user: User, @Param("projectId") projectId: string): Promise<Bookmark[]> {
+        this.logger.verbose(`The user ${user.email} trying to get his/her own all bookmarks`);
+        return this.taskService.getAllBookmarks(user, projectId);
+    }
 
     @Post("/create/bookmark")
-    createBookmark(@GetUser() user: User, @Body() createBookmarkDto: CreateBookmarkDto) {}
-
-    @Patch("/bring/down/bookmark")
-    bringDownBookmark(@GetUser() user: User, @Body() bringDownBookmarkDto: BringDownBookmarkDto) {}
-
-    @Patch("/bring/up/bookmark")
-    bringUpBookmark(@GetUser() user: User, @Body("bookmarkId", ParseUUIDPipe) bookmarkId: string) {}
+    createBookmark(@GetUser() user: User, @Body() createBookmarkDto: CreateBookmarkDto): Promise<void> {
+        this.logger.verbose(`User ${user.email} trying to create bookmark`);
+        return this.taskService.createBookmark(user, createBookmarkDto);
+    }
 
     @Patch("/update/bookmark/title/:id")
     updateBookmarkTitle(
         @GetUser() user: User,
         @Param("id", ParseUUIDPipe) bookmarkId: string,
         @Body("newTitle", NotEmptyStringValidationPipe) newTitle: string,
-    ) {}
+    ) {
+        return this.taskService.updateBookmarkTitle(user, bookmarkId, newTitle);
+    }
 
-    @Delete("/delete/bookmark/:id")
-    deleteBookmark(@GetUser() user: User, @Param("id", ParseUUIDPipe) bookmarkId: string) {}
+    @Delete("/delete/bookmark/:id/:cascading")
+    deleteBookmark(
+        @GetUser() user: User,
+        @Param("id", ParseUUIDPipe) bookmarkId: string,
+        @Param("cascading", ParseBoolPipe) cascading: boolean,
+    ) {
+        return this.taskService.deleteBookmark(user, bookmarkId, cascading);
+    }
+
+    @Delete("/delete/bookmark/byid/:projectId/:taskId")
+    deleteBookmarkByTaskID(
+        @GetUser() user: User,
+        @Param("projectId", ParseUUIDPipe) projectId: string,
+        @Param("taskId", ParseUUIDPipe) taskId: string,
+    ) {
+        return this.taskService.deleteBookmarkByTaskID(user, projectId, taskId);
+    }
 
     @Get("/content/:id")
-    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {}
+    getAllContents(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {
+        return this.taskService.getAllContents(user, taskId);
+    }
 
     @Post("/create/content/:id")
-    createContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {}
+    createContent(@GetUser() user: User, @Param("id", ParseUUIDPipe) taskId: string) {
+        return this.taskService.createContent(user, taskId);
+    }
 
     @Put("/update/content/:id")
     updateContent(
@@ -870,7 +906,7 @@ export class TaskController {
     @Delete("/delete/comment/:id")
     deleteComment(@GetUser() user: User, @Param("id", ParseUUIDPipe) commentId: string) {}
 
-    @Delete("/delete")
+    @Delete("/delete/:taskId/:cascading")
     @ApiOperation({
         summary: "Delete the task",
         description: "Delete the task specified by UUID",
@@ -882,8 +918,12 @@ export class TaskController {
         description:
             "If the user is not member of the project that you want to delete the task for, or if the user don't have sufficient privileges",
     })
-    deleteTask(@GetUser() user: User, @Body() deleteTaskDto: DeleteTaskDto): Promise<void> {
-        this.logger.verbose(`User ${user.email} trying to delete the task with id ${deleteTaskDto.taskId}`);
-        return this.taskService.deleteTask(user, deleteTaskDto);
+    deleteTask(
+        @GetUser() user: User,
+        @Param("taskId", ParseUUIDPipe) taskId: string,
+        @Param("cascading", ParseBoolPipe) cascading: boolean,
+    ): Promise<void> {
+        this.logger.verbose(`User ${user.email} trying to delete the task with id ${taskId}`);
+        return this.taskService.deleteTask(user, taskId, cascading);
     }
 }

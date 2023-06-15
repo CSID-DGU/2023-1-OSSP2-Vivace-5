@@ -25,6 +25,8 @@ const not_empty_string_validation_pipe_1 = require("../pipe/not-empty-string-val
 const swagger_1 = require("@nestjs/swagger");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const user_right_enum_1 = require("../enum/user-right.enum");
+const update_doc_title_dto_1 = require("./dto/update-doc-title.dto");
+const update_doc_content_dto_1 = require("./dto/update-doc-content.dto");
 let ProjectController = class ProjectController {
     constructor(projectService) {
         this.projectService = projectService;
@@ -33,6 +35,10 @@ let ProjectController = class ProjectController {
     getAllProjects(user, query) {
         this.logger.verbose(`User "${user.email}" trying to get his or her project list.`);
         return this.projectService.getAllProjects(user, query);
+    }
+    getAllBookmarkedProjects(user, query) {
+        this.logger.verbose(`User "${user.email}" trying to get his or her bookmarked project list.`);
+        return this.projectService.getAllBookmarkedProjects(user, query);
     }
     getProjectInfo(user, projectId) {
         this.logger.verbose(`User "${user.email}" trying to get the info of project "${projectId}".`);
@@ -45,6 +51,22 @@ let ProjectController = class ProjectController {
     updateProject(user, projectId, projectInfoDto) {
         this.logger.verbose(`User "${user.email}" trying to update project "${projectId}".`);
         return this.projectService.updateProject(user, projectId, projectInfoDto);
+    }
+    updateTitle(user, projectId, newTitle) {
+        this.logger.verbose(`User "${user.email}" trying to update title of the project "${projectId}".`);
+        return this.projectService.updateTitle(user, projectId, newTitle);
+    }
+    updateDescription(user, projectId, newDescription) {
+        this.logger.verbose(`User "${user.email}" trying to update description of the project "${projectId}".`);
+        return this.projectService.updateDescription(user, projectId, newDescription);
+    }
+    updateIcon(user, projectId, newIconBase64) {
+        this.logger.verbose(`User "${user.email}" trying to update icon of the project "${projectId}".`);
+        return this.projectService.updateIcon(user, projectId, newIconBase64);
+    }
+    updateBookmarkStatus(user, projectId, bookmarkStatus) {
+        this.logger.verbose(`User "${user.email}" trying to update bookmark status of the project "${projectId}".`);
+        return this.projectService.updateBookmarkStatus(user, projectId, bookmarkStatus);
     }
     deleteProject(user, projectId) {
         this.logger.verbose(`User "${user.email}" trying to delete project "${projectId}".`);
@@ -82,6 +104,26 @@ let ProjectController = class ProjectController {
         this.logger.verbose(`User "${user.email}" trying to update pin status of the comment "${commentId}" in this project.`);
         return this.projectService.updateCommentFixStatus(user, commentId, pinned);
     }
+    getAllDocs(user, projectId) {
+        this.logger.verbose(`User "${user.email}" trying to get all project documents in the project ${projectId}`);
+        return this.projectService.getAllDocs(user, projectId);
+    }
+    createDocument(user, projectId) {
+        this.logger.verbose(`User "${user.email}" trying to create project document in the project ${projectId}`);
+        return this.projectService.createDocument(user, projectId);
+    }
+    updateDocTitle(user, projectId, updateDocTitleDto) {
+        this.logger.verbose(`User "${user.email}" trying to update the title of project document ${updateDocTitleDto.docId} in the project ${projectId}`);
+        return this.projectService.updateDocTitle(user, projectId, updateDocTitleDto);
+    }
+    updateDocContent(user, projectId, updateDocContentDto) {
+        this.logger.verbose(`User "${user.email}" trying to update the content of project document ${updateDocContentDto.docId} in the project ${projectId}`);
+        return this.projectService.updateDocContent(user, projectId, updateDocContentDto);
+    }
+    deleteDocument(user, projectId, docId) {
+        this.logger.verbose(`User "${user.email}" trying to delete the project document ${docId} in the project ${projectId}`);
+        return this.projectService.deleteDocument(user, projectId, docId);
+    }
     deleteComment(user, commentId) {
         this.logger.verbose(`User "${user.email}" trying to delete the comment "${commentId}" in this project.`);
         return this.projectService.deleteComment(user, commentId);
@@ -105,6 +147,7 @@ __decorate([
                     description: { type: "string" },
                     type: { type: "enum", enum: [sub_task_enum_1.SubTask.GRAPH, sub_task_enum_1.SubTask.KANBAN, sub_task_enum_1.SubTask.LIST, sub_task_enum_1.SubTask.TERMINAL] },
                     encodedImg: { type: "string" },
+                    progress: { type: "number", example: 0.37 },
                     userToProjects: {
                         type: "object",
                         properties: {
@@ -131,6 +174,33 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "getAllProjects", null);
+__decorate([
+    (0, common_1.Get)("/bookmarked"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Get all bookmarked projects",
+        description: "Get all bookmarked projects to which the user belongs",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "Return an array of bookmarked projects",
+        schema: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    id: { type: "string" },
+                    title: { type: "string" },
+                    encodedImg: { type: "string" },
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiQuery)({ name: "q", type: "string", description: "query string", required: false }),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Query)("q")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "getAllBookmarkedProjects", null);
 __decorate([
     (0, common_1.Get)("/:id"),
     (0, swagger_1.ApiOperation)({
@@ -162,6 +232,7 @@ __decorate([
                                     user_right_enum_1.UserRight.TASK_MGT,
                                 ],
                             },
+                            isBookmarked: { type: "boolean" },
                             user: {
                                 type: "object",
                                 properties: {
@@ -169,12 +240,24 @@ __decorate([
                                     firstName: { type: "string" },
                                     lastName: { type: "string" },
                                     encodedImg: { type: "string" },
+                                    email: { type: "string" },
                                 },
                             },
                         },
                     },
                 },
-                tasks: { type: "array", items: { type: "object" } },
+                tasks: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            bookmarks: {
+                                type: "array",
+                                items: { type: "object", properties: { title: { type: "string" } } },
+                            },
+                        },
+                    },
+                },
                 comments: {
                     type: "array",
                     items: {
@@ -226,7 +309,7 @@ __decorate([
         },
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)(common_1.ValidationPipe, project_info_validation_pipe_1.ProjectInfoValidationPipe, encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
+    __param(1, (0, common_1.Body)(encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User,
         project_info_dto_1.ProjectInfoDto]),
@@ -266,6 +349,114 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String, project_info_dto_1.ProjectInfoDto]),
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "updateProject", null);
+__decorate([
+    (0, common_1.Patch)("/update/title/:projectId"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Update project title",
+        description: "Update the title of the project specified by the project ID.",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "If succeed in updating title, return nothing.",
+    }),
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    }),
+    (0, swagger_1.ApiParam)({ name: "projectId", type: "string", description: "project UUID" }),
+    (0, swagger_1.ApiBody)({
+        description: "New title string",
+        schema: { type: "object", properties: { newTitle: { type: "string", example: "My new title!" } } },
+    }),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId")),
+    __param(2, (0, common_1.Body)("newTitle")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "updateTitle", null);
+__decorate([
+    (0, common_1.Patch)("/update/description/:projectId"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Update project description",
+        description: "Update the description of the project specified by the project ID.",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "If succeed in updating description, return nothing.",
+    }),
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    }),
+    (0, swagger_1.ApiParam)({ name: "projectId", type: "string", description: "project UUID" }),
+    (0, swagger_1.ApiBody)({
+        description: "New description string",
+        schema: { type: "object", properties: { newDescription: { type: "string", example: "My new description.." } } },
+    }),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId")),
+    __param(2, (0, common_1.Body)("newDescription")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "updateDescription", null);
+__decorate([
+    (0, common_1.Patch)("/update/icon/:projectId"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Update project icon",
+        description: "Update the icon of the project specified by the project ID.",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "If succeed in updating icon, return nothing.",
+    }),
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    }),
+    (0, swagger_1.ApiParam)({ name: "projectId", type: "string", description: "project UUID" }),
+    (0, swagger_1.ApiBody)({
+        description: "New icon base64 string",
+        schema: { type: "object", properties: { newIconBase64: { type: "string" } } },
+    }),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId")),
+    __param(2, (0, common_1.Body)("newIconBase64")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "updateIcon", null);
+__decorate([
+    (0, common_1.Patch)("/update/bookmark/:projectId"),
+    (0, swagger_1.ApiOperation)({
+        summary: "Update whether the project is bookmarked",
+        description: "Update whether the project specified by the project ID is bookmarked.",
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: "If succeed in updating bookmark status, return nothing.",
+    }),
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    }),
+    (0, swagger_1.ApiParam)({ name: "projectId", type: "string", description: "project UUID" }),
+    (0, swagger_1.ApiBody)({
+        description: "New bookmark status",
+        schema: { type: "object", properties: { bookmarkStatus: { type: "boolean" } } },
+    }),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)("bookmarkStatus", common_1.ParseBoolPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "updateBookmarkStatus", null);
 __decorate([
     (0, common_1.Delete)("/delete/:id"),
     (0, swagger_1.ApiOperation)({
@@ -593,6 +784,49 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "updateCommentPinStatus", null);
+__decorate([
+    (0, common_1.Get)("/docs/:projectId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "getAllDocs", null);
+__decorate([
+    (0, common_1.Post)("/docs/create/:projectId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "createDocument", null);
+__decorate([
+    (0, common_1.Patch)("/docs/update/title/:projectId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, update_doc_title_dto_1.UpdateDocTitleDto]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "updateDocTitle", null);
+__decorate([
+    (0, common_1.Patch)("/docs/update/content/:projectId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, update_doc_content_dto_1.UpdateDocContentDto]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "updateDocContent", null);
+__decorate([
+    (0, common_1.Delete)("/docs/delete/:projectId/:docId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Param)("docId", common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", void 0)
+], ProjectController.prototype, "deleteDocument", null);
 __decorate([
     (0, common_1.Delete)("/comment/delete/:id"),
     (0, swagger_1.ApiOperation)({

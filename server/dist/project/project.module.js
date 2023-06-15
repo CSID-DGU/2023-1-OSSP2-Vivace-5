@@ -17,6 +17,7 @@ const user_to_project_repository_1 = require("./user-to-project.repository");
 const project_comment_repository_1 = require("./project-comment.repository");
 const task_repository_1 = require("../task/task.repository");
 const user_repository_1 = require("../user/user.repository");
+const project_content_repository_1 = require("./project-content.repository");
 let ProjectModule = class ProjectModule {
 };
 ProjectModule = __decorate([
@@ -26,6 +27,7 @@ ProjectModule = __decorate([
                 project_repository_1.ProjectRepository,
                 user_to_project_repository_1.UserToProjectRepository,
                 project_comment_repository_1.ProjectCommentRepository,
+                project_content_repository_1.ProjectContentRepository,
                 task_repository_1.TaskRepository,
                 user_repository_1.UserRepository,
             ]),

@@ -74,7 +74,7 @@ __decorate([
     (0, swagger_1.ApiInternalServerErrorResponse)({
         description: "Else",
     }),
-    __param(0, (0, common_1.Body)(common_1.ValidationPipe, encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
+    __param(0, (0, common_1.Body)(encoded_img_validation_pipe_1.EncodedImgValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [sign_up_dto_1.SignUpDto]),
     __metadata("design:returntype", Promise)

@@ -8,6 +8,7 @@ import { ProjectRepository } from "src/project/project.repository";
 import { UserRepository } from "src/user/user.repository";
 import { BookmarkRepository } from "./bookmark.repository";
 import { KanbanColumnRepository } from "./kanban-column.repository";
+import { TaskContentRepository } from "./task-content.repository";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { KanbanColumnRepository } from "./kanban-column.repository";
             UserRepository,
             BookmarkRepository,
             KanbanColumnRepository,
+            TaskContentRepository,
         ]),
         UserModule,
     ],

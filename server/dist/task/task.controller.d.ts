@@ -6,15 +6,13 @@ import { BringDownTaskDto } from "./dto/bring-down-task.dto";
 import { AppendColumnDto } from "./dto/append-column.dto";
 import { MoveTaskBetweenColumnsDto } from "./dto/move-task-between-columns.dto";
 import { CreateBookmarkDto } from "./dto/create-bookmark.dto";
-import { BringDownBookmarkDto } from "./dto/bring-down-bookmark.dto";
-import { Task } from "src/entity/task.entity";
 import { SubTask } from "src/enum/sub-task.enum";
-import { DeleteTaskDto } from "./dto/delete-task.dto";
+import { Bookmark } from "src/entity/bookmark.entity";
 export declare class TaskController {
     private taskService;
     private logger;
     constructor(taskService: TaskService);
-    getTaskInfo(user: User, taskId: string): Promise<Task>;
+    getTaskInfo(user: User, taskId: string): Promise<Record<string, any>>;
     createTask(user: User, createTaskDto: CreateTaskDto): Promise<{
         id: string;
         title: string;
@@ -27,6 +25,9 @@ export declare class TaskController {
     updateDeadline(user: User, taskId: string, newDeadline: Date): Promise<void>;
     updateMilestoneStatus(user: User, taskId: string, milestone: boolean): Promise<{
         milestone: boolean;
+    }>;
+    updateDescendantFinishedStatus(user: User, taskId: string, isFinished: boolean): Promise<{
+        isFinished: boolean;
     }>;
     updateFinishedStatus(user: User, taskId: string, isFinished: boolean): Promise<{
         isFinished: boolean;
@@ -52,6 +53,7 @@ export declare class TaskController {
         differentParentTaskIds: string[];
         alreadyPredecessorIds: string[];
     }>;
+    disconnect(user: User, appendTaskDto: AppendTaskDto): Promise<void>;
     bringDownTask(user: User, bringDownDto: BringDownTaskDto): Promise<void>;
     bringUpTask(user: User, taskId: string): Promise<void>;
     invite(user: User, taskId: string, memberIds: string[]): Promise<{
@@ -67,15 +69,13 @@ export declare class TaskController {
         notFoundUserIds: string[];
         alreadyNotTaskMemberIds: string[];
     }>;
-    getAllBookmarks(user: User, query: string): void;
-    getAllBookmarkFolders(user: User): void;
-    createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): void;
-    bringDownBookmark(user: User, bringDownBookmarkDto: BringDownBookmarkDto): void;
-    bringUpBookmark(user: User, bookmarkId: string): void;
-    updateBookmarkTitle(user: User, bookmarkId: string, newTitle: string): void;
-    deleteBookmark(user: User, bookmarkId: string): void;
-    getAllContents(user: User, taskId: string): void;
-    createContent(user: User, taskId: string): void;
+    getAllBookmarks(user: User, projectId: string): Promise<Bookmark[]>;
+    createBookmark(user: User, createBookmarkDto: CreateBookmarkDto): Promise<void>;
+    updateBookmarkTitle(user: User, bookmarkId: string, newTitle: string): Promise<void>;
+    deleteBookmark(user: User, bookmarkId: string, cascading: boolean): Promise<void>;
+    deleteBookmarkByTaskID(user: User, projectId: string, taskId: string): Promise<void>;
+    getAllContents(user: User, taskId: string): Promise<import("../entity/task-content.entity").TaskContent[]>;
+    createContent(user: User, taskId: string): Promise<void>;
     updateContent(user: User, contentId: string, content: string): void;
     deleteContent(user: User, contentId: string): void;
     getAllComments(user: User, taskId: string, query: string): void;
@@ -84,5 +84,5 @@ export declare class TaskController {
     updateCommentContent(user: User, commentId: string, content: string): void;
     updateCommentPinStatus(user: User, commentId: string, pinned: boolean): void;
     deleteComment(user: User, commentId: string): void;
-    deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<void>;
+    deleteTask(user: User, taskId: string, cascading: boolean): Promise<void>;
 }

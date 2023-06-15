@@ -8,9 +8,9 @@ import { ProjectComment } from "src/entity/project-comment.entity";
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
-    async createUser(joinMembershipDto: SignUpDto): Promise<void> {
+    async createUser(signUpDto: SignUpDto): Promise<void> {
         const { firstName, lastName, email, year, month, date, password, belong, country, region, encodedImg } =
-            joinMembershipDto;
+            signUpDto;
 
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);

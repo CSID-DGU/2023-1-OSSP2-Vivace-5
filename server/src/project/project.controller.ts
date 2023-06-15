@@ -20,7 +20,6 @@ import { AuthGuard } from "@nestjs/passport";
 import { GetUser } from "src/decorator/get-user.decorator";
 import { ProjectInfoValidationPipe } from "../pipe/project-info-validation.pipe";
 import { MemberDto, ProjectInfoDto } from "./dto/project-info.dto";
-import { Project } from "../entity/project.entity";
 import { EncodedImgValidationPipe } from "../pipe/encoded-img-validation.pipe";
 import { ProjectComment } from "src/entity/project-comment.entity";
 import { NotEmptyStringValidationPipe } from "src/pipe/not-empty-string-validation.pipe";
@@ -38,6 +37,9 @@ import {
 } from "@nestjs/swagger";
 import { SubTask } from "src/enum/sub-task.enum";
 import { UserRight } from "src/enum/user-right.enum";
+import { ProjectContent } from "src/entity/project-content.entity";
+import { UpdateDocTitleDto } from "./dto/update-doc-title.dto";
+import { UpdateDocContentDto } from "./dto/update-doc-content.dto";
 
 @Controller("project")
 @UseGuards(AuthGuard())
@@ -65,6 +67,7 @@ export class ProjectController {
                     description: { type: "string" },
                     type: { type: "enum", enum: [SubTask.GRAPH, SubTask.KANBAN, SubTask.LIST, SubTask.TERMINAL] },
                     encodedImg: { type: "string" },
+                    progress: { type: "number", example: 0.37 },
                     userToProjects: {
                         type: "object",
                         properties: {
@@ -85,9 +88,34 @@ export class ProjectController {
         },
     })
     @ApiQuery({ name: "q", type: "string", description: "query string", required: false })
-    getAllProjects(@GetUser() user: User, @Query("q") query: string): Promise<Project[]> {
+    getAllProjects(@GetUser() user: User, @Query("q") query: string): Promise<Record<string, any>[]> {
         this.logger.verbose(`User "${user.email}" trying to get his or her project list.`);
         return this.projectService.getAllProjects(user, query);
+    }
+
+    @Get("/bookmarked")
+    @ApiOperation({
+        summary: "Get all bookmarked projects",
+        description: "Get all bookmarked projects to which the user belongs",
+    })
+    @ApiOkResponse({
+        description: "Return an array of bookmarked projects",
+        schema: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    id: { type: "string" },
+                    title: { type: "string" },
+                    encodedImg: { type: "string" },
+                },
+            },
+        },
+    })
+    @ApiQuery({ name: "q", type: "string", description: "query string", required: false })
+    getAllBookmarkedProjects(@GetUser() user: User, @Query("q") query: string): Promise<Record<string, any>[]> {
+        this.logger.verbose(`User "${user.email}" trying to get his or her bookmarked project list.`);
+        return this.projectService.getAllBookmarkedProjects(user, query);
     }
 
     @Get("/:id")
@@ -120,6 +148,7 @@ export class ProjectController {
                                     UserRight.TASK_MGT,
                                 ],
                             },
+                            isBookmarked: { type: "boolean" },
                             user: {
                                 type: "object",
                                 properties: {
@@ -127,12 +156,24 @@ export class ProjectController {
                                     firstName: { type: "string" },
                                     lastName: { type: "string" },
                                     encodedImg: { type: "string" },
+                                    email: { type: "string" },
                                 },
                             },
                         },
                     },
                 },
-                tasks: { type: "array", items: { type: "object" } },
+                tasks: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            bookmarks: {
+                                type: "array",
+                                items: { type: "object", properties: { title: { type: "string" } } },
+                            },
+                        },
+                    },
+                },
                 comments: {
                     type: "array",
                     items: {
@@ -158,7 +199,7 @@ export class ProjectController {
             "If the user who sent the request is not a member of this project, the user is not eligible to view the information. So, returns an unauthorized error.",
     })
     @ApiParam({ name: "id", type: "string", description: "project UUID" })
-    getProjectInfo(@GetUser() user: User, @Param("id", ParseUUIDPipe) projectId: string): Promise<Project> {
+    getProjectInfo(@GetUser() user: User, @Param("id", ParseUUIDPipe) projectId: string): Promise<Record<string, any>> {
         this.logger.verbose(`User "${user.email}" trying to get the info of project "${projectId}".`);
         return this.projectService.getProjectInfo(user, projectId);
     }
@@ -185,7 +226,7 @@ export class ProjectController {
     })
     createProject(
         @GetUser() user: User,
-        @Body(ValidationPipe, ProjectInfoValidationPipe, EncodedImgValidationPipe) projectInfoDto: ProjectInfoDto,
+        @Body(EncodedImgValidationPipe) projectInfoDto: ProjectInfoDto,
     ): Promise<{ notFoundUserId: string[] }> {
         this.logger.verbose(`User "${user.email}" trying to create project.`);
         return this.projectService.createProject(user, projectInfoDto);
@@ -225,6 +266,118 @@ export class ProjectController {
     ): Promise<{ notFoundUserId: string[] }> {
         this.logger.verbose(`User "${user.email}" trying to update project "${projectId}".`);
         return this.projectService.updateProject(user, projectId, projectInfoDto);
+    }
+
+    @Patch("/update/title/:projectId")
+    @ApiOperation({
+        summary: "Update project title",
+        description: "Update the title of the project specified by the project ID.",
+    })
+    @ApiOkResponse({
+        description: "If succeed in updating title, return nothing.",
+    })
+    @ApiNotFoundResponse({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    })
+    @ApiUnauthorizedResponse({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    })
+    @ApiParam({ name: "projectId", type: "string", description: "project UUID" })
+    @ApiBody({
+        description: "New title string",
+        schema: { type: "object", properties: { newTitle: { type: "string", example: "My new title!" } } },
+    })
+    updateTitle(
+        @GetUser() user: User,
+        @Param("projectId") projectId: string,
+        @Body("newTitle") newTitle: string,
+    ): Promise<void> {
+        this.logger.verbose(`User "${user.email}" trying to update title of the project "${projectId}".`);
+        return this.projectService.updateTitle(user, projectId, newTitle);
+    }
+
+    @Patch("/update/description/:projectId")
+    @ApiOperation({
+        summary: "Update project description",
+        description: "Update the description of the project specified by the project ID.",
+    })
+    @ApiOkResponse({
+        description: "If succeed in updating description, return nothing.",
+    })
+    @ApiNotFoundResponse({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    })
+    @ApiUnauthorizedResponse({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    })
+    @ApiParam({ name: "projectId", type: "string", description: "project UUID" })
+    @ApiBody({
+        description: "New description string",
+        schema: { type: "object", properties: { newDescription: { type: "string", example: "My new description.." } } },
+    })
+    updateDescription(
+        @GetUser() user: User,
+        @Param("projectId") projectId: string,
+        @Body("newDescription") newDescription: string,
+    ): Promise<void> {
+        this.logger.verbose(`User "${user.email}" trying to update description of the project "${projectId}".`);
+        return this.projectService.updateDescription(user, projectId, newDescription);
+    }
+
+    @Patch("/update/icon/:projectId")
+    @ApiOperation({
+        summary: "Update project icon",
+        description: "Update the icon of the project specified by the project ID.",
+    })
+    @ApiOkResponse({
+        description: "If succeed in updating icon, return nothing.",
+    })
+    @ApiNotFoundResponse({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    })
+    @ApiUnauthorizedResponse({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    })
+    @ApiParam({ name: "projectId", type: "string", description: "project UUID" })
+    @ApiBody({
+        description: "New icon base64 string",
+        schema: { type: "object", properties: { newIconBase64: { type: "string" } } },
+    })
+    updateIcon(
+        @GetUser() user: User,
+        @Param("projectId") projectId: string,
+        @Body("newIconBase64") newIconBase64: string,
+    ): Promise<void> {
+        this.logger.verbose(`User "${user.email}" trying to update icon of the project "${projectId}".`);
+        return this.projectService.updateIcon(user, projectId, newIconBase64);
+    }
+
+    @Patch("/update/bookmark/:projectId")
+    @ApiOperation({
+        summary: "Update whether the project is bookmarked",
+        description: "Update whether the project specified by the project ID is bookmarked.",
+    })
+    @ApiOkResponse({
+        description: "If succeed in updating bookmark status, return nothing.",
+    })
+    @ApiNotFoundResponse({
+        description: "If there is no project for the received project ID, return the Not Found error.",
+    })
+    @ApiUnauthorizedResponse({
+        description: "If the user is not member or not the ADMIN of the project, return the Unauthorized error.",
+    })
+    @ApiParam({ name: "projectId", type: "string", description: "project UUID" })
+    @ApiBody({
+        description: "New bookmark status",
+        schema: { type: "object", properties: { bookmarkStatus: { type: "boolean" } } },
+    })
+    updateBookmarkStatus(
+        @GetUser() user: User,
+        @Param("projectId", ParseUUIDPipe) projectId: string,
+        @Body("bookmarkStatus", ParseBoolPipe) bookmarkStatus: boolean,
+    ): Promise<{ bookmarkStatus: boolean }> {
+        this.logger.verbose(`User "${user.email}" trying to update bookmark status of the project "${projectId}".`);
+        return this.projectService.updateBookmarkStatus(user, projectId, bookmarkStatus);
     }
 
     @Delete("/delete/:id")
@@ -561,6 +714,54 @@ export class ProjectController {
             `User "${user.email}" trying to update pin status of the comment "${commentId}" in this project.`,
         );
         return this.projectService.updateCommentFixStatus(user, commentId, pinned);
+    }
+
+    @Get("/docs/:projectId")
+    getAllDocs(@GetUser() user: User, @Param("projectId", ParseUUIDPipe) projectId: string): Promise<ProjectContent[]> {
+        this.logger.verbose(`User "${user.email}" trying to get all project documents in the project ${projectId}`);
+        return this.projectService.getAllDocs(user, projectId);
+    }
+
+    @Post("/docs/create/:projectId")
+    createDocument(@GetUser() user: User, @Param("projectId", ParseUUIDPipe) projectId: string): Promise<void> {
+        this.logger.verbose(`User "${user.email}" trying to create project document in the project ${projectId}`);
+        return this.projectService.createDocument(user, projectId);
+    }
+
+    @Patch("/docs/update/title/:projectId")
+    updateDocTitle(
+        @GetUser() user: User,
+        @Param("projectId", ParseUUIDPipe) projectId: string,
+        @Body() updateDocTitleDto: UpdateDocTitleDto,
+    ): Promise<void> {
+        this.logger.verbose(
+            `User "${user.email}" trying to update the title of project document ${updateDocTitleDto.docId} in the project ${projectId}`,
+        );
+        return this.projectService.updateDocTitle(user, projectId, updateDocTitleDto);
+    }
+
+    @Patch("/docs/update/content/:projectId")
+    updateDocContent(
+        @GetUser() user: User,
+        @Param("projectId", ParseUUIDPipe) projectId: string,
+        @Body() updateDocContentDto: UpdateDocContentDto,
+    ): Promise<void> {
+        this.logger.verbose(
+            `User "${user.email}" trying to update the content of project document ${updateDocContentDto.docId} in the project ${projectId}`,
+        );
+        return this.projectService.updateDocContent(user, projectId, updateDocContentDto);
+    }
+
+    @Delete("/docs/delete/:projectId/:docId")
+    deleteDocument(
+        @GetUser() user: User,
+        @Param("projectId", ParseUUIDPipe) projectId: string,
+        @Param("docId", ParseUUIDPipe) docId: string,
+    ) {
+        this.logger.verbose(
+            `User "${user.email}" trying to delete the project document ${docId} in the project ${projectId}`,
+        );
+        return this.projectService.deleteDocument(user, projectId, docId);
     }
 
     @Delete("/comment/delete/:id")

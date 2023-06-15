@@ -25,6 +25,10 @@ __decorate([
     __metadata("design:type", String)
 ], UserToProject.prototype, "right", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], UserToProject.prototype, "isBookmarked", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: "projectId" }),
     __metadata("design:type", String)
 ], UserToProject.prototype, "projectId", void 0);

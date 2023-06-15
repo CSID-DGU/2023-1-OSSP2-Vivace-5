@@ -13,6 +13,7 @@ exports.Bookmark = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const task_entity_1 = require("./task.entity");
+const project_entity_1 = require("./project.entity");
 let Bookmark = class Bookmark extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -33,11 +34,25 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], Bookmark.prototype, "user", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "taskId", nullable: true }),
+    __metadata("design:type", String)
+], Bookmark.prototype, "taskId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.bookmarks, { eager: false, onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "taskId" }),
     __metadata("design:type", task_entity_1.Task)
 ], Bookmark.prototype, "task", void 0);
 __decorate([
-    (0, typeorm_1.TreeParent)(),
+    (0, typeorm_1.Column)({ name: "projectId" }),
+    __metadata("design:type", String)
+], Bookmark.prototype, "projectId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)((type) => project_entity_1.Project, (project) => project.bookmarks, { eager: false, onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "projectId" }),
+    __metadata("design:type", project_entity_1.Project)
+], Bookmark.prototype, "project", void 0);
+__decorate([
+    (0, typeorm_1.TreeParent)({ onDelete: "CASCADE" }),
     __metadata("design:type", Bookmark)
 ], Bookmark.prototype, "parent", void 0);
 __decorate([

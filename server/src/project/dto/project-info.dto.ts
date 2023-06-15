@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { UserRight } from "../../enum/user-right.enum";
 import { Type } from "class-transformer";
 import { SubTask } from "../../enum/sub-task.enum";
@@ -8,9 +8,10 @@ export class MemberDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({ name: "id", type: "string", description: "User UUID" })
-    id: string;
+    memberId: string;
 
     @IsNotEmpty()
+    @IsEnum(UserRight)
     @ApiProperty({
         name: "right",
         enum: [
@@ -37,6 +38,7 @@ export class ProjectInfoDto {
     description: string;
 
     @IsNotEmpty()
+    @IsEnum(SubTask)
     @ApiProperty({
         name: "type",
         enum: [SubTask.GRAPH, SubTask.KANBAN, SubTask.LIST, SubTask.TERMINAL],
@@ -57,7 +59,7 @@ export class ProjectInfoDto {
         items: {
             type: "object",
             properties: {
-                name: { type: "string" },
+                memberId: { type: "string", description: "User UUID" },
                 right: {
                     type: "enum",
                     enum: [

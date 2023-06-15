@@ -6,5 +6,6 @@ export declare class TaskContent extends BaseEntity {
     createdAt: Date;
     modifiedAt: Date;
     content: string;
+    taskId: string;
     task: Task;
 }

@@ -43,7 +43,7 @@ __decorate([
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Matches)(/[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i, {
+    (0, class_validator_1.Matches)(/^\S+@\S+\.\S+$/, {
         message: "It isn't a format of e-mail address.",
     }),
     __metadata("design:type", String)

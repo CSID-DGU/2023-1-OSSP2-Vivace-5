@@ -22,9 +22,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiProperty)({ name: "id", type: "string", description: "User UUID" }),
     __metadata("design:type", String)
-], MemberDto.prototype, "id", void 0);
+], MemberDto.prototype, "memberId", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsEnum)(user_right_enum_1.UserRight),
     (0, swagger_1.ApiProperty)({
         name: "right",
         enum: [
@@ -55,6 +56,7 @@ __decorate([
 ], ProjectInfoDto.prototype, "description", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsEnum)(sub_task_enum_1.SubTask),
     (0, swagger_1.ApiProperty)({
         name: "type",
         enum: [sub_task_enum_1.SubTask.GRAPH, sub_task_enum_1.SubTask.KANBAN, sub_task_enum_1.SubTask.LIST, sub_task_enum_1.SubTask.TERMINAL],
@@ -77,7 +79,7 @@ __decorate([
         items: {
             type: "object",
             properties: {
-                name: { type: "string" },
+                memberId: { type: "string", description: "User UUID" },
                 right: {
                     type: "enum",
                     enum: [

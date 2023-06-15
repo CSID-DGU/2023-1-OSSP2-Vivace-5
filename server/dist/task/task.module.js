@@ -17,6 +17,7 @@ const project_repository_1 = require("../project/project.repository");
 const user_repository_1 = require("../user/user.repository");
 const bookmark_repository_1 = require("./bookmark.repository");
 const kanban_column_repository_1 = require("./kanban-column.repository");
+const task_content_repository_1 = require("./task-content.repository");
 let TaskModule = class TaskModule {
 };
 TaskModule = __decorate([
@@ -28,6 +29,7 @@ TaskModule = __decorate([
                 user_repository_1.UserRepository,
                 bookmark_repository_1.BookmarkRepository,
                 kanban_column_repository_1.KanbanColumnRepository,
+                task_content_repository_1.TaskContentRepository,
             ]),
             user_module_1.UserModule,
         ],

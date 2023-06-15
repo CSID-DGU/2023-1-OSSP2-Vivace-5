@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { User } from "./user.entity";
 import { Task } from "./task.entity";
+import { Project } from "./project.entity";
 
 @Entity()
 @Tree("closure-table")
@@ -28,10 +29,21 @@ export class Bookmark extends BaseEntity {
     @JoinColumn({ name: "userId" })
     user: User;
 
+    @Column({ name: "taskId", nullable: true })
+    taskId: string;
+
     @ManyToOne((type) => Task, (task) => task.bookmarks, { eager: false, onDelete: "CASCADE" })
+    @JoinColumn({ name: "taskId" })
     task: Task;
 
-    @TreeParent()
+    @Column({ name: "projectId" })
+    projectId: string;
+
+    @ManyToOne((type) => Project, (project) => project.bookmarks, { eager: false, onDelete: "CASCADE" })
+    @JoinColumn({ name: "projectId" })
+    project: Project;
+
+    @TreeParent({ onDelete: "CASCADE" })
     parent: Bookmark;
 
     @TreeChildren()

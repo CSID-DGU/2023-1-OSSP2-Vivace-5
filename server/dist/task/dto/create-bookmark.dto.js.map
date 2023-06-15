@@ -1,1 +1,1 @@
-{"version":3,"file":"create-bookmark.dto.js","sourceRoot":"","sources":["../../../src/task/dto/create-bookmark.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,iBAAiB;CAI7B;AAJD,8CAIC"}
+{"version":3,"file":"create-bookmark.dto.js","sourceRoot":"","sources":["../../../src/task/dto/create-bookmark.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAA+D;AAE/D,MAAa,iBAAiB;CAc7B;AAbG;IAAC,IAAA,0BAAQ,GAAE;;gDACG;AAEd;IAAC,IAAA,wBAAM,GAAE;;oDACS;AAElB;IAAC,IAAA,4BAAU,GAAE;IACZ,IAAA,wBAAM,GAAE;;iDACM;AAEf;IAAC,IAAA,4BAAU,GAAE;IACZ,IAAA,wBAAM,GAAE;;mDACQ;AAbrB,8CAcC"}

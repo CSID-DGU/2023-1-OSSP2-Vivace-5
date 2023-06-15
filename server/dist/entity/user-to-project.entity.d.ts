@@ -5,6 +5,7 @@ import { UserRight } from "../enum/user-right.enum";
 export declare class UserToProject extends BaseEntity {
     id: number;
     right: UserRight;
+    isBookmarked: boolean;
     projectId: string;
     userId: string;
     project: Project;

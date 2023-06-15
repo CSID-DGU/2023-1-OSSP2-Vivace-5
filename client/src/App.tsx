@@ -1,40 +1,66 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainPage from "./components/Main/MainPage/MainPage";
-import ToSignin from "./components/Redirect/to_signin";
+import React, { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ColorModeContext as ColorModeContext, useMode } from "./theme";
+import { CssBaseline, Theme, ThemeProvider } from "@mui/material";
 import {
-    CREATE_PROJECT_PATH,
-    MAIN_PATH,
-    SIGN_IN_PATH,
-    SIGN_UP_PATH,
-    UPDATE_INFO_PATH,
-    UPDATE_PASSWORD_PATH,
-    UPDATE_PROJECT_PATH,
-} from "./config/constants";
-import SignIn from "./components/SignIn/SingIn";
-import SignUp from "./components/SignUp/SignUp";
-import UpdatePassword from "./components/UpdatePassword/UpdatePassword";
-import UpdateInfo from "./components/UpdateInfo/UpdateInfo";
-import CreateProject from "./components/CreateProject/CreateProject";
-import UpdateProject from "./components/UpdateProject/UpdateProject";
+  CREATE_PROJECT_PATH,
+  MAIN_PATH,
+  SIGN_IN_PATH,
+  SIGN_UP_PATH,
+  UPDATE_INFO_PATH,
+  UPDATE_PASSWORD_PATH,
+  UPDATE_PROJECT_PATH,
+} from "./constants";
+import MainPage from "./pages/MainPage";
+import SignIn from "./pages/SingIn";
+import NotFound from "./Redirect/NotFound";
 
 const App: React.FC = () => {
-    return (
-        <BrowserRouter>
-            <div className="App">
-                <Routes>
-                    <Route path="/" Component={MainPage} />
-                    <Route path={SIGN_IN_PATH} Component={SignIn} />
-                    <Route path={SIGN_UP_PATH} Component={SignUp} />
-                    <Route path={UPDATE_PASSWORD_PATH} Component={UpdatePassword} />
-                    <Route path={UPDATE_INFO_PATH} Component={UpdateInfo} />
-                    <Route path={CREATE_PROJECT_PATH} Component={CreateProject} />
-                    <Route path={UPDATE_PROJECT_PATH} Component={UpdateProject} />
-                    <Route path={MAIN_PATH} Component={MainPage} />
-                </Routes>
-            </div>
-        </BrowserRouter>
-    );
+  const [theme, colorMode] = useMode();
+
+  useEffect(() => {
+    window.addEventListener("error", (e) => {
+      if (e.message === "ResizeObserver loop limit exceeded") {
+        const resizeObserverErrDiv = document.getElementById("webpack-dev-server-client-overlay-div");
+        const resizeObserverErr = document.getElementById("webpack-dev-server-client-overlay");
+        if (resizeObserverErr) {
+          resizeObserverErr.setAttribute("style", "display: none");
+        }
+        if (resizeObserverErrDiv) {
+          resizeObserverErrDiv.setAttribute("style", "display: none");
+        }
+      }
+    });
+  }, []);
+
+  return (
+    <ColorModeContext.Provider
+      value={
+        colorMode as {
+          toggleColorMode: () => void;
+        }
+      }
+    >
+      <ThemeProvider theme={theme as Theme}>
+        <CssBaseline />
+        <div className="app">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Navigate to={SIGN_IN_PATH} />} />
+              <Route path={SIGN_IN_PATH} Component={SignIn} />
+              <Route path={SIGN_UP_PATH} />
+              <Route path={UPDATE_PASSWORD_PATH} />
+              <Route path={UPDATE_INFO_PATH} />
+              <Route path={CREATE_PROJECT_PATH} />
+              <Route path={UPDATE_PROJECT_PATH} />
+              <Route path={MAIN_PATH + "/*"} Component={MainPage} />
+              <Route path="*" Component={NotFound} />
+            </Routes>
+          </BrowserRouter>
+        </div>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  );
 };
 
 export default App;

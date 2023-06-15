@@ -1,14 +1,14 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import "./css/index.css";
-import App from "./App";
+import * as ReactDOMClient from "react-dom/client";
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+import App from "./App";
+import "./styles/index.scss";
+
+const rootElement = document.getElementById("root") as HTMLElement;
+const root = ReactDOMClient.createRoot(rootElement);
 
 root.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
 );
-
-export default App;

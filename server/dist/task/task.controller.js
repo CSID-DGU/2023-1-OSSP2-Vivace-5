@@ -26,10 +26,8 @@ const time_format_validation_pipe_1 = require("../pipe/time-format.validation.pi
 const append_column_dto_1 = require("./dto/append-column.dto");
 const move_task_between_columns_dto_1 = require("./dto/move-task-between-columns.dto");
 const create_bookmark_dto_1 = require("./dto/create-bookmark.dto");
-const bring_down_bookmark_dto_1 = require("./dto/bring-down-bookmark.dto");
 const sub_task_enum_1 = require("../enum/sub-task.enum");
 const boolean_pipe_1 = require("../pipe/boolean.pipe");
-const delete_task_dto_1 = require("./dto/delete-task.dto");
 const swagger_1 = require("@nestjs/swagger");
 const user_right_enum_1 = require("../enum/user-right.enum");
 let TaskController = class TaskController {
@@ -65,6 +63,10 @@ let TaskController = class TaskController {
         this.logger.verbose(`User ${user.email} trying to update whether task with id ${taskId} is milestone or not`);
         return this.taskService.updateMilestoneStatus(user, taskId, milestone);
     }
+    updateDescendantFinishedStatus(user, taskId, isFinished) {
+        this.logger.verbose(`User ${user.email} trying to update whether task with id ${taskId} is finished including all descendant`);
+        return this.taskService.updateDescendantFinishedStatus(user, taskId, isFinished);
+    }
     updateFinishedStatus(user, taskId, isFinished) {
         this.logger.verbose(`User ${user.email} trying to update whether task with id ${taskId} is finished`);
         return this.taskService.updateFinishedStatus(user, taskId, isFinished);
@@ -84,6 +86,9 @@ let TaskController = class TaskController {
         this.logger.verbose(`User ${user.email} trying to append some tasks after task ${appendTaskDto.taskId}`);
         return this.taskService.appendTaskAfter(user, appendTaskDto);
     }
+    disconnect(user, appendTaskDto) {
+        return this.taskService.disconnect(user, appendTaskDto);
+    }
     bringDownTask(user, bringDownDto) {
         this.logger.verbose(`User ${user.email} trying to bring down task ${bringDownDto.taskId} under the task ${bringDownDto.taskIdToParent}`);
         return this.taskService.bringDownTask(user, bringDownDto);
@@ -100,15 +105,29 @@ let TaskController = class TaskController {
         this.logger.verbose(`User ${user.email} trying to dismiss members from task with id ${taskId}`);
         return this.taskService.dismiss(user, taskId, memberIds);
     }
-    getAllBookmarks(user, query) { }
-    getAllBookmarkFolders(user) { }
-    createBookmark(user, createBookmarkDto) { }
-    bringDownBookmark(user, bringDownBookmarkDto) { }
-    bringUpBookmark(user, bookmarkId) { }
-    updateBookmarkTitle(user, bookmarkId, newTitle) { }
-    deleteBookmark(user, bookmarkId) { }
-    getAllContents(user, taskId) { }
-    createContent(user, taskId) { }
+    getAllBookmarks(user, projectId) {
+        this.logger.verbose(`The user ${user.email} trying to get his/her own all bookmarks`);
+        return this.taskService.getAllBookmarks(user, projectId);
+    }
+    createBookmark(user, createBookmarkDto) {
+        this.logger.verbose(`User ${user.email} trying to create bookmark`);
+        return this.taskService.createBookmark(user, createBookmarkDto);
+    }
+    updateBookmarkTitle(user, bookmarkId, newTitle) {
+        return this.taskService.updateBookmarkTitle(user, bookmarkId, newTitle);
+    }
+    deleteBookmark(user, bookmarkId, cascading) {
+        return this.taskService.deleteBookmark(user, bookmarkId, cascading);
+    }
+    deleteBookmarkByTaskID(user, projectId, taskId) {
+        return this.taskService.deleteBookmarkByTaskID(user, projectId, taskId);
+    }
+    getAllContents(user, taskId) {
+        return this.taskService.getAllContents(user, taskId);
+    }
+    createContent(user, taskId) {
+        return this.taskService.createContent(user, taskId);
+    }
     updateContent(user, contentId, content) { }
     deleteContent(user, contentId) { }
     getAllComments(user, taskId, query) { }
@@ -117,9 +136,9 @@ let TaskController = class TaskController {
     updateCommentContent(user, commentId, content) { }
     updateCommentPinStatus(user, commentId, pinned) { }
     deleteComment(user, commentId) { }
-    deleteTask(user, deleteTaskDto) {
-        this.logger.verbose(`User ${user.email} trying to delete the task with id ${deleteTaskDto.taskId}`);
-        return this.taskService.deleteTask(user, deleteTaskDto);
+    deleteTask(user, taskId, cascading) {
+        this.logger.verbose(`User ${user.email} trying to delete the task with id ${taskId}`);
+        return this.taskService.deleteTask(user, taskId, cascading);
     }
 };
 __decorate([
@@ -451,7 +470,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "updateMilestoneStatus", null);
 __decorate([
-    (0, common_1.Patch)("/update/finished/:id"),
+    (0, common_1.Patch)("/update/finished/all/:id"),
     (0, swagger_1.ApiOperation)({
         summary: "Update the completion status of task",
         description: "Update the completion status of task specified by task UUId",
@@ -484,6 +503,15 @@ __decorate([
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __param(2, (0, common_1.Body)("isFinished", boolean_pipe_1.BooleanPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
+    __metadata("design:returntype", Promise)
+], TaskController.prototype, "updateDescendantFinishedStatus", null);
+__decorate([
+    (0, common_1.Patch)("update/finished/:taskId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("taskId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Body)("isFinished", common_1.ParseBoolPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
     __metadata("design:returntype", Promise)
@@ -660,6 +688,14 @@ __decorate([
         append_task_dto_1.AppendTaskDto]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "appendTaskAfter", null);
+__decorate([
+    (0, common_1.Patch)("/disconnect"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, append_task_dto_1.AppendTaskDto]),
+    __metadata("design:returntype", void 0)
+], TaskController.prototype, "disconnect", null);
 __decorate([
     (0, common_1.Patch)("/bring/down/task"),
     (0, swagger_1.ApiOperation)({
@@ -839,44 +875,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "dismiss", null);
 __decorate([
-    (0, common_1.Get)("/bookmark"),
+    (0, common_1.Get)("/all/bookmarks/:projectId"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Query)("q")),
+    __param(1, (0, common_1.Param)("projectId")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getAllBookmarks", null);
-__decorate([
-    (0, common_1.Get)("/bookmark/folder"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "getAllBookmarkFolders", null);
 __decorate([
     (0, common_1.Post)("/create/bookmark"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User, create_bookmark_dto_1.CreateBookmarkDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TaskController.prototype, "createBookmark", null);
-__decorate([
-    (0, common_1.Patch)("/bring/down/bookmark"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, bring_down_bookmark_dto_1.BringDownBookmarkDto]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "bringDownBookmark", null);
-__decorate([
-    (0, common_1.Patch)("/bring/up/bookmark"),
-    __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)("bookmarkId", common_1.ParseUUIDPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String]),
-    __metadata("design:returntype", void 0)
-], TaskController.prototype, "bringUpBookmark", null);
 __decorate([
     (0, common_1.Patch)("/update/bookmark/title/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
@@ -887,13 +900,23 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "updateBookmarkTitle", null);
 __decorate([
-    (0, common_1.Delete)("/delete/bookmark/:id"),
+    (0, common_1.Delete)("/delete/bookmark/:id/:cascading"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Param)("cascading", common_1.ParseBoolPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "deleteBookmark", null);
+__decorate([
+    (0, common_1.Delete)("/delete/bookmark/byid/:projectId/:taskId"),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Param)("projectId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Param)("taskId", common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
+    __metadata("design:returntype", void 0)
+], TaskController.prototype, "deleteBookmarkByTaskID", null);
 __decorate([
     (0, common_1.Get)("/content/:id"),
     __param(0, (0, get_user_decorator_1.GetUser)()),
@@ -981,7 +1004,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "deleteComment", null);
 __decorate([
-    (0, common_1.Delete)("/delete"),
+    (0, common_1.Delete)("/delete/:taskId/:cascading"),
     (0, swagger_1.ApiOperation)({
         summary: "Delete the task",
         description: "Delete the task specified by UUID",
@@ -993,9 +1016,10 @@ __decorate([
         description: "If the user is not member of the project that you want to delete the task for, or if the user don't have sufficient privileges",
     }),
     __param(0, (0, get_user_decorator_1.GetUser)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Param)("taskId", common_1.ParseUUIDPipe)),
+    __param(2, (0, common_1.Param)("cascading", common_1.ParseBoolPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, delete_task_dto_1.DeleteTaskDto]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "deleteTask", null);
 TaskController = __decorate([

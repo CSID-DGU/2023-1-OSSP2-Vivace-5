@@ -1,5 +1,6 @@
 export declare class CreateBookmarkDto {
     title: string;
+    projectId: string;
     taskId: string;
-    bookmarkId: string;
+    parentId: string;
 }

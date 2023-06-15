@@ -10,7 +10,7 @@ exports.BookmarkRepository = void 0;
 const typeorm_ex_decorator_1 = require("../typeorm/typeorm-ex.decorator");
 const typeorm_1 = require("typeorm");
 const bookmark_entity_1 = require("../entity/bookmark.entity");
-let BookmarkRepository = class BookmarkRepository extends typeorm_1.Repository {
+let BookmarkRepository = class BookmarkRepository extends typeorm_1.TreeRepository {
 };
 BookmarkRepository = __decorate([
     (0, typeorm_ex_decorator_1.CustomRepository)(bookmark_entity_1.Bookmark)

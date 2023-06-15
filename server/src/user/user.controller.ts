@@ -56,7 +56,7 @@ export class UserController {
     @ApiInternalServerErrorResponse({
         description: "Else",
     })
-    signUp(@Body(ValidationPipe, EncodedImgValidationPipe) signUpDto: SignUpDto): Promise<void> {
+    signUp(@Body(EncodedImgValidationPipe) signUpDto: SignUpDto): Promise<void> {
         this.logger.verbose(`"${signUpDto.email}" trying to sign up.`);
         return this.userService.signUp(signUpDto);
     }

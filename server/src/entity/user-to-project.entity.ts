@@ -11,6 +11,9 @@ export class UserToProject extends BaseEntity {
     @Column()
     right: UserRight;
 
+    @Column()
+    isBookmarked: boolean;
+
     @Column({ name: "projectId" })
     projectId: string;
 

@@ -35,7 +35,12 @@ __decorate([
     __metadata("design:type", String)
 ], TaskContent.prototype, "content", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "taskId" }),
+    __metadata("design:type", String)
+], TaskContent.prototype, "taskId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)((type) => task_entity_1.Task, (task) => task.contents, { eager: false, onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "taskId" }),
     __metadata("design:type", task_entity_1.Task)
 ], TaskContent.prototype, "task", void 0);
 TaskContent = __decorate([

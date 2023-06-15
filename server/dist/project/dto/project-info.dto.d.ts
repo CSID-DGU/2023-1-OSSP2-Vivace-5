@@ -1,7 +1,7 @@
 import { UserRight } from "../../enum/user-right.enum";
 import { SubTask } from "../../enum/sub-task.enum";
 export declare class MemberDto {
-    id: string;
+    memberId: string;
     right: UserRight;
 }
 export declare class ProjectInfoDto {

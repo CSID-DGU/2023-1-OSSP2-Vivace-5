@@ -8,6 +8,7 @@ import { UserToProjectRepository } from "./user-to-project.repository";
 import { ProjectCommentRepository } from "./project-comment.repository";
 import { TaskRepository } from "src/task/task.repository";
 import { UserRepository } from "src/user/user.repository";
+import { ProjectContentRepository } from "./project-content.repository";
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { UserRepository } from "src/user/user.repository";
             ProjectRepository,
             UserToProjectRepository,
             ProjectCommentRepository,
+            ProjectContentRepository,
             TaskRepository,
             UserRepository,
         ]),
