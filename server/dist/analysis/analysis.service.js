@@ -51,11 +51,7 @@ let AnalysisService = class AnalysisService {
         const roots = await rootsQuery.getMany();
         const count = roots.length;
         if (count === 0) {
-            return { todo: new Array(), cycles: new Array() };
-        }
-        const cycles = await this.getCycles(roots);
-        if (cycles.length >= 1) {
-            return { todo: new Array(), cycles };
+            return { todo: new Array() };
         }
         const indexes = new Map();
         for (let i = 0; i < count; ++i) {
@@ -73,7 +69,7 @@ let AnalysisService = class AnalysisService {
         for (const taskNum of todoNum) {
             todo.push(roots[taskNum]);
         }
-        return { todo, cycles: new Array() };
+        return { todo };
     }
     async getTodo(user, parentId) {
         const parentQuery = this.taskRepository.createQueryBuilder("task");
@@ -100,11 +96,7 @@ let AnalysisService = class AnalysisService {
         const children = parent.children;
         const count = children.length;
         if (count === 0) {
-            return { todo: new Array(), cycles: new Array() };
-        }
-        const cycles = await this.getCycles(children);
-        if (cycles.length >= 1) {
-            return { todo: new Array(), cycles };
+            return { todo: new Array() };
         }
         const indexes = new Map();
         for (let i = 0; i < count; ++i) {
@@ -122,7 +114,7 @@ let AnalysisService = class AnalysisService {
         for (const taskNum of todoNum) {
             todo.push(children[taskNum]);
         }
-        return { todo, cycles: new Array() };
+        return { todo };
     }
     async getRelation(user, firstTaskId, secondTaskId) {
         const firstQuery = this.taskRepository.createQueryBuilder("task");

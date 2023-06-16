@@ -15,7 +15,7 @@ export class AnalysisService {
         @InjectRepository(ProjectRepository) private projectRepository: ProjectRepository,
     ) {}
 
-    async getRootTodo(user: User, projectId: string): Promise<{ todo: Task[]; cycles: Set<Task>[] }> {
+    async getRootTodo(user: User, projectId: string): Promise<{ todo: Task[] }> {
         const projectQuery = this.projectRepository.createQueryBuilder("project");
 
         projectQuery
@@ -54,13 +54,7 @@ export class AnalysisService {
         const count = roots.length;
 
         if (count === 0) {
-            return { todo: new Array<Task>(), cycles: new Array<Set<Task>>() };
-        }
-
-        const cycles = await this.getCycles(roots);
-
-        if (cycles.length >= 1) {
-            return { todo: new Array<Task>(), cycles };
+            return { todo: new Array<Task>() };
         }
 
         const indexes = new Map<string, number>();
@@ -85,10 +79,10 @@ export class AnalysisService {
             todo.push(roots[taskNum]);
         }
 
-        return { todo, cycles: new Array<Set<Task>>() };
+        return { todo };
     }
 
-    async getTodo(user: User, parentId: string): Promise<{ todo: Task[]; cycles: Set<Task>[] }> {
+    async getTodo(user: User, parentId: string): Promise<{ todo: Task[] }> {
         const parentQuery = this.taskRepository.createQueryBuilder("task");
 
         parentQuery
@@ -125,13 +119,7 @@ export class AnalysisService {
         const count = children.length;
 
         if (count === 0) {
-            return { todo: new Array<Task>(), cycles: new Array<Set<Task>>() };
-        }
-
-        const cycles = await this.getCycles(children);
-
-        if (cycles.length >= 1) {
-            return { todo: new Array<Task>(), cycles };
+            return { todo: new Array<Task>() };
         }
 
         const indexes = new Map<string, number>();
@@ -156,7 +144,7 @@ export class AnalysisService {
             todo.push(children[taskNum]);
         }
 
-        return { todo, cycles: new Array<Set<Task>>() };
+        return { todo };
     }
 
     async getRelation(user: User, firstTaskId: string, secondTaskId: string): Promise<{ relation: Relation }> {

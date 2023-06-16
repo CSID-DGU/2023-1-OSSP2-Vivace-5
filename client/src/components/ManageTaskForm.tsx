@@ -20,7 +20,7 @@ import { Right } from "../Enum/Right.enum";
 import axios, { AxiosResponse } from "axios";
 import { API_HOST, MAIN_DASHBOARD_PATH, MAIN_PATH, OK_RESPONCE } from "../constants";
 import { ProjectInfoType } from "../types/ProjectInfo.type";
-import { BriefMemberInfoType } from "../types/MemberInfo.type";
+import { BriefMemberInfoType } from "../types/BriefMemberInfo.type";
 import { UserInfoType } from "../types/UserInfo.type";
 
 type TaskUpdateFormType = {

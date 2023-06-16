@@ -65,7 +65,10 @@ const BookmakrPanel: React.FC<BookmarkPanelProps> = ({
 
   useEffect(() => {
     if (path.length > 0) {
-      setbookmarkListOn(path[-1].children.sort((a, b) => (a.taskId && !b.taskId ? 1 : !a.taskId && b.taskId ? -1 : 0)));
+      console.log(path);
+      setbookmarkListOn(
+        path[-1]?.children?.sort((a, b) => (a.taskId && !b.taskId ? 1 : !a.taskId && b.taskId ? -1 : 0)),
+      );
     } else {
       setbookmarkListOn(bookmarkListInfo.sort((a, b) => (a.taskId && !b.taskId ? 1 : !a.taskId && b.taskId ? -1 : 0)));
     }

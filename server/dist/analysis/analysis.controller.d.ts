@@ -8,11 +8,9 @@ export declare class AnalysisController {
     constructor(analysisService: AnalysisService);
     getRootTodo(user: User, projectId: string): Promise<{
         todo: Task[];
-        cycles: Set<Task>[];
     }>;
     getTodo(user: User, parentId: string): Promise<{
         todo: Task[];
-        cycles: Set<Task>[];
     }>;
     getRelation(user: User, firstTaskId: string, secondTaskId: string): Promise<{
         relation: Relation;

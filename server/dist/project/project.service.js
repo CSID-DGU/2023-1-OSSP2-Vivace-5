@@ -743,8 +743,7 @@ let ProjectService = class ProjectService {
         if (found.pinned) {
             throw new common_1.BadRequestException(`This project comment "${commentId}" is pinned. Pinned comment cannot be removed.`);
         }
-        found.isDeleted = true;
-        await this.projectCommentRepository.save(found);
+        await this.projectCommentRepository.delete({ id: commentId });
     }
 };
 ProjectService = __decorate([

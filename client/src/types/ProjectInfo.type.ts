@@ -1,6 +1,6 @@
 import { SubTask } from "../Enum/SubTask.enum";
 import { BriefTaskInfoType } from "./BriefTaskInfo.typs";
-import { BriefMemberInfoType } from "./MemberInfo.type";
+import { BriefMemberInfoType } from "./BriefMemberInfo.type";
 
 export type ProjectInfoType = {
   title: string;

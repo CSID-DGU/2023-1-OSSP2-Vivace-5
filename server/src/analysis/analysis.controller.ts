@@ -60,7 +60,7 @@ export class AnalysisController {
     getRootTodo(
         @GetUser() user: User,
         @Param("projectId", ParseUUIDPipe) projectId: string,
-    ): Promise<{ todo: Task[]; cycles: Set<Task>[] }> {
+    ): Promise<{ todo: Task[] }> {
         this.logger.verbose(`User ${user.email} trying to get todo list of root task in project ${projectId}`);
         return this.analysisService.getRootTodo(user, projectId);
     }
@@ -96,10 +96,7 @@ export class AnalysisController {
         description: "If the project type is not a GRAPH",
     })
     @ApiParam({ name: "parentId", type: "string", description: "parent task UUID" })
-    getTodo(
-        @GetUser() user: User,
-        @Param("parentId", ParseUUIDPipe) parentId: string,
-    ): Promise<{ todo: Task[]; cycles: Set<Task>[] }> {
+    getTodo(@GetUser() user: User, @Param("parentId", ParseUUIDPipe) parentId: string): Promise<{ todo: Task[] }> {
         this.logger.verbose(`User ${user.email} trying to get todo list in children of task ${parentId}`);
         return this.analysisService.getTodo(user, parentId);
     }

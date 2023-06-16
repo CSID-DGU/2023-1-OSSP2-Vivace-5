@@ -1117,8 +1117,6 @@ export class ProjectService {
             );
         }
 
-        found.isDeleted = true;
-
-        await this.projectCommentRepository.save(found);
+        await this.projectCommentRepository.delete({ id: commentId });
     }
 }

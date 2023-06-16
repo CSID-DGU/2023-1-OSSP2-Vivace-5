@@ -12,7 +12,7 @@ import {
 import { SubTask } from "../Enum/SubTask.enum";
 import { Avatar, Box, Divider, IconButton, InputBase, Typography, useTheme } from "@mui/material";
 import { tokens } from "../theme";
-import { BriefMemberInfoType } from "../types/MemberInfo.type";
+import { BriefMemberInfoType } from "../types/BriefMemberInfo.type";
 import MemberProfile from "./MemberProfile";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
@@ -542,6 +542,8 @@ const Project: React.FC<ProjectProps> = (props) => {
 
           {/* INNER SIDEBAR */}
           <ProjectInnerSidebar
+            myId={props.userInfo.id}
+            right={userRight}
             projectId={projectId}
             members={projectInfo.members}
             bookmarkList={bookmarkList}

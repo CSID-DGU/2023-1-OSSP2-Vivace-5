@@ -12,7 +12,7 @@ import {
 import { SubTask } from "../Enum/SubTask.enum";
 import { Avatar, Box, Divider, IconButton, InputBase, Typography, useTheme } from "@mui/material";
 import { tokens } from "../theme";
-import { BriefMemberInfoType } from "../types/MemberInfo.type";
+import { BriefMemberInfoType } from "../types/BriefMemberInfo.type";
 import MemberProfile from "./MemberProfile";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
@@ -35,8 +35,15 @@ type ProjectProps = {
 };
 
 const Task: React.FC<ProjectProps> = (props) => {
+  const params = useParams();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
   /* STATES */
   const [dummyState, setDummyState] = useState<object>({});
+  const [projectId, setProjectId] = useState<string>(params.projectId as string);
+  const [taskId, setTaskId] = useState<string>(params.taskId as string);
   const [userRight, setUserRight] = useState<Right>(Right.ADMIN);
   const [isTitleEdit, setIsTitleEdit] = useState<boolean>(false);
   const [isDescriptionEdit, setIsDescriptionEdit] = useState<boolean>(false);
@@ -56,21 +63,11 @@ const Task: React.FC<ProjectProps> = (props) => {
     comments: [],
   });
 
-  /* PARAMS */
-  const params = useParams();
-  const projectId = params.projectId as string;
-  const taskId = params.taskId as string;
-
-  /* THEME */
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-
-  /* USE NAVIGATE */
-  const navigate = useNavigate();
-
   /* USE_EFFECT */
   useEffect(() => {
     props.setIsCollapsed(true);
+    setProjectId(params.projectId as string);
+    setTaskId(params.taskId as string);
   }, []);
 
   useEffect(() => {
@@ -362,7 +359,7 @@ const Task: React.FC<ProjectProps> = (props) => {
     }
   };
 
-  return projectInfo && taskInfo ? (
+  return taskId && projectInfo && taskInfo ? (
     <Box m="20px" display="flex" flexDirection="row" justifyContent="start" height="calc(100vh - 120px)">
       <Box display="flex" flexDirection="column" justifyContent="start" width="40%">
         {/* HEADER */}
@@ -483,6 +480,9 @@ const Task: React.FC<ProjectProps> = (props) => {
 
         {/* INNER SIDEBAR */}
         <ProjectInnerSidebar
+          myId={props.userInfo.id}
+          right={userRight}
+          parentId={taskId}
           projectId={projectId}
           members={projectInfo.members}
           bookmarkList={bookmarkList}

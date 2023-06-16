@@ -473,7 +473,7 @@ const Graph: React.FC<GraphProps> = (props) => {
 
           {/* TYPE */}
           <FormControl sx={{ m: "30px", width: "85%" }}>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <InputLabel id="demo-simple-select-label">Type</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"

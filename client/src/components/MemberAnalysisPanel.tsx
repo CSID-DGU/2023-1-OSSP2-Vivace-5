@@ -9,32 +9,74 @@ import {
   Divider,
   IconButton,
   MenuItem,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
 import { tokens } from "../theme";
-import { BriefMemberInfoType } from "../types/MemberInfo.type";
+import { BriefMemberInfoType } from "../types/BriefMemberInfo.type";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
+import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
+import StarOutlineOutlinedIcon from "@mui/icons-material/StarOutlineOutlined";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
+import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
+import FormatListNumberedOutlinedIcon from "@mui/icons-material/FormatListNumberedOutlined";
+import ViewKanbanOutlinedIcon from "@mui/icons-material/ViewKanbanOutlined";
+import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
+import DoneAllOutlinedIcon from "@mui/icons-material/DoneAllOutlined";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import AccessCell from "./AccessCell";
+import axios from "axios";
+import { API_HOST, OK_RESPONCE } from "../constants";
+import { SubTask } from "../Enum/SubTask.enum";
+import { Handle, Position } from "reactflow";
+import { Right } from "../Enum/Right.enum";
+import { useNavigate } from "react-router-dom";
+
+type MemberTaskType = {
+  id: string;
+  title: string;
+  description: string;
+  type: SubTask;
+  milestone: boolean;
+  createdAt: string;
+  start: string;
+  end: string | null;
+  deadline: string;
+  isFinished: boolean;
+  parentColumnId: string | null;
+  projectId: string;
+};
 
 type MemberAnalysisPanelProps = {
+  projectId: string;
+  parentId?: string;
   currentTap: number;
   members: BriefMemberInfoType[];
 };
 
-const MemberAnalysisPanel: React.FC<MemberAnalysisPanelProps> = ({ currentTap, members }) => {
+const MemberAnalysisPanel: React.FC<MemberAnalysisPanelProps> = ({ projectId, parentId, currentTap, members }) => {
+  const navigate = useNavigate();
+
   /* THEME */
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   /* STATES */
   const [currentMember, setCurrentMember] = useState<BriefMemberInfoType>(members[0]);
+  const [currentMemberTask, setCurrentMemberTask] = useState<MemberTaskType[]>([]);
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
 
   /* USE EFFECT */
   useEffect(() => {
     setCurrentMember(members[0]);
   }, [members]);
+
+  useEffect(() => {
+    getMemberTasks();
+  }, [currentMember]);
 
   const showMemberList = () => {
     const memberList = [] as React.JSX.Element[];
@@ -88,7 +130,123 @@ const MemberAnalysisPanel: React.FC<MemberAnalysisPanelProps> = ({ currentTap, m
     return memberList;
   };
 
-  const showMemberTasks = () => {};
+  const getMemberTasks = async () => {
+    try {
+      const res = await axios.get(
+        `${API_HOST}/analysis/user/tasks/project/${parentId ? parentId : projectId}/${currentMember.id}`,
+        {
+          headers: {
+            withCredentials: true,
+            crossDomain: true,
+            credentials: "include",
+          },
+        },
+      );
+
+      if (res.status === OK_RESPONCE) {
+        setCurrentMemberTask(res.data.yourTask);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+      }
+    }
+  };
+
+  const showMemberTasks = () => {
+    if (currentMemberTask.length === 0) {
+      return;
+    }
+
+    const taskElements: React.JSX.Element[] = [];
+
+    for (const item of currentMemberTask) {
+      taskElements.push(
+        <Box
+          sx={{
+            "&": {
+              background: "#f5f5f6",
+              color: "#222",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%)",
+              borderRadius: "2px",
+              width: 250,
+            },
+          }}
+        >
+          {/* HEADER */}
+          <Box
+            padding="6px 10px"
+            borderBottom="1px solid #c2c2c2"
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+          >
+            <Typography
+              fontSize="16px"
+              fontWeight="bold"
+              onClick={() => navigate(`/main/task/${projectId}/${item.id}`)}
+            >
+              {item.title}
+            </Typography>
+
+            <Box display="flex" flexDirection="row" justifyContent="start" gap="5px">
+              {/* MILESTONE TOGGLE */}
+              <Tooltip title="Milestone">
+                {item.milestone ? (
+                  <FlagRoundedIcon sx={{ fontSize: "16px", color: colors.blueAccent[400] }} />
+                ) : (
+                  <FlagOutlinedIcon sx={{ fontSize: "16px", color: colors.blueAccent[400] }} />
+                )}
+              </Tooltip>
+
+              {/* FINISH STATUS TOGGLE */}
+              <Tooltip title="Complete">
+                <DoneOutlinedIcon
+                  sx={{
+                    fontSize: "16px",
+                    color: item.isFinished ? colors.redAccent[400] : colors.blueAccent[400],
+                  }}
+                />
+              </Tooltip>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{ "&": { padding: "6px 10px" }, "& p": { fontSize: "10px" } }}
+            fontSize="10px"
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+          >
+            {/* DESCRIPTION */}
+            <Box width="60%">
+              <Typography fontSize="12px" fontWeight="bold">
+                {item.description}
+              </Typography>
+            </Box>
+
+            <Box display="flex" flexDirection="row" justifyContent="start">
+              {/* TYPE ICON */}
+              <Box sx={{ ml: "5px" }}>
+                <Tooltip title={item.type}>
+                  {item.type === SubTask.TERMINAL ? (
+                    <InsertDriveFileOutlinedIcon sx={{ fontSize: "16px", color: colors.blueAccent[400] }} />
+                  ) : item.type === SubTask.LIST ? (
+                    <FormatListNumberedOutlinedIcon sx={{ fontSize: "16px", color: colors.blueAccent[400] }} />
+                  ) : item.type === SubTask.KANBAN ? (
+                    <ViewKanbanOutlinedIcon sx={{ fontSize: "16px", color: colors.blueAccent[400] }} />
+                  ) : (
+                    <></>
+                  )}
+                </Tooltip>
+              </Box>
+            </Box>
+          </Box>
+        </Box>,
+      );
+    }
+
+    return taskElements;
+  };
 
   /* HANDLERS */
   const handleMemberItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
